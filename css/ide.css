@@ -1,0 +1,71 @@
+:root {
+  --main-border-colour: #ddd;
+  --primary-background-colour: #f8f8f8;
+  --secondary-background-colour: #ececec;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--primary-background-colour);
+}
+
+.navbar-default {
+  background-color: var(--secondary-background-colour);
+  border-bottom: 1px solid var(--main-border-colour);
+}
+
+.CodeMirror {
+  background-color: var(--primary-background-colour);
+  min-height: 100%;
+}
+
+.CodeMirror-gutters {
+  background-color: var(--secondary-background-colour);
+}
+
+.navbar {
+  margin-bottom: 0px;
+}
+
+.navbar-brand {
+  font-family: monospace;
+}
+
+#sourceEditor {
+  border-bottom: 1px solid var(--main-border-colour);
+  min-height: 400px;
+  height: 60%;
+}
+
+#selectLanguageBtn {
+  max-width: 180px;
+}
+
+#inputLabel {
+  border-right: 1px solid var(--main-border-colour);
+}
+
+#inputEditor, #outputEditor {
+  min-height: 300px;
+  height: 40%;
+}
+
+#inputEditor {
+  border-right: 1px solid var(--main-border-colour);
+  padding-left: 0px;
+}
+
+#runBtn {
+  width: 100px;
+}
+
+#footer {
+  border-top: 1px solid var(--main-border-colour);
+  padding-top: 40px;
+  text-align: center;
+  min-height: 100px;
+  color: #777;
+}
