@@ -56,7 +56,7 @@ function fetchSubmission(submission_token) {
     type: "GET",
     async: true,
     success: function(data, textStatus, jqXHR) {
-      if (data.status.id === 1) { // In Queue
+      if (data.status.id <= 2) { // In Queue or Processing
         setTimeout(fetchSubmission.bind(null, submission_token), 1000);
         return;
       }
@@ -69,7 +69,7 @@ function fetchSubmission(submission_token) {
 
       $statusLine.html(`${status.description}, ${time}, ${memory}`);
 
-      if (status.id !== 2 && stderr !== "") { // If status is not "Accepted", merge stdout and stderr
+      if (status.id !== 3 && stderr !== "") { // If status is not "Accepted", merge stdout and stderr
         stdout += (stdout === "" ? "" : "\n") + stderr;
       }
       outputEditor.setValue(stdout);
