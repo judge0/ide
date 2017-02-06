@@ -173,9 +173,9 @@ public class Main {\n\
 var octaveSource = "printf(\"hello, world\\n\");\n";
 
 var pascalSource = "\
-program Hello;\
-begin\
-  writeln ('hello, world')\
+program Hello;\n\
+begin\n\
+  writeln ('hello, world')\n\
 end.\n";
 
 var pythonSource = "print(\"hello, world\")\n";
