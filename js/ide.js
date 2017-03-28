@@ -182,6 +182,8 @@ var pythonSource = "print(\"hello, world\")\n";
 
 var rubySource = "puts \"hello, world\"\n";
 
+var javaScriptSource = "console.log(\"hello, world\");";
+
 var sources = {
   1: bashSource,
   2: bashSource,
@@ -206,5 +208,7 @@ var sources = {
   21: rubySource,
   22: rubySource,
   23: rubySource,
-  24: rubySource
+  24: rubySource,
+  25: javaScriptSource,
+  26: javaScriptSource
 };
