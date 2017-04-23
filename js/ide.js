@@ -27,8 +27,8 @@ function run() {
     $runBtn.button("loading");
   }
 
-  var sourceValue = sourceEditor.getValue();
-  var inputValue = inputEditor.getValue();
+  var sourceValue = btoa(sourceEditor.getValue());
+  var inputValue = btoa(inputEditor.getValue());
   var languageId = $selectLanguageBtn.val();
   var data = {
     source_code: sourceValue,
@@ -37,7 +37,7 @@ function run() {
   };
   
   $.ajax({
-    url: BASE_URL + "/submissions",
+    url: BASE_URL + "/submissions?base64_encoded=true",
     type: "POST",
     async: true,
     contentType: "application/json",
@@ -52,7 +52,7 @@ function run() {
 
 function fetchSubmission(submission_token) {
   $.ajax({
-    url: BASE_URL + "/submissions/" + submission_token,
+    url: BASE_URL + "/submissions/" + submission_token + "?base64_encoded=true",
     type: "GET",
     async: true,
     success: function(data, textStatus, jqXHR) {
@@ -62,8 +62,8 @@ function fetchSubmission(submission_token) {
       }
 
       var status = data.status;
-      var stdout = data.stdout || "";
-      var stderr = data.stderr || "";
+      var stdout = atob(data.stdout || "");
+      var stderr = atob(data.stderr || "");
       var time = (data.time === null ? "-" : data.time + "s");
       var memory = (data.memory === null ? "-" : data.memory + "KB");
 
@@ -81,6 +81,17 @@ function fetchSubmission(submission_token) {
   });
 }
 
+function setEditorMode() {
+  sourceEditor.setOption("mode", $selectLanguageBtn.find(":selected").attr("mode"));
+}
+
+function insertTemplate() {
+  var value = parseInt($selectLanguageBtn.val());
+  sourceEditor.setValue(sources[value]);
+  sourceEditor.focus();
+  sourceEditor.setCursor(sourceEditor.lineCount(), 0);
+}
+
 $(document).ready(function() {
   console.log("Hey, Judge0 IDE is open-sourced here: https://github.com/judge0/ide. Have fun!");
   if (window.location.protocol === "file:") {
@@ -96,11 +107,11 @@ $(document).ready(function() {
   sourceEditor = CodeMirror(document.getElementById("sourceEditor"), {
     lineNumbers: true,
     indentUnit: 4,
-    mode: "text/x-csrc"
   });
-  sourceEditor.setValue(cSource);
-  sourceEditor.focus();
-  sourceEditor.setCursor(sourceEditor.lineCount(), 0);
+  var randomChildIndex = Math.floor(Math.random()*$selectLanguageBtn[0].length);
+  $selectLanguageBtn[0][randomChildIndex].selected = true;
+  setEditorMode();
+  insertTemplate();
 
   inputEditor = CodeMirror(document.getElementById("inputEditor"), {
     lineNumbers: true,
@@ -111,15 +122,13 @@ $(document).ready(function() {
     mode: "plain"
   });
 
+  
   $selectLanguageBtn.change(function(e) {
-    sourceEditor.setOption("mode", $selectLanguageBtn.find(":selected").attr("mode"));
+    setEditorMode();
   });
   
   $insertTemplateBtn.click(function(e) {
-    var value = parseInt($selectLanguageBtn.val());
-    sourceEditor.setValue(sources[value]);
-    sourceEditor.focus();
-    sourceEditor.setCursor(sourceEditor.lineCount(), 0);
+    insertTemplate();
   });
 
   $("body").keydown(function(e){
