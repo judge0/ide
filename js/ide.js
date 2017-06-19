@@ -107,6 +107,13 @@ $(document).ready(function() {
   sourceEditor = CodeMirror(document.getElementById("sourceEditor"), {
     lineNumbers: true,
     indentUnit: 4,
+    indentWithTabs: true,
+    extraKeys: {
+      "Tab": function(cm) {
+        var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
+        cm.replaceSelection(spaces);
+      }
+    }
   });
   var randomChildIndex = Math.floor(Math.random()*$selectLanguageBtn[0].length);
   $selectLanguageBtn[0][randomChildIndex].selected = true;
@@ -167,16 +174,16 @@ var csharpSource = "\
 public class Hello {\n\
     public static void Main() {\n\
         System.Console.WriteLine(\"hello, world\");\n\
-     }\n\
+    }\n\
 }\n";
 
 var haskellSource = "main = putStrLn \"hello, world\"\n";
 
 var javaSource = "\
 public class Main {\n\
-  public static void main(String[] args) {\n\
-    System.out.println(\"hello, world\");\n\
-  }\n\
+    public static void main(String[] args) {\n\
+        System.out.println(\"hello, world\");\n\
+    }\n\
 }\n";
 
 var octaveSource = "printf(\"hello, world\\n\");\n";
@@ -184,14 +191,14 @@ var octaveSource = "printf(\"hello, world\\n\");\n";
 var pascalSource = "\
 program Hello;\n\
 begin\n\
-  writeln ('hello, world')\n\
+    writeln ('hello, world')\n\
 end.\n";
 
 var pythonSource = "print(\"hello, world\")\n";
 
 var rubySource = "puts \"hello, world\"\n";
 
-var javaScriptSource = "console.log(\"hello, world\");";
+var javaScriptSource = "console.log(\"hello, world\");\n";
 
 var sources = {
   1: bashSource,
