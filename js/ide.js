@@ -1,4 +1,5 @@
 var BASE_URL = "https://api.judge0.com";
+var SUBMISSION_CHECK_TIMEOUT = 10; // in ms
 
 var sourceEditor, inputEditor, outputEditor;
 var $insertTemplateBtn, $selectLanguageBtn, $runBtn;
@@ -44,7 +45,7 @@ function run() {
     data: JSON.stringify(data),
     success: function(data, textStatus, jqXHR) {
       console.log(`Your submission token is: ${data.token}`);
-      setTimeout(fetchSubmission.bind(null, data.token), 1500);
+      setTimeout(fetchSubmission.bind(null, data.token), SUBMISSION_CHECK_TIMEOUT);
     },
     error: handleError
   });
@@ -57,7 +58,7 @@ function fetchSubmission(submission_token) {
     async: true,
     success: function(data, textStatus, jqXHR) {
       if (data.status.id <= 2) { // In Queue or Processing
-        setTimeout(fetchSubmission.bind(null, submission_token), 1000);
+        setTimeout(fetchSubmission.bind(null, submission_token), SUBMISSION_CHECK_TIMEOUT);
         return;
       }
 
