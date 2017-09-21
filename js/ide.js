@@ -144,6 +144,9 @@ $(document).ready(function() {
     if (keyCode == 120) { // F9
       e.preventDefault();
       run();
+    } else if (keyCode == 119) { // F8
+      e.preventDefault();
+      BASE_URL = prompt("Enter URL of Judge0 API", BASE_URL);
     }
   });
 
