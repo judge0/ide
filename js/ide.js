@@ -1,6 +1,6 @@
 var BASE_URL = "https://api.judge0.com";
 var SUBMISSION_CHECK_TIMEOUT = 10; // in ms
-var WAIT=false;
+var WAIT=true;
 
 var sourceEditor, inputEditor, outputEditor;
 var $insertTemplateBtn, $selectLanguageBtn, $runBtn;
@@ -35,7 +35,7 @@ function run() {
   var data = {
     source_code: sourceValue,
     language_id: languageId,
-    input: inputValue
+    stdin: inputValue
   };
   
   $.ajax({
@@ -102,6 +102,7 @@ function insertTemplate() {
   sourceEditor.setValue(sources[value]);
   sourceEditor.focus();
   sourceEditor.setCursor(sourceEditor.lineCount(), 0);
+  sourceEditor.markClean();
 }
 
 $(document).ready(function() {
@@ -143,11 +144,17 @@ $(document).ready(function() {
 
   
   $selectLanguageBtn.change(function(e) {
-    setEditorMode();
+    if (sourceEditor.isClean()) {
+      setEditorMode();
+      insertTemplate();
+    }
   });
   
   $insertTemplateBtn.click(function(e) {
-    insertTemplate();
+    if (!sourceEditor.isClean() && confirm("Are you sure? Your current changes will be lost.")) {
+      setEditorMode();
+      insertTemplate();
+    }
   });
 
   $("body").keydown(function(e){
