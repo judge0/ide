@@ -107,9 +107,6 @@ function insertTemplate() {
 
 $(document).ready(function() {
   console.log("Hey, Judge0 IDE is open-sourced: https://github.com/judge0/ide. Have fun!");
-  if (window.location.protocol === "file:") {
-    BASE_URL = "http://localhost:3000";
-  }
 
   $selectLanguageBtn = $("#selectLanguageBtn");
   $insertTemplateBtn = $("#insertTemplateBtn");
