@@ -144,8 +144,8 @@ $(document).ready(function() {
 
   
   $selectLanguageBtn.change(function(e) {
+    setEditorMode();
     if (sourceEditor.isClean()) {
-      setEditorMode();
       insertTemplate();
     }
   });
@@ -243,6 +243,8 @@ public class Main {\n\
 
 var javaScriptSource = "console.log(\"hello, world\");\n";
 
+var ocamlSource = "print_endline \"hello, world\" ;;\n";
+
 var octaveSource = "printf(\"hello, world\\n\");\n";
 
 var pascalSource = "\
@@ -293,16 +295,17 @@ var sources = {
  28: javaSource,
  29: javaScriptSource,
  30: javaScriptSource,
- 31: octaveSource,
- 32: pascalSource,
- 33: pythonSource,
+ 31: ocamlSource,
+ 32: octaveSource,
+ 33: pascalSource,
  34: pythonSource,
  35: pythonSource,
  36: pythonSource,
- 37: rubySource,
+ 37: pythonSource,
  38: rubySource,
  39: rubySource,
  40: rubySource,
- 41: rustSource,
- 42: textSource
+ 41: rubySource,
+ 42: rustSource,
+ 43: textSource
 };
