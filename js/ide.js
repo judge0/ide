@@ -243,7 +243,7 @@ public class Main {\n\
 
 var javaScriptSource = "console.log(\"hello, world\");\n";
 
-var ocamlSource = "print_endline \"hello, world\" ;;\n";
+var ocamlSource = "print_endline \"hello, world\";;\n";
 
 var octaveSource = "printf(\"hello, world\\n\");\n";
 

@@ -2,6 +2,7 @@
   --main-border-colour: #ddd;
   --primary-background-colour: #f8f8f8;
   --secondary-background-colour: #ececec;
+  --primary-brand-colour: #333333;
 }
 
 html, body {
@@ -10,11 +11,24 @@ html, body {
 
 body {
   background-color: var(--primary-background-colour);
+  font-family: 'Exo 2', sans-serif;
 }
 
 .navbar-default {
-  background-color: var(--secondary-background-colour);
+  background-color: var(--primary-brand-colour);
   border-bottom: 1px solid var(--main-border-colour);
+}
+
+.navbar-default .navbar-brand {
+  color: #ddd;
+  padding: 12px 15px 12px 15px;
+  font-size: 24px;
+  line-height: 26px;
+  font-weight: bold;
+}
+
+.navbar-default .navbar-brand:hover {
+  color: #fff;
 }
 
 .CodeMirror {
@@ -28,10 +42,6 @@ body {
 
 .navbar {
   margin-bottom: 0px;
-}
-
-.navbar-brand {
-  font-family: monospace;
 }
 
 #sourceEditor {
@@ -63,9 +73,20 @@ body {
 }
 
 #footer {
+  background-color: var(--primary-brand-colour);
   border-top: 1px solid var(--main-border-colour);
   padding-top: 40px;
   text-align: center;
   min-height: 100px;
   color: #777;
+}
+
+#footer a {
+  text-decoration: none;
+  font-weight: bold;
+  color: #ddd;
+}
+
+#footer a:hover {
+  color: #fff;
 }
