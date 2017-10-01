@@ -46,7 +46,11 @@ function run() {
     data: JSON.stringify(data),
     success: function(data, textStatus, jqXHR) {
       console.log(`Your submission token is: ${data.token}`);
-      setTimeout(fetchSubmission.bind(null, data.token), SUBMISSION_CHECK_TIMEOUT);
+      if (WAIT == true) {
+        handleResult(data);
+      } else {
+        setTimeout(fetchSubmission.bind(null, data.token), SUBMISSION_CHECK_TIMEOUT);
+      }
     },
     error: handleError
   });
