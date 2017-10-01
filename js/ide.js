@@ -1,6 +1,6 @@
 var BASE_URL = "https://api.judge0.com";
 var SUBMISSION_CHECK_TIMEOUT = 10; // in ms
-var WAIT=true;
+var WAIT=false;
 
 var sourceEditor, inputEditor, outputEditor;
 var $insertTemplateBtn, $selectLanguageBtn, $runBtn;
