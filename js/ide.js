@@ -3,8 +3,12 @@ var SUBMISSION_CHECK_TIMEOUT = 10; // in ms
 var WAIT=false;
 
 var sourceEditor, inputEditor, outputEditor;
-var $insertTemplateBtn, $selectLanguageBtn, $runBtn;
+var $insertTemplateBtn, $selectLanguageBtn, $runBtn, $saveBtn;
 var $statusLine, $emptyIndicator;
+
+function getIdFromURI() {
+  return location.search.substr(1).trim();
+}
 
 function updateEmptyIndicator() {
   if (outputEditor.getValue() === "") {
@@ -17,9 +21,38 @@ function updateEmptyIndicator() {
 function handleError(jqXHR, textStatus, errorThrown) {
   outputEditor.setValue(JSON.stringify(jqXHR, null, 4));
   $statusLine.html(`${jqXHR.statusText} (${jqXHR.status})`);
+}
+
+function handleRunError(jqXHR, textStatus, errorThrown) {
+  handleError(jqXHR, textStatus, errorThrown);
   $runBtn.button("reset");
   updateEmptyIndicator();
 }
+
+function handleResult(data) {
+  var status = data.status;
+  var stdout = decodeURIComponent(escape(atob(data.stdout || "")));
+  var stderr = decodeURIComponent(escape(atob(data.stderr || "")));
+  var compile_output = decodeURIComponent(escape(atob(data.compile_output || "")));
+  var message = decodeURIComponent(escape(atob(data.message || "")));
+  var time = (data.time === null ? "-" : data.time + "s");
+  var memory = (data.memory === null ? "-" : data.memory + "KB");
+
+  $statusLine.html(`${status.description}, ${time}, ${memory}`);
+
+  if (status.id == 6) {
+    stdout = compile_output;
+  } else if (status.id == 13) {
+    stdout = message;
+  } else if (status.id !== 3 && stderr !== "") { // If status is not "Accepted", merge stdout and stderr
+    stdout += (stdout === "" ? "" : "\n") + stderr;
+  }
+
+  outputEditor.setValue(stdout);
+
+  updateEmptyIndicator();
+  $runBtn.button("reset");
+};
 
 function run() {
   if (sourceEditor.getValue().trim() === "") {
@@ -52,33 +85,8 @@ function run() {
         setTimeout(fetchSubmission.bind(null, data.token), SUBMISSION_CHECK_TIMEOUT);
       }
     },
-    error: handleError
+    error: handleRunError
   });
-};
-
-function handleResult(data) {
-  var status = data.status;
-  var stdout = decodeURIComponent(escape(atob(data.stdout || "")));
-  var stderr = decodeURIComponent(escape(atob(data.stderr || "")));
-  var compile_output = decodeURIComponent(escape(atob(data.compile_output || "")));
-  var message = decodeURIComponent(escape(atob(data.message || "")));
-  var time = (data.time === null ? "-" : data.time + "s");
-  var memory = (data.memory === null ? "-" : data.memory + "KB");
-
-  $statusLine.html(`${status.description}, ${time}, ${memory}`);
-
-  if (status.id == 6) {
-    stdout = compile_output;
-  } else if (status.id == 13) {
-    stdout = message;
-  } else if (status.id !== 3 && stderr !== "") { // If status is not "Accepted", merge stdout and stderr
-    stdout += (stdout === "" ? "" : "\n") + stderr;
-  }
-
-  outputEditor.setValue(stdout);
-  
-  updateEmptyIndicator();
-  $runBtn.button("reset");
 };
 
 function fetchSubmission(submission_token) {
@@ -93,7 +101,59 @@ function fetchSubmission(submission_token) {
       }
       handleResult(data);
     },
-    error: handleError
+    error: handleRunError
+  });
+}
+
+function save() {
+  var content = JSON.stringify({
+    source_code: btoa(unescape(encodeURIComponent(sourceEditor.getValue()))),
+    stdin: btoa(unescape(encodeURIComponent(inputEditor.getValue()))),
+    language_id: $selectLanguageBtn.val()
+  });
+  var filename = "judge0-ide.json";
+  var data = {
+    content: content,
+    filename: filename
+  };
+
+  $saveBtn.button("loading");
+  $.ajax({
+    url: "https://ptpb.pw",
+    type: "POST",
+    async: true,
+    headers: {
+      "Accept": "application/json"
+    },
+    data: data,
+    success: function(data, textStatus, jqXHR) {
+      $saveBtn.button("reset");
+      if (getIdFromURI() != data["long"]) {
+        window.history.replaceState(null, null, location.origin + location.pathname + "?" + data["long"]);
+      }
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      handleError(jqXHR, textStatus, errorThrown);
+      $saveBtn.button("reset");
+    }
+  });
+}
+
+function loadSavedSource() {
+  $.ajax({
+    url: "https://ptpb.pw/" + getIdFromURI(),
+    type: "GET",
+    success: function(data, textStatus, jqXHR) {
+      sourceEditor.setValue(decodeURIComponent(escape(atob(data["source_code"] || ""))));
+      inputEditor.setValue(decodeURIComponent(escape(atob(data["stdin"] || ""))));
+      $selectLanguageBtn[0].value = data["language_id"];
+      setEditorMode();
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("Code not found!");
+      window.history.replaceState(null, null, location.origin + location.pathname);
+      loadRandomLanguage();
+    }
   });
 }
 
@@ -109,12 +169,19 @@ function insertTemplate() {
   sourceEditor.markClean();
 }
 
+function loadRandomLanguage() {
+  var randomChildIndex = Math.floor(Math.random()*$selectLanguageBtn[0].length);
+  $selectLanguageBtn[0][randomChildIndex].selected = true;
+  setEditorMode();
+  insertTemplate();
+}
+
 $(document).ready(function() {
   console.log("Hey, Judge0 IDE is open-sourced: https://github.com/judge0/ide. Have fun!");
-
   $selectLanguageBtn = $("#selectLanguageBtn");
   $insertTemplateBtn = $("#insertTemplateBtn");
   $runBtn = $("#runBtn");
+  $saveBtn = $("#saveBtn");
   $emptyIndicator = $("#emptyIndicator");
   $statusLine = $("#statusLine");
 
@@ -129,10 +196,12 @@ $(document).ready(function() {
       }
     }
   });
-  var randomChildIndex = Math.floor(Math.random()*$selectLanguageBtn[0].length);
-  $selectLanguageBtn[0][randomChildIndex].selected = true;
-  setEditorMode();
-  insertTemplate();
+
+  if (getIdFromURI()) {
+    loadSavedSource();
+  } else {
+    loadRandomLanguage();
+  }
 
   inputEditor = CodeMirror(document.getElementById("inputEditor"), {
     lineNumbers: true,
@@ -173,11 +242,18 @@ $(document).ready(function() {
       e.preventDefault();
       WAIT=!WAIT;
       alert(`Submission wait is ${WAIT ? "ON. Enjoy" : "OFF"}.`);
+    } else if (event.ctrlKey && keyCode == 83) { // Ctrl+S
+      e.preventDefault();
+      save();
     }
   });
 
   $runBtn.click(function(e) {
     run();
+  });
+
+  $saveBtn.click(function(e) {
+    save();
   });
 });
 

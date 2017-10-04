@@ -72,6 +72,10 @@ body {
   width: 100px;
 }
 
+#saveBtn {
+  width: 130px;
+}
+
 #footer {
   background-color: var(--primary-brand-colour);
   border-top: 1px solid var(--main-border-colour);
