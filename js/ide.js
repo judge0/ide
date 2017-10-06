@@ -190,6 +190,10 @@ $(document).ready(function() {
 
   initializeElements();
 
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  });
+
   sourceEditor = CodeMirror(document.getElementById("sourceEditor"), {
     lineNumbers: true,
     indentUnit: 4,

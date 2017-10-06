@@ -54,8 +54,8 @@
       <div class="navbar-form navbar-right">
         <div class="input-group">
           <div class="input-group-btn">
-            <button id="insertTemplateBtn" type="button" class="btn btn-default">
-              <span class="glyphicon glyphicon-file" aria-hidden="true"></span> Insert Template
+            <button id="insertTemplateBtn" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Insert template">
+              <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
             </button>
           </div>
           <select class="form-control" id="selectLanguageBtn">
@@ -110,7 +110,7 @@
         <button class="btn btn-primary" id="saveBtn" data-loading-text="Saving...">
           <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save (Ctrl+S)
         </button>
-        <button class="btn btn-default" id="downloadSourceBtn">
+        <button class="btn btn-default" id="downloadSourceBtn" data-toggle="tooltip" data-placement="bottom" title="Download source">
           <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
         </button>
       </div>
@@ -124,7 +124,7 @@
       <div id="inputLabel" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
         <h4>
           <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Input <small>optional</small>
-          <button class="btn btn-default pull-right" id="downloadInputBtn">
+          <button class="btn btn-default pull-right" id="downloadInputBtn" data-toggle="tooltip" data-placement="top" title="Download input">
             <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
           </button>
         </h4>
@@ -132,7 +132,7 @@
       <div id="outputLabel" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
         <h4>
           <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Output <small id="emptyIndicator">empty</small>
-          <button class="btn btn-default pull-right" id="downloadOutputBtn">
+          <button class="btn btn-default pull-right" id="downloadOutputBtn" data-toggle="tooltip" data-placement="top" title="Download output">
             <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
           </button>
           <small class="pull-right" id="statusLine"></small>
