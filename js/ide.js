@@ -260,6 +260,17 @@ $(document).ready(function() {
   $saveBtn.click(function(e) {
     save();
   });
+
+  $("#downloadSourceBtn").click(function(e) {
+    var value = parseInt($selectLanguageBtn.val());
+    download(sourceEditor.getValue(), fileNames[value], "text/plain");
+  });
+  $("#downloadInputBtn").click(function(e) {
+    download(inputEditor.getValue(), "input.txt", "text/plain");
+  });
+  $("#downloadOutputBtn").click(function(e) {
+    download(outputEditor.getValue(), "output.txt", "text/plain");
+  });
 });
 
 // Template Sources
@@ -390,4 +401,50 @@ var sources = {
  41: rubySource,
  42: rustSource,
  43: textSource
+};
+
+var fileNames = {
+  1: "script.sh",
+  2: "script.sh",
+  3: "main.bas",
+  4: "main.c",
+  5: "main.c",
+  6: "main.c",
+  7: "main.c",
+  8: "main.c",
+  9: "main.c",
+ 10: "main.cpp",
+ 11: "main.cpp",
+ 12: "main.cpp",
+ 13: "main.cpp",
+ 14: "main.cpp",
+ 15: "main.cpp",
+ 16: "Main.cs",
+ 17: "Main.cs",
+ 18: "main.clj",
+ 19: "main.cr",
+ 20: "main.exs",
+ 21: "main.erl",
+ 22: "main.go",
+ 23: "main.hs",
+ 24: "main.hs",
+ 25: "main.ins",
+ 26: "Main.java",
+ 27: "Main.java",
+ 28: "Main.java",
+ 29: "main.js",
+ 30: "main.js",
+ 31: "main.ml",
+ 32: "file.m",
+ 33: "main.pas",
+ 34: "main.py",
+ 35: "main.py",
+ 36: "main.py",
+ 37: "main.py",
+ 38: "main.rb",
+ 39: "main.rb",
+ 40: "main.rb",
+ 41: "main.rb",
+ 42: "main.rs",
+ 43: "source.txt"
 };

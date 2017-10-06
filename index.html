@@ -33,6 +33,8 @@
   <script src="js/mode/rust.js"></script>
   <script src="js/mode/shell.js"></script>
 
+  <script src="js/download.js"></script>
+
   <link rel="stylesheet" href="css/ide.css">
   <script src="js/ide.js"></script>
 
@@ -108,6 +110,9 @@
         <button class="btn btn-primary" id="saveBtn" data-loading-text="Saving...">
           <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save (Ctrl+S)
         </button>
+        <button class="btn btn-default" id="downloadSourceBtn">
+          <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+        </button>
       </div>
     </div>
   </nav>
@@ -117,12 +122,19 @@
   <div class="container-fluid">
     <div class="row labels">
       <div id="inputLabel" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-        <h4><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Input<small> optional</small></h4>
+        <h4>
+          <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Input <small>optional</small>
+          <button class="btn btn-default pull-right" id="downloadInputBtn">
+            <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+          </button>
+        </h4>
       </div>
       <div id="outputLabel" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
         <h4>
-          <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
-          Output <small id="emptyIndicator">empty</small>
+          <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Output <small id="emptyIndicator">empty</small>
+          <button class="btn btn-default pull-right" id="downloadOutputBtn">
+            <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+          </button>
           <small class="pull-right" id="statusLine"></small>
         </h4>
       </div>

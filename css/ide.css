@@ -76,6 +76,10 @@ body {
   width: 130px;
 }
 
+#statusLine {
+  margin-right: 10px;
+}
+
 #footer {
   background-color: var(--primary-brand-colour);
   border-top: 1px solid var(--main-border-colour);
