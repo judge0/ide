@@ -176,14 +176,19 @@ function loadRandomLanguage() {
   insertTemplate();
 }
 
-$(document).ready(function() {
-  console.log("Hey, Judge0 IDE is open-sourced: https://github.com/judge0/ide. Have fun!");
+function initializeElements() {
   $selectLanguageBtn = $("#selectLanguageBtn");
   $insertTemplateBtn = $("#insertTemplateBtn");
   $runBtn = $("#runBtn");
   $saveBtn = $("#saveBtn");
   $emptyIndicator = $("#emptyIndicator");
   $statusLine = $("#statusLine");
+}
+
+$(document).ready(function() {
+  console.log("Hey, Judge0 IDE is open-sourced: https://github.com/judge0/ide. Have fun!");
+
+  initializeElements();
 
   sourceEditor = CodeMirror(document.getElementById("sourceEditor"), {
     lineNumbers: true,
@@ -214,10 +219,10 @@ $(document).ready(function() {
 
   
   $selectLanguageBtn.change(function(e) {
-    setEditorMode();
     if (sourceEditor.isClean()) {
       insertTemplate();
     }
+    setEditorMode();
   });
   
   $insertTemplateBtn.click(function(e) {
@@ -234,8 +239,8 @@ $(document).ready(function() {
       run();
     } else if (keyCode == 119) { // F8
       e.preventDefault();
-      var url = prompt("Enter URL of Judge0 API:", BASE_URL);
-      if (url.trim() != "") {
+      var url = prompt("Enter URL of Judge0 API:", BASE_URL).trim();
+      if (url != "") {
         BASE_URL = url;
       }
     } else if (keyCode == 118) { // F7
