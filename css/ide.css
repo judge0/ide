@@ -46,8 +46,9 @@ body {
 
 #sourceEditor {
   border-bottom: 1px solid var(--main-border-colour);
-  min-height: 400px;
   height: 60%;
+  resize: vertical;
+  overflow: auto;
 }
 
 #selectLanguageBtn {
@@ -58,9 +59,11 @@ body {
   border-right: 1px solid var(--main-border-colour);
 }
 
-#inputEditor, #outputEditor {
+#rowioEditors, #inputLabel, #outputLabel {
   min-height: 300px;
   height: 40%;
+  resize: horizontal;
+  overflow: auto;
 }
 
 #inputEditor {
