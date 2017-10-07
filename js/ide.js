@@ -289,7 +289,7 @@ $(document).ready(function() {
 
   $vimBtn.click(function(e) {
     toggleVim();
-  };
+  });
                 
   $("#downloadSourceBtn").click(function(e) {
     var value = parseInt($selectLanguageBtn.val());
