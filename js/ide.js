@@ -54,6 +54,22 @@ function handleResult(data) {
   $runBtn.button("reset");
 };
 
+function toggleVim() {
+    var isVimModeActive = (Cookies.get("vimMode")) == "on";
+
+    // alert(Cookies.get("vimMode"));
+
+    if(isVimModeActive) {
+        // we need to disable vim mode.
+        Cookies.set("vimMode" , "off");
+    } else {
+        // we need to enable vim mode
+        Cookies.set("vimMode" , "on");
+    }
+
+    alert("Please refresh for changes to take effect");
+}
+
 function run() {
   if (sourceEditor.getValue().trim() === "") {
     alert("Source code can't be empty.");
@@ -181,6 +197,7 @@ function initializeElements() {
   $insertTemplateBtn = $("#insertTemplateBtn");
   $runBtn = $("#runBtn");
   $saveBtn = $("#saveBtn");
+  $vimBtn = $("#vimBtn");
   $emptyIndicator = $("#emptyIndicator");
   $statusLine = $("#statusLine");
 }
@@ -190,7 +207,7 @@ $(document).ready(function() {
 
   initializeElements();
 
-  sourceEditor = CodeMirror(document.getElementById("sourceEditor"), {
+  var CodeMirrorSettings =  {
     lineNumbers: true,
     indentUnit: 4,
     indentWithTabs: true,
@@ -200,7 +217,12 @@ $(document).ready(function() {
         cm.replaceSelection(spaces);
       }
     }
-  });
+  };
+
+  if(Cookies.get("vimMode") == "on")
+    CodeMirrorSettings["keyMap"] = "vim";
+
+  sourceEditor = CodeMirror(document.getElementById("sourceEditor"), CodeMirrorSettings);
 
   if (getIdFromURI()) {
     loadSavedSource();
@@ -259,6 +281,10 @@ $(document).ready(function() {
 
   $saveBtn.click(function(e) {
     save();
+  });
+
+  $vimBtn.click(function(e) {
+    toggleVim();
   });
 });
 
