@@ -55,19 +55,15 @@ function handleResult(data) {
 };
 
 function toggleVim() {
-    var isVimModeActive = (Cookies.get("vimMode")) == "on";
 
-    // alert(Cookies.get("vimMode"));
-
-    if(isVimModeActive) {
-        // we need to disable vim mode.
-        Cookies.set("vimMode" , "off");
+    if (vimCheckBox.checked) {
+        localStorage.setItem("vimMode" , "on");
+        sourceEditor.options.keyMap = "vim";
     } else {
-        // we need to enable vim mode
-        Cookies.set("vimMode" , "on");
+        localStorage.setItem("vimMode" , "off");
+        sourceEditor.options.keyMap = "default";
     }
 
-    alert("Please refresh for changes to take effect");
 }
 
 function run() {
@@ -86,7 +82,9 @@ function run() {
     language_id: languageId,
     stdin: inputValue
   };
-  
+
+
+
   $.ajax({
     url: BASE_URL + `/submissions?base64_encoded=true&wait=${WAIT}`,
     type: "POST",
@@ -197,7 +195,7 @@ function initializeElements() {
   $insertTemplateBtn = $("#insertTemplateBtn");
   $runBtn = $("#runBtn");
   $saveBtn = $("#saveBtn");
-  $vimBtn = $("#vimBtn");
+  $vimCheckBox = $("#vimCheckBox");
   $emptyIndicator = $("#emptyIndicator");
   $statusLine = $("#statusLine");
 }
@@ -223,10 +221,13 @@ $(document).ready(function() {
     }
   };
 
-  if(Cookies.get("vimMode") == "on")
-    CodeMirrorSettings["keyMap"] = "vim";
-
   sourceEditor = CodeMirror(document.getElementById("sourceEditor"), CodeMirrorSettings);
+
+  sourceEditor.options.keyMap = (localStorage.getItem("vimMode") == "on")
+                                ? "vim" : "default";
+
+  $vimCheckBox.prop("checked",localStorage.getItem("vimMode") == "on");
+
 
   if (getIdFromURI()) {
     loadSavedSource();
@@ -287,18 +288,21 @@ $(document).ready(function() {
     save();
   });
 
+  $vimCheckBox.click(function(e) {
+    toggleVim();
+  });
+                
   $("#downloadSourceBtn").click(function(e) {
     var value = parseInt($selectLanguageBtn.val());
     download(sourceEditor.getValue(), fileNames[value], "text/plain");
   });
+
   $("#downloadInputBtn").click(function(e) {
     download(inputEditor.getValue(), "input.txt", "text/plain");
   });
+
   $("#downloadOutputBtn").click(function(e) {
     download(outputEditor.getValue(), "output.txt", "text/plain");
-  });
-  $vimBtn.click(function(e) {
-    toggleVim();
   });
 });
 
