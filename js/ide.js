@@ -54,6 +54,20 @@ function handleResult(data) {
   $runBtn.button("reset");
 };
 
+function toggleVim() {
+
+    alert("Vim Mode Toggled");
+
+    if (vimCheckBox.checked) {
+        localStorage.setItem("vimMode" , "on");
+        sourceEditor.options.keyMap = "vim";
+    } else {
+        localStorage.setItem("vimMode" , "off");
+        sourceEditor.options.keyMap = "default";
+    }
+
+}
+
 function run() {
   if (sourceEditor.getValue().trim() === "") {
     alert("Source code can't be empty.");
@@ -70,7 +84,9 @@ function run() {
     language_id: languageId,
     stdin: inputValue
   };
-  
+
+
+
   $.ajax({
     url: BASE_URL + `/submissions?base64_encoded=true&wait=${WAIT}`,
     type: "POST",
@@ -181,6 +197,7 @@ function initializeElements() {
   $insertTemplateBtn = $("#insertTemplateBtn");
   $runBtn = $("#runBtn");
   $saveBtn = $("#saveBtn");
+  $vimCheckBox = $("#vimCheckBox");
   $emptyIndicator = $("#emptyIndicator");
   $statusLine = $("#statusLine");
 }
@@ -194,7 +211,7 @@ $(document).ready(function() {
     $('[data-toggle="tooltip"]').tooltip()
   });
 
-  sourceEditor = CodeMirror(document.getElementById("sourceEditor"), {
+  var CodeMirrorSettings =  {
     lineNumbers: true,
     indentUnit: 4,
     indentWithTabs: true,
@@ -204,7 +221,22 @@ $(document).ready(function() {
         cm.replaceSelection(spaces);
       }
     }
-  });
+  };
+
+  sourceEditor = CodeMirror(document.getElementById("sourceEditor"), CodeMirrorSettings);
+
+  var currentKeyMap;
+  try {
+    currentKeyMap = localStorage.getItem("vimMode") == "on" ? "vim" : "default"; 
+  } catch (e){
+    currentKeyMap = "default";
+  }
+
+  alert(currentKeyMap == "vim");
+
+  sourceEditor.options.keyMap = currentKeyMap;
+
+  $vimCheckBox.prop("checked", currentKeyMap == "vim").change();
 
   if (getIdFromURI()) {
     loadSavedSource();
@@ -265,13 +297,19 @@ $(document).ready(function() {
     save();
   });
 
+  $vimCheckBox.change(function() {
+    toggleVim();
+  });
+                
   $("#downloadSourceBtn").click(function(e) {
     var value = parseInt($selectLanguageBtn.val());
     download(sourceEditor.getValue(), fileNames[value], "text/plain");
   });
+  
   $("#downloadInputBtn").click(function(e) {
     download(inputEditor.getValue(), "input.txt", "text/plain");
   });
+  
   $("#downloadOutputBtn").click(function(e) {
     download(outputEditor.getValue(), "output.txt", "text/plain");
   });

@@ -33,6 +33,10 @@
   <script src="js/mode/rust.js"></script>
   <script src="js/mode/shell.js"></script>
 
+  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+  <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
+  <script src="js/keymap/vim.js"></script>
   <script src="js/download.js"></script>
 
   <link rel="stylesheet" href="css/ide.css">
@@ -113,6 +117,7 @@
         <button class="btn btn-default" id="downloadSourceBtn" data-toggle="tooltip" data-placement="bottom" title="Download source">
           <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
         </button>
+        <input type="checkbox" id="vimCheckBox" data-toggle="toggle" data-on="Vim Mode On" data-off="Vim Mode Off">
       </div>
     </div>
   </nav>
