@@ -1,9 +1,9 @@
-var BASE_URL = "https://api.judge0.com";
+var BASE_URL = localStorageGetItem("baseUrl") || "https://api.judge0.com";
 var SUBMISSION_CHECK_TIMEOUT = 10; // in ms
-var WAIT=false;
+var WAIT = localStorageGetItem("wait") || false;
 
 var sourceEditor, inputEditor, outputEditor;
-var $insertTemplateBtn, $selectLanguageBtn, $runBtn, $saveBtn;
+var $insertTemplateBtn, $selectLanguageBtn, $runBtn, $saveBtn, $vimCheckBox;
 var $statusLine, $emptyIndicator;
 
 function getIdFromURI() {
@@ -11,7 +11,7 @@ function getIdFromURI() {
 }
 
 function updateEmptyIndicator() {
-  if (outputEditor.getValue() === "") {
+  if (outputEditor.getValue() == "") {
     $emptyIndicator.html("empty");
   } else {
     $emptyIndicator.html("");
@@ -44,32 +44,25 @@ function handleResult(data) {
     stdout = compile_output;
   } else if (status.id == 13) {
     stdout = message;
-  } else if (status.id !== 3 && stderr !== "") { // If status is not "Accepted", merge stdout and stderr
-    stdout += (stdout === "" ? "" : "\n") + stderr;
+  } else if (status.id != 3 && stderr != "") { // If status is not "Accepted", merge stdout and stderr
+    stdout += (stdout == "" ? "" : "\n") + stderr;
   }
 
   outputEditor.setValue(stdout);
 
   updateEmptyIndicator();
   $runBtn.button("reset");
-};
+}
 
 function toggleVim() {
-
-    alert("Vim Mode Toggled");
-
-    if (vimCheckBox.checked) {
-        localStorage.setItem("vimMode" , "on");
-        sourceEditor.options.keyMap = "vim";
-    } else {
-        localStorage.setItem("vimMode" , "off");
-        sourceEditor.options.keyMap = "default";
-    }
-
+  var keyMap = vimCheckBox.checked ? "vim" : "default";
+  localStorageSetItem("keyMap", keyMap);
+  sourceEditor.setOption("keyMap", keyMap);
+  focusAndSetCursorAtTheEnd();
 }
 
 function run() {
-  if (sourceEditor.getValue().trim() === "") {
+  if (sourceEditor.getValue().trim() == "") {
     alert("Source code can't be empty.");
     return;
   } else {
@@ -84,8 +77,6 @@ function run() {
     language_id: languageId,
     stdin: inputValue
   };
-
-
 
   $.ajax({
     url: BASE_URL + `/submissions?base64_encoded=true&wait=${WAIT}`,
@@ -103,7 +94,7 @@ function run() {
     },
     error: handleRunError
   });
-};
+}
 
 function fetchSubmission(submission_token) {
   $.ajax({
@@ -164,6 +155,7 @@ function loadSavedSource() {
       inputEditor.setValue(decodeURIComponent(escape(atob(data["stdin"] || ""))));
       $selectLanguageBtn[0].value = data["language_id"];
       setEditorMode();
+      focusAndSetCursorAtTheEnd();
     },
     error: function(jqXHR, textStatus, errorThrown) {
       alert("Code not found!");
@@ -177,11 +169,15 @@ function setEditorMode() {
   sourceEditor.setOption("mode", $selectLanguageBtn.find(":selected").attr("mode"));
 }
 
+function focusAndSetCursorAtTheEnd() {
+  sourceEditor.focus();
+  sourceEditor.setCursor(sourceEditor.lineCount(), 0);
+}
+
 function insertTemplate() {
   var value = parseInt($selectLanguageBtn.val());
   sourceEditor.setValue(sources[value]);
-  sourceEditor.focus();
-  sourceEditor.setCursor(sourceEditor.lineCount(), 0);
+  focusAndSetCursorAtTheEnd();
   sourceEditor.markClean();
 }
 
@@ -202,6 +198,21 @@ function initializeElements() {
   $statusLine = $("#statusLine");
 }
 
+function localStorageSetItem(key, value) {
+  try {
+    localStorage.setItem(key, value);
+  } catch (ignorable) {
+  }
+}
+
+function localStorageGetItem(key) {
+  try {
+    return localStorage.getItem(key);
+  } catch (ignorable) {
+    return null;
+  }
+}
+
 $(document).ready(function() {
   console.log("Hey, Judge0 IDE is open-sourced: https://github.com/judge0/ide. Have fun!");
 
@@ -211,38 +222,20 @@ $(document).ready(function() {
     $('[data-toggle="tooltip"]').tooltip()
   });
 
-  var CodeMirrorSettings =  {
+  sourceEditor = CodeMirror(document.getElementById("sourceEditor"), {
     lineNumbers: true,
     indentUnit: 4,
     indentWithTabs: true,
+    showCursorWhenSelecting: true,
+    matchBrackets: true,
+    keyMap: localStorageGetItem("keyMap") || "default",
     extraKeys: {
       "Tab": function(cm) {
         var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
         cm.replaceSelection(spaces);
       }
     }
-  };
-
-  sourceEditor = CodeMirror(document.getElementById("sourceEditor"), CodeMirrorSettings);
-
-  var currentKeyMap;
-  try {
-    currentKeyMap = localStorage.getItem("vimMode") == "on" ? "vim" : "default"; 
-  } catch (e){
-    currentKeyMap = "default";
-  }
-
-  alert(currentKeyMap == "vim");
-
-  sourceEditor.options.keyMap = currentKeyMap;
-
-  $vimCheckBox.prop("checked", currentKeyMap == "vim").change();
-
-  if (getIdFromURI()) {
-    loadSavedSource();
-  } else {
-    loadRandomLanguage();
-  }
+  });
 
   inputEditor = CodeMirror(document.getElementById("inputEditor"), {
     lineNumbers: true,
@@ -253,7 +246,14 @@ $(document).ready(function() {
     mode: "plain"
   });
 
-  
+  $vimCheckBox.prop("checked", localStorageGetItem("keyMap") == "vim").change();
+
+  if (getIdFromURI()) {
+    loadSavedSource();
+  } else {
+    loadRandomLanguage();
+  }
+
   $selectLanguageBtn.change(function(e) {
     if (sourceEditor.isClean()) {
       insertTemplate();
@@ -278,10 +278,12 @@ $(document).ready(function() {
       var url = prompt("Enter URL of Judge0 API:", BASE_URL).trim();
       if (url != "") {
         BASE_URL = url;
+        localStorageSetItem("baseUrl", BASE_URL);
       }
     } else if (keyCode == 118) { // F7
       e.preventDefault();
       WAIT=!WAIT;
+      localStorageSetItem("wait", WAIT);
       alert(`Submission wait is ${WAIT ? "ON. Enjoy" : "OFF"}.`);
     } else if (event.ctrlKey && keyCode == 83) { // Ctrl+S
       e.preventDefault();
@@ -293,6 +295,7 @@ $(document).ready(function() {
     run();
   });
 
+  CodeMirror.commands.save = function(){ save(); };
   $saveBtn.click(function(e) {
     save();
   });
