@@ -223,10 +223,16 @@ $(document).ready(function() {
 
   sourceEditor = CodeMirror(document.getElementById("sourceEditor"), CodeMirrorSettings);
 
-  sourceEditor.options.keyMap = (localStorage.getItem("vimMode") == "on")
-                                ? "vim" : "default";
+  var currentKeyMap;
+  try {
+    currentKeyMap = localStorage.getItem("vimMode") == "on" ? "vim" : "default"; 
+  } catch (e){
+    currentKeyMap = "default";
+  }
 
-  $vimCheckBox.prop("checked",localStorage.getItem("vimMode") == "on");
+  sourceEditor.options.keyMap = currentKeyMap;
+
+  $vimCheckBox.prop("checked", currentKeyMap == "vim");
 
 
   if (getIdFromURI()) {
