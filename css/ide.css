@@ -98,3 +98,11 @@ body {
 #footer a:hover {
   color: #fff;
 }
+
+.vertical-spacer {
+  display: inline-block;
+  background-color: var(--main-border-colour);
+  margin: 0px 10px -14px 10px;
+  width: 1px;
+  height: 34px;
+}
