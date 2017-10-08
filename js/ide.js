@@ -56,6 +56,8 @@ function handleResult(data) {
 
 function toggleVim() {
 
+    alert("Vim Mode Toggled");
+
     if (vimCheckBox.checked) {
         localStorage.setItem("vimMode" , "on");
         sourceEditor.options.keyMap = "vim";
@@ -230,10 +232,11 @@ $(document).ready(function() {
     currentKeyMap = "default";
   }
 
+  alert(currentKeyMap == "vim");
+
   sourceEditor.options.keyMap = currentKeyMap;
 
-  $vimCheckBox.prop("checked", currentKeyMap == "vim");
-
+  $vimCheckBox.prop("checked", currentKeyMap == "vim").change();
 
   if (getIdFromURI()) {
     loadSavedSource();
@@ -294,7 +297,7 @@ $(document).ready(function() {
     save();
   });
 
-  $vimCheckBox.click(function(e) {
+  $vimCheckBox.change(function() {
     toggleVim();
   });
                 
