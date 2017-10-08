@@ -228,6 +228,7 @@ $(document).ready(function() {
     indentWithTabs: true,
     showCursorWhenSelecting: true,
     matchBrackets: true,
+    autoCloseBrackets: true,
     keyMap: localStorageGetItem("keyMap") || "default",
     extraKeys: {
       "Tab": function(cm) {
