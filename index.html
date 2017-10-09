@@ -57,7 +57,27 @@
 </head>
 
 <body>
-  <nav class="navbar navbar-default navbar-static-top">
+    
+    <!-- Settings Modal -->
+    <div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="settingsModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="settingsModalLabel">Settings</h4>
+          </div>
+          
+          <div class="modal-body">
+          <!-- Settings, buttons and stuff -->
+          </div>
+          
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <nav class="navbar navbar-default navbar-static-top">
     <div class="container-fluid">
       <div class="navbar-header">
         <a class="navbar-brand" href="https://ide.judge0.com">
@@ -125,6 +145,9 @@
         </button>
         <button class="btn btn-default" id="downloadSourceBtn" data-toggle="tooltip" data-placement="bottom" title="Download source">
           <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#settingsModal">
+            Settings
         </button>
         <div class="vertical-spacer"></div>
         <input type="checkbox" id="vimCheckBox" data-toggle="toggle" data-on="Vim Mode On" data-off="Vim Mode Off" data-onstyle="success">
