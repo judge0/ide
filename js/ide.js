@@ -225,6 +225,7 @@ $(document).ready(function() {
   sourceEditor = CodeMirror(document.getElementById("sourceEditor"), {
     lineNumbers: true,
     indentUnit: 4,
+    styleActiveLine: true,
     indentWithTabs: true,
     showCursorWhenSelecting: true,
     matchBrackets: true,
@@ -236,6 +237,16 @@ $(document).ready(function() {
         cm.replaceSelection(spaces);
       }
     }
+  });
+
+  var themeChoice = document.getElementById("theme_select");
+  function selectTheme() {
+    var theme = themeChoice.options[themeChoice.selectedIndex].textContent;
+    inputEditor.setOption('theme', theme);
+  }
+  $('#theme_select').change(function() {
+    var theme = this.options[this.selectedIndex].textContent;
+    sourceEditor.setOption('theme', theme);
   });
 
   inputEditor = CodeMirror(document.getElementById("inputEditor"), {
