@@ -54,6 +54,10 @@ body {
   max-width: 330px;
 }
 
+#theme_select {
+    max-width: 330px;
+}
+
 #inputLabel {
   border-right: 1px solid var(--main-border-colour);
 }
@@ -105,4 +109,8 @@ body {
   margin: 0px 10px -14px 10px;
   width: 1px;
   height: 34px;
+}
+
+.select-group {
+  display: inline;
 }
