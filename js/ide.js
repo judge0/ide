@@ -5,6 +5,7 @@ var WAIT = localStorageGetItem("wait") || false;
 var sourceEditor, inputEditor, outputEditor;
 var $insertTemplateBtn, $selectLanguageBtn, $runBtn, $saveBtn, $vimCheckBox;
 var $statusLine, $emptyIndicator;
+var timeStart, timeEnd;
 
 function getIdFromURI() {
   return location.search.substr(1).trim();
@@ -30,6 +31,9 @@ function handleRunError(jqXHR, textStatus, errorThrown) {
 }
 
 function handleResult(data) {
+  timeEnd = performance.now();
+  console.log("It took " + (timeEnd - timeStart) + " ms to get submission result.");
+
   var status = data.status;
   var stdout = decodeURIComponent(escape(atob(data.stdout || "")));
   var stderr = decodeURIComponent(escape(atob(data.stderr || "")));
@@ -78,6 +82,7 @@ function run() {
     stdin: inputValue
   };
 
+  timeStart = performance.now();
   $.ajax({
     url: BASE_URL + `/submissions?base64_encoded=true&wait=${WAIT}`,
     type: "POST",
