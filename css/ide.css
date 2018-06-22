@@ -106,3 +106,13 @@ body {
   width: 1px;
   height: 34px;
 }
+
+#apiLink {
+  color: #ddd;
+  text-decoration: none;
+  font-size: 85%;
+}
+
+#apiLink:hover {
+  color: #fff;
+}

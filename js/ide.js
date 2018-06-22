@@ -255,13 +255,18 @@ $(document).ready(function() {
     loadRandomLanguage();
   }
 
+  if (BASE_URL != "https://api.judge0.com") {
+    $("#apiLink").attr("href", BASE_URL);
+    $("#apiLink").html(BASE_URL);
+  }
+
   $selectLanguageBtn.change(function(e) {
     if (sourceEditor.isClean()) {
       insertTemplate();
     }
     setEditorMode();
   });
-  
+
   $insertTemplateBtn.click(function(e) {
     if (!sourceEditor.isClean() && confirm("Are you sure? Your current changes will be lost.")) {
       setEditorMode();
@@ -280,6 +285,10 @@ $(document).ready(function() {
       if (url != "") {
         BASE_URL = url;
         localStorageSetItem("baseUrl", BASE_URL);
+        if (BASE_URL != "https://api.judge0.com") {
+          $("#apiLink").attr("href", BASE_URL);
+          $("#apiLink").html(BASE_URL);
+        }
       }
     } else if (keyCode == 118) { // F7
       e.preventDefault();
@@ -304,7 +313,7 @@ $(document).ready(function() {
   $vimCheckBox.change(function() {
     toggleVim();
   });
-                
+
   $("#downloadSourceBtn").click(function(e) {
     var value = parseInt($selectLanguageBtn.val());
     download(sourceEditor.getValue(), fileNames[value], "text/plain");
