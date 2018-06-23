@@ -1,6 +1,6 @@
 var BASE_URL = localStorageGetItem("baseUrl") || "https://api.judge0.com";
 var SUBMISSION_CHECK_TIMEOUT = 10; // in ms
-var WAIT = localStorageGetItem("wait") || false;
+var WAIT = localStorageGetItem("wait") == "true";
 
 var sourceEditor, inputEditor, outputEditor;
 var $insertTemplateBtn, $selectLanguageBtn, $runBtn, $saveBtn, $vimCheckBox;
@@ -286,8 +286,11 @@ $(document).ready(function() {
       run();
     } else if (keyCode == 119) { // F8
       e.preventDefault();
-      var url = prompt("Enter URL of Judge0 API:", BASE_URL).trim();
-      if (url != "") {
+      var url = prompt("Enter URL of Judge0 API:", BASE_URL);
+      if (url != null) {
+        url = url.trim();
+      }
+      if (url != null && url != "") {
         BASE_URL = url;
         localStorageSetItem("baseUrl", BASE_URL);
         if (BASE_URL != "https://api.judge0.com") {
