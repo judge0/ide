@@ -7,6 +7,19 @@ var $insertTemplateBtn, $selectLanguageBtn, $runBtn, $saveBtn, $vimCheckBox;
 var $statusLine, $emptyIndicator;
 var timeStart, timeEnd;
 
+function encode(str) {
+  return btoa(unescape(encodeURIComponent(str)));
+}
+
+function decode(bytes) {
+  var escaped = escape(atob(bytes));
+  try {
+    return decodeURIComponent(escaped);
+  } catch {
+    return unescape(escaped);
+  }
+}
+
 function getIdFromURI() {
   return location.search.substr(1).trim();
 }
@@ -35,10 +48,10 @@ function handleResult(data) {
   console.log("It took " + (timeEnd - timeStart) + " ms to get submission result.");
 
   var status = data.status;
-  var stdout = atob(data.stdout || "");
-  var stderr = atob(data.stderr || "");
-  var compile_output = atob(data.compile_output || "");
-  var message = atob(data.message || "");
+  var stdout = decode(data.stdout || "");
+  var stderr = decode(data.stderr || "");
+  var compile_output = decode(data.compile_output || "");
+  var message = decode(data.message || "");
   var time = (data.time === null ? "-" : data.time + "s");
   var memory = (data.memory === null ? "-" : data.memory + "KB");
 
@@ -73,8 +86,8 @@ function run() {
     $runBtn.button("loading");
   }
 
-  var sourceValue = btoa(sourceEditor.getValue());
-  var inputValue = btoa(inputEditor.getValue());
+  var sourceValue = encode(sourceEditor.getValue());
+  var inputValue = encode(inputEditor.getValue());
   var languageId = $selectLanguageBtn.val();
   var data = {
     source_code: sourceValue,
@@ -119,8 +132,8 @@ function fetchSubmission(submission_token) {
 
 function save() {
   var content = JSON.stringify({
-    source_code: btoa(sourceEditor.getValue()),
-    stdin: btoa(inputEditor.getValue()),
+    source_code: encode(sourceEditor.getValue()),
+    stdin: encode(inputEditor.getValue()),
     language_id: $selectLanguageBtn.val()
   });
   var filename = "judge0-ide.json";
@@ -156,8 +169,8 @@ function loadSavedSource() {
     url: "https://ptpb.pw/" + getIdFromURI(),
     type: "GET",
     success: function(data, textStatus, jqXHR) {
-      sourceEditor.setValue(atob(data["source_code"] || ""));
-      inputEditor.setValue(atob(data["stdin"] || ""));
+      sourceEditor.setValue(decode(data["source_code"] || ""));
+      inputEditor.setValue(decode(data["stdin"] || ""));
       $selectLanguageBtn[0].value = data["language_id"];
       setEditorMode();
       focusAndSetCursorAtTheEnd();
