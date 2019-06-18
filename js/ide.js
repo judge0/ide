@@ -1,4 +1,5 @@
 var BASE_URL = localStorageGetItem("baseUrl") || "https://api.judge0.com";
+var PB_URL = "https://pb.judge0.com";
 var SUBMISSION_CHECK_TIMEOUT = 10; // in ms
 var WAIT = localStorageGetItem("wait") == "true";
 
@@ -144,7 +145,7 @@ function save() {
 
   $saveBtn.button("loading");
   $.ajax({
-    url: "https://ptpb.pw",
+    url: PB_URL,
     type: "POST",
     async: true,
     headers: {
@@ -166,7 +167,7 @@ function save() {
 
 function loadSavedSource() {
   $.ajax({
-    url: "https://ptpb.pw/" + getIdFromURI(),
+    url: PB_URL + "/" + getIdFromURI(),
     type: "GET",
     success: function(data, textStatus, jqXHR) {
       sourceEditor.setValue(decode(data["source_code"] || ""));
