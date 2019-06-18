@@ -310,6 +310,8 @@ $(document).ready(function() {
         if (BASE_URL != "https://api.judge0.com") {
           $("#apiLink").attr("href", BASE_URL);
           $("#apiLink").html(BASE_URL);
+        } else {
+          $("#apiLink").html("");
         }
       }
     } else if (keyCode == 118) { // F7
