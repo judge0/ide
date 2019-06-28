@@ -361,8 +361,18 @@ fn main() {\n\
 
 var sources = {
   1: vSource,
+  2: vSource,
+  3: vSource,
+  4: vSource,
+  5: vSource,
+  6: vSource
 };
 
 var fileNames = {
   1: "main.v",
+  2: "main.v",
+  3: "main.v",
+  4: "main.v",
+  5: "main.v",
+  6: "main.v"
 };
