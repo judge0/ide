@@ -66,7 +66,7 @@ function handleResult(data) {
     stdout += (stdout == "" ? "" : "\n") + stderr;
   }
 
-  outputEditor.setValue(stdout);
+  outputEditor.setValue(stdout || compile_output);
 
   updateEmptyIndicator();
   $runBtn.button("reset");
