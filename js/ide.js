@@ -201,7 +201,7 @@ function insertTemplate() {
 }
 
 function loadRandomLanguage() {
-  var randomChildIndex = Math.floor(Math.random()*$selectLanguageBtn[0].length);
+  var randomChildIndex = 9;
   $selectLanguageBtn[0][randomChildIndex].selected = true;
   setEditorMode();
   insertTemplate();
@@ -365,7 +365,11 @@ var sources = {
   3: vSource,
   4: vSource,
   5: vSource,
-  6: vSource
+  6: vSource,
+  7: vSource,
+  8: vSource,
+  9: vSource,
+  10: vSource
 };
 
 var fileNames = {
@@ -374,5 +378,9 @@ var fileNames = {
   3: "main.v",
   4: "main.v",
   5: "main.v",
-  6: "main.v"
+  6: "main.v",
+  7: "main.v",
+  8: "main.v",
+  9: "main.v",
+  10: "main.v"
 };
