@@ -1,129 +1,167 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="description" content="Online compiler and IDE powered by Judge0 API">
-  <meta name="keywords" content="online compiler, online ide">
-  <meta name="author" content="Herman Zvonimir Došilović">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="description" content="Online compiler and IDE powered by Judge0 API">
+    <meta name="keywords" content="online compiler, online ide">
+    <meta name="author" content="Herman Zvonimir Došilović">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://golden-layout.com/files/latest/js/goldenlayout.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://golden-layout.com/files/latest/css/goldenlayout-base.css" />
+    <link type="text/css" rel="stylesheet"
+        href="https://golden-layout.com/files/latest/css/goldenlayout-dark-theme.css" />
 
-  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
-  <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+    <script type="text/javascript" src="third_party/monaco-editor-0.18.0/min/vs/loader.js"></script>
+    <script>require.config({ paths: { "vs": "third_party/monaco-editor-0.18.0/min/vs" } });</script>
 
-  <link href="https://fonts.googleapis.com/css?family=Exo+2" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
+        integrity="sha256-9mbkOfVho3ZPXfM7W8sV2SndrGDuh7wuyLjtsWeTI1Q=" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"
+        integrity="sha256-t8GepnyPmw9t+foMh3mKNvcorqNHamSKtKRxxpUEgFI=" crossorigin="anonymous"></script>
 
-  <link rel="stylesheet" href="css/codemirror.css">
-  <script src="js/codemirror.js"></script>
-  <script src="js/mode/go.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Exo+2" rel="stylesheet">
 
-  <script src="js/download.js"></script>
+    <script type="text/javascript" src="js/ide.js"></script>
 
-  <link rel="stylesheet" href="css/addon/dialog.css">
+    <link type="text/css" rel="stylesheet" href="css/ide.css">
 
-  <script src="js/addon/searchcursor.js"></script>
-  <script src="js/addon/search.js"></script>
-  <script src="js/addon/dialog.js"></script>
-  <script src="js/addon/matchbrackets.js"></script>
-  <script src="js/addon/closebrackets.js"></script>
-
-  <script src="js/keymap/vim.js"></script>
-
-  <link rel="stylesheet" href="css/ide.css">
-  <script src="js/ide.js"></script>
-
-  <title>V Playground</title>
-  <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
-  <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    <title>V Playground</title>
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+    <link rel="icon" href="./favicon.ico" type="image/x-icon">
 </head>
 
 <body>
-  <nav class="navbar navbar-default navbar-static-top">
-    <div class="container-fluid">
-      <div class="navbar-header">
-        <a class="navbar-brand" href="https://vlang.io">
-          V Playground
-        </a>
-      </div>
-      <ul class="nav navbar-nav navbar-left">
-        <li><a id="apiLink" target="_blank" href=""></a></li>
-      </ul>
-      <div class="navbar-form navbar-right">
-        <div class="input-group">
-          <div class="input-group-btn">
-            <button id="insertTemplateBtn" type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Insert template">
-              <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
-            </button>
-          </div>
-          <select class="form-control" id="selectLanguageBtn">
-            <option value="1" mode="text/x-go">V (0.1.3)</option>
-            <option value="2" mode="text/x-go">V (0.1.4)</option>
-            <option value="3" mode="text/x-go">V (0.1.5)</option>
-            <option value="4" mode="text/x-go">V (0.1.6)</option>
-            <option value="5" mode="text/x-go">V (0.1.7)</option>
-            <option value="6" mode="text/x-go">V (0.1.8)</option>
-            <option value="7" mode="text/x-go">V (0.1.9)</option>
-            <option value="8" mode="text/x-go">V (0.1.10)</option>
-            <option value="9" mode="text/x-go">V (0.1.11)</option>
-            <option value="10" mode="text/x-go">V (0.1.12)</option>
-          </select>
+    <div id="site-navigation" class="ui inverted menu">
+        <div id="site-header" class="header item">
+            <a href="https://vlang.io">
+                <img id="site-icon" src="./images/judge0_icon.png">
+                <h2>V Playground</h2>
+            </a>
         </div>
-        <button class="btn btn-success" id="runBtn" data-loading-text="Running...">
-          <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Run (F9)
-        </button>
-        <button class="btn btn-primary" id="saveBtn" data-loading-text="Saving...">
-          <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save (Ctrl+S)
-        </button>
-        <button class="btn btn-default" id="downloadSourceBtn" data-toggle="tooltip" data-placement="bottom" title="Download source">
-          <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
-        </button>
-        <div class="vertical-spacer"></div>
-        <input type="checkbox" id="vimCheckBox" data-toggle="toggle" data-on="Vim Mode On" data-off="Vim Mode Off" data-onstyle="success">
-      </div>
+        <div class="left menu">
+            <div class="ui dropdown item site-links on-hover">
+                File
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                    <div class="item" onclick="save()"><i class="save icon"></i> Save (Ctrl + S)</div>
+                    <!-- <div class="item"><i class="share icon"></i> Share</div> -->
+                    <div id="insert-template-btn" class="item"><i class="file code outline icon"></i> Insert template for current language</div>
+                    <!-- <div class="item"><i class="download icon"></i> Download</div> -->
+                </div>
+            </div>
+            <!-- <div class="link item" onclick="$('#site-settings').modal('show')"><i class="cog icon"></i> Settings</div> -->
+            <div class="item fitted borderless left-padding">
+                    <select id="select-language" class="ui dropdown">
+                        <option value="1" mode="go">V (0.1.3)</option>
+                        <option value="2" mode="go">V (0.1.4)</option>
+                        <option value="3" mode="go">V (0.1.5)</option>
+                        <option value="4" mode="go">V (0.1.6)</option>
+                        <option value="5" mode="go">V (0.1.7)</option>
+                        <option value="6" mode="go">V (0.1.8)</option>
+                        <option value="7" mode="go">V (0.1.9)</option>
+                        <option value="8" mode="go">V (0.1.10)</option>
+                        <option value="9" mode="go">V (0.1.11)</option>
+                        <option value="10" mode="go">V (0.1.12)</option>
+                    </select>
+            </div>
+            <div class="item fitted borderless left-padding">
+                <button id="run-btn" class="ui primary labeled icon button"><i class="play icon"></i>Run (F9)</button>
+            </div>
+        </div>
+        <div class="right menu">
+            <a class="link item" target="_blank" href="https://judge0.com/about"><i class="info circle icon"></i> About</a>
+            <a id="api-url" class="link item" target="_blank" href="https://api.judge0.com"><i class="server icon"></i> API</a>
+            <div class="ui dropdown item site-links">
+                Other
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                    <a class="item" target="_blank" href="https://www.patreon.com/hermanzdosilovic"><i class="patreon icon"></i>
+                        Become a Patron</a>
+                    <a class="item" target="_blank" href="https://github.com/judge0/ide"><i class="github icon"></i> View source
+                        code on Github</a>
+                    <a class="item" target="_blank" href="https://judge0.com/#subscribe"><i class="envelope icon"></i> Subscribe
+                        to Judge0 news</a>
+                    <a class="item" target="_blank" href="https://github.com/judge0/ide/issues/new"><i
+                            class="exclamation circle icon"></i> Report an issue</a>
+                    <a class="item" target="_blank" href="mailto:hermanz.dosilovic@gmail.com"><i class="paper plane icon"></i>
+                        Contact the author</a>
+                    <a class="item" target="_blank" href="https://hermanz.dosilovic.com"><i class="user icon"></i> About the
+                        author</a>
+                    <a class="item" target="_blank"
+                        href="https://www.reddit.com/submit?url=https%3A%2F%2Fide.judge0.com&title=Judge0%20IDE"
+                        style="background-color: #ff4500 !important; color: white !important;"><i class="reddit icon"></i> Share
+                        on Reddit</a>
+                    <a class="item" target="_blank"
+                        href="https://twitter.com/intent/tweet?text=Judge0%20IDE&url=https%3A%2F%2Fide.judge0.com&via=hermanzvonimir"
+                        style="background-color: #1da1f2 !important; color: white !important;"><i class="twitter icon"></i>
+                        Share on Twitter</a>
+                    <a class="item" target="_blank"
+                        href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fide.judge0.com"
+                        style="background-color: #1877f2 !important; color: white !important;"><i class="facebook icon"></i>
+                        Share on Facebook</a>
+                </div>
+            </div>
+        </div>
     </div>
-  </nav>
 
-  <div id="sourceEditor"></div>
+    <div id="site-content"></div>
 
-  <div class="container-fluid">
-    <div class="row labels">
-      <div id="inputLabel" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-        <h4>
-          <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Input <small>optional</small>
-          <button class="btn btn-default pull-right" id="downloadInputBtn" data-toggle="tooltip" data-placement="top" title="Download input">
-            <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
-          </button>
-        </h4>
-      </div>
-      <div id="outputLabel" class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-        <h4>
-          <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Output <small id="emptyIndicator">empty</small>
-          <button class="btn btn-default pull-right" id="downloadOutputBtn" data-toggle="tooltip" data-placement="top" title="Download output">
-            <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
-          </button>
-          <small class="pull-right" id="statusLine"></small>
-        </h4>
-      </div>
+    <div id="site-modal" class="ui basic modal">
+        <div class="header">
+            <i class="close icon"></i>
+            <span id="title"></span>
+        </div>
+        <div class="content"></div>
+        <div class="actions">
+            <div class="ui small inverted labeled icon cancel button">
+                <i class="remove icon"></i>
+                Close (ESC)
+            </div>
+        </div>
     </div>
 
-    <div class="row ioEditors">
-      <div id="inputEditor" class="col-xs-6 col-sm-6 col-md-6 col-lg-6"></div>
-      <div id="outputEditor" class="col-xs-6 col-sm-6 col-md-6 col-lg-6"></div>
+    <div id="site-settings" class="ui modal">
+        <i class="close icon"></i>
+        <div class="header">
+            <i class="cog icon"></i>
+            Settings
+        </div>
+        <div class="content">
+            <div class="ui form">
+                <div class="inline fields">
+                    <label>Editor Mode</label>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="editor-mode" checked="checked">
+                            <label>Normal</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="editor-mode">
+                            <label>Vim</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="editor-mode">
+                            <label>Emacs</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="row">
-      <div id="footer" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-        <p>
-          © 2017-2019 <a href="https://judge0.com">Judge0</a>,
-          Powered by <a href="https://api.judge0.com">Judge0 API</a> and
-          <a href="https://ide.judge0.com">Judge0 IDE</a>.
-        </p>
-      </div>
+    <div id="site-footer">
+        <span>© 2017-2019 <a href="https://judge0.com">Judge0</a> | Powered by <a href="https://api.judge0.com">Judge0
+                API</a> | Source code available on <a href="https://github.com/judge0/ide">GitHub</a></span>
+        <span id="status-line"></span>
     </div>
-  </div>
 </body>
+
 </html>
