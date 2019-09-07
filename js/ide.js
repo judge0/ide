@@ -1,220 +1,111 @@
-var BASE_URL = localStorageGetItem("baseUrl") || "https://api.judge0.com";
-var PB_URL = "https://pb.judge0.com";
-var SUBMISSION_CHECK_TIMEOUT = 10; // in ms
-var WAIT = localStorageGetItem("wait") == "true";
+var apiUrl = localStorageGetItem("api-url") || "https://api.judge0.com";
+var wait = localStorageGetItem("wait") || false;
+var pbUrl = "https://pb.judge0.com";
+var check_timeout = 200;
 
-var sourceEditor, inputEditor, outputEditor;
-var $insertTemplateBtn, $selectLanguageBtn, $runBtn, $saveBtn, $vimCheckBox;
-var $statusLine, $emptyIndicator;
-var timeStart, timeEnd;
+var layout;
+
+var sourceEditor;
+var stdinEditor;
+var stdoutEditor;
+var stderrEditor;
+var compileOutputEditor;
+var sandboxMessageEditor;
+
+var isEditorDirty = false;
+var currentLanguageId;
+
+var $selectLanguage;
+var $insertTemplateBtn;
+var $runBtn;
+var $statusLine;
+
+var timeStart;
+var timeEnd;
+
+var layoutConfig = {
+    settings: {
+        showPopoutIcon: false,
+        reorderEnabled: false
+    },
+    dimensions: {
+        borderWidth: 3,
+        headerHeight: 22
+    },
+    content: [{
+        type: "row",
+        content: [{
+            type: "component",
+            componentName: "source",
+            title: "SOURCE",
+            isClosable: false,
+            componentState: {
+                readOnly: false
+            }
+        }, {
+            type: "column",
+            content: [{
+                type: "stack",
+                content: [{
+                    type: "component",
+                    componentName: "stdin",
+                    title: "STDIN",
+                    isClosable: false,
+                    componentState: {
+                        readOnly: false
+                    }
+                }]
+            }, {
+                type: "stack",
+                content: [{
+                        type: "component",
+                        componentName: "stdout",
+                        title: "STDOUT",
+                        isClosable: false,
+                        componentState: {
+                            readOnly: true
+                        }
+                    }, {
+                        type: "component",
+                        componentName: "stderr",
+                        title: "STDERR",
+                        isClosable: false,
+                        componentState: {
+                            readOnly: true
+                        }
+                    }, {
+                        type: "component",
+                        componentName: "compile output",
+                        title: "COMPILE OUTPUT",
+                        isClosable: false,
+                        componentState: {
+                            readOnly: true
+                        }
+                    }, {
+                        type: "component",
+                        componentName: "sandbox message",
+                        title: "SANDBOX MESSAGE",
+                        isClosable: false,
+                        componentState: {
+                            readOnly: true
+                        }
+                    }]
+            }]
+        }]
+    }]
+};
 
 function encode(str) {
-  return btoa(unescape(encodeURIComponent(str)));
+    return btoa(unescape(encodeURIComponent(str || "")));
 }
 
 function decode(bytes) {
-  var escaped = escape(atob(bytes));
-  try {
-    return decodeURIComponent(escaped);
-  } catch {
-    return unescape(escaped);
-  }
-}
-
-function getIdFromURI() {
-  return location.search.substr(1).trim();
-}
-
-function updateEmptyIndicator() {
-  if (outputEditor.getValue() == "") {
-    $emptyIndicator.html("empty");
-  } else {
-    $emptyIndicator.html("");
-  }
-}
-
-function handleError(jqXHR, textStatus, errorThrown) {
-  outputEditor.setValue(JSON.stringify(jqXHR, null, 4));
-  $statusLine.html(`${jqXHR.statusText} (${jqXHR.status})`);
-}
-
-function handleRunError(jqXHR, textStatus, errorThrown) {
-  handleError(jqXHR, textStatus, errorThrown);
-  $runBtn.button("reset");
-  updateEmptyIndicator();
-}
-
-function handleResult(data) {
-  timeEnd = performance.now();
-  console.log("It took " + (timeEnd - timeStart) + " ms to get submission result.");
-
-  var status = data.status;
-  var stdout = decode(data.stdout || "");
-  var stderr = decode(data.stderr || "");
-  var compile_output = decode(data.compile_output || "");
-  var message = decode(data.message || "");
-  var time = (data.time === null ? "-" : data.time + "s");
-  var memory = (data.memory === null ? "-" : data.memory + "KB");
-
-  $statusLine.html(`${status.description}, ${time}, ${memory}`);
-
-  if (status.id == 6) {
-    stdout = compile_output;
-  } else if (status.id == 13) {
-    stdout = message;
-  } else if (status.id != 3 && stderr != "") { // If status is not "Accepted", merge stdout and stderr
-    stdout += (stdout == "" ? "" : "\n") + stderr;
-  }
-
-  outputEditor.setValue(stdout);
-
-  updateEmptyIndicator();
-  $runBtn.button("reset");
-}
-
-function toggleVim() {
-  var keyMap = vimCheckBox.checked ? "vim" : "default";
-  localStorageSetItem("keyMap", keyMap);
-  sourceEditor.setOption("keyMap", keyMap);
-  focusAndSetCursorAtTheEnd();
-}
-
-function run() {
-  if (sourceEditor.getValue().trim() == "") {
-    alert("Source code can't be empty.");
-    return;
-  } else {
-    $runBtn.button("loading");
-  }
-
-  var sourceValue = encode(sourceEditor.getValue());
-  var inputValue = encode(inputEditor.getValue());
-  var languageId = $selectLanguageBtn.val();
-  var data = {
-    source_code: sourceValue,
-    language_id: languageId,
-    stdin: inputValue
-  };
-
-  timeStart = performance.now();
-  $.ajax({
-    url: BASE_URL + `/submissions?base64_encoded=true&wait=${WAIT}`,
-    type: "POST",
-    async: true,
-    contentType: "application/json",
-    data: JSON.stringify(data),
-    success: function(data, textStatus, jqXHR) {
-      console.log(`Your submission token is: ${data.token}`);
-      if (WAIT == true) {
-        handleResult(data);
-      } else {
-        setTimeout(fetchSubmission.bind(null, data.token), SUBMISSION_CHECK_TIMEOUT);
-      }
-    },
-    error: handleRunError
-  });
-}
-
-function fetchSubmission(submission_token) {
-  $.ajax({
-    url: BASE_URL + "/submissions/" + submission_token + "?base64_encoded=true",
-    type: "GET",
-    async: true,
-    success: function(data, textStatus, jqXHR) {
-      if (data.status.id <= 2) { // In Queue or Processing
-        setTimeout(fetchSubmission.bind(null, submission_token), SUBMISSION_CHECK_TIMEOUT);
-        return;
-      }
-      handleResult(data);
-    },
-    error: handleRunError
-  });
-}
-
-function save() {
-  var content = JSON.stringify({
-    source_code: encode(sourceEditor.getValue()),
-    stdin: encode(inputEditor.getValue()),
-    language_id: $selectLanguageBtn.val()
-  });
-  var filename = "judge0-ide.json";
-  var data = {
-    content: content,
-    filename: filename
-  };
-
-  $saveBtn.button("loading");
-  $.ajax({
-    url: PB_URL,
-    type: "POST",
-    async: true,
-    headers: {
-      "Accept": "application/json"
-    },
-    data: data,
-    success: function(data, textStatus, jqXHR) {
-      $saveBtn.button("reset");
-      if (getIdFromURI() != data["long"]) {
-        window.history.replaceState(null, null, location.origin + location.pathname + "?" + data["long"]);
-      }
-    },
-    error: function(jqXHR, textStatus, errorThrown) {
-      handleError(jqXHR, textStatus, errorThrown);
-      $saveBtn.button("reset");
+    var escaped = escape(atob(bytes || ""));
+    try {
+        return decodeURIComponent(escaped);
+    } catch {
+        return unescape(escaped);
     }
-  });
-}
-
-function loadSavedSource() {
-  $.ajax({
-    url: PB_URL + "/" + getIdFromURI(),
-    type: "GET",
-    success: function(data, textStatus, jqXHR) {
-      sourceEditor.setValue(decode(data["source_code"] || ""));
-      inputEditor.setValue(decode(data["stdin"] || ""));
-      $selectLanguageBtn[0].value = data["language_id"];
-      setEditorMode();
-      focusAndSetCursorAtTheEnd();
-    },
-    error: function(jqXHR, textStatus, errorThrown) {
-      alert("Code not found!");
-      window.history.replaceState(null, null, location.origin + location.pathname);
-      loadRandomLanguage();
-    }
-  });
-}
-
-function setEditorMode() {
-  sourceEditor.setOption("mode", $selectLanguageBtn.find(":selected").attr("mode"));
-}
-
-function focusAndSetCursorAtTheEnd() {
-  sourceEditor.focus();
-  sourceEditor.setCursor(sourceEditor.lineCount(), 0);
-}
-
-function insertTemplate() {
-  var value = parseInt($selectLanguageBtn.val());
-  sourceEditor.setValue(sources[value]);
-  focusAndSetCursorAtTheEnd();
-  sourceEditor.markClean();
-}
-
-function loadRandomLanguage() {
-  var randomChildIndex = Math.floor(Math.random()*$selectLanguageBtn[0].length);
-  $selectLanguageBtn[0][randomChildIndex].selected = true;
-  setEditorMode();
-  insertTemplate();
-}
-
-function initializeElements() {
-  $selectLanguageBtn = $("#selectLanguageBtn");
-  $insertTemplateBtn = $("#insertTemplateBtn");
-  $runBtn = $("#runBtn");
-  $saveBtn = $("#saveBtn");
-  $vimCheckBox = $("#vimCheckBox");
-  $emptyIndicator = $("#emptyIndicator");
-  $statusLine = $("#statusLine");
 }
 
 function localStorageSetItem(key, value) {
@@ -232,124 +123,310 @@ function localStorageGetItem(key) {
   }
 }
 
-$(document).ready(function() {
-  console.log("Hey, Judge0 IDE is open-sourced: https://github.com/judge0/ide. Have fun!");
+function showApiUrl() {
+    $("#api-url").attr("href", apiUrl);
+}
 
-  initializeElements();
+function showError(title, content) {
+    $("#site-modal #title").html(title);
+    $("#site-modal .content").html(content);
+    $("#site-modal").modal("show");
+}
 
-  $(function () {
-    $('[data-toggle="tooltip"]').tooltip()
-  });
+function handleError(jqXHR, textStatus, errorThrown) {
+    showError(`${jqXHR.statusText} (${jqXHR.status})`, `<pre>${JSON.stringify(jqXHR, null, 4)}</pre>`);
+}
 
-  sourceEditor = CodeMirror(document.getElementById("sourceEditor"), {
-    lineNumbers: true,
-    indentUnit: 4,
-    indentWithTabs: true,
-    showCursorWhenSelecting: true,
-    matchBrackets: true,
-    autoCloseBrackets: true,
-    keyMap: localStorageGetItem("keyMap") || "default",
-    extraKeys: {
-      "Tab": function(cm) {
-        var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
-        cm.replaceSelection(spaces);
-      }
-    }
-  });
+function handleRunError(jqXHR, textStatus, errorThrown) {
+    handleError(jqXHR, textStatus, errorThrown);
+    $runBtn.removeClass("loading");
+}
 
-  inputEditor = CodeMirror(document.getElementById("inputEditor"), {
-    lineNumbers: true,
-    mode: "plain"
-  });
-  outputEditor = CodeMirror(document.getElementById("outputEditor"), {
-    readOnly: true,
-    mode: "plain"
-  });
+function handleResult(data) {
+    timeEnd = performance.now();
+    console.log("It took " + (timeEnd - timeStart) + " ms to get submission result.");
 
-  $vimCheckBox.prop("checked", localStorageGetItem("keyMap") == "vim").change();
+    var status = data.status;
+    var stdout = decode(data.stdout);
+    var stderr = decode(data.stderr);
+    var compile_output = decode(data.compile_output);
+    var sandbox_message = decode(data.message);
+    var time = (data.time === null ? "-" : data.time + "s");
+    var memory = (data.memory === null ? "-" : data.memory + "KB");
 
-  if (getIdFromURI()) {
-    loadSavedSource();
-  } else {
-    loadRandomLanguage();
-  }
+    $statusLine.html(`${status.description}, ${time}, ${memory}`);
 
-  if (BASE_URL != "https://api.judge0.com") {
-    $("#apiLink").attr("href", BASE_URL);
-    $("#apiLink").html(BASE_URL);
-  }
+    stdoutEditor.setValue(stdout);
+    stderrEditor.setValue(stderr);
+    compileOutputEditor.setValue(compile_output);
+    sandboxMessageEditor.setValue(sandbox_message);
 
-  $selectLanguageBtn.change(function(e) {
-    if (sourceEditor.isClean()) {
-      insertTemplate();
-    }
-    setEditorMode();
-  });
+    $runBtn.removeClass("loading");
+}
 
-  $insertTemplateBtn.click(function(e) {
-    if (!sourceEditor.isClean() && confirm("Are you sure? Your current changes will be lost.")) {
-      setEditorMode();
-      insertTemplate();
-    }
-  });
+function getIdFromURI() {
+  return location.search.substr(1).trim();
+}
 
-  $("body").keydown(function(e){
-    var keyCode = e.keyCode || e.which;
-    if (keyCode == 120) { // F9
-      e.preventDefault();
-      run();
-    } else if (keyCode == 119) { // F8
-      e.preventDefault();
-      var url = prompt("Enter URL of Judge0 API:", BASE_URL);
-      if (url != null) {
-        url = url.trim();
-      }
-      if (url != null && url != "") {
-        BASE_URL = url;
-        localStorageSetItem("baseUrl", BASE_URL);
-        if (BASE_URL != "https://api.judge0.com") {
-          $("#apiLink").attr("href", BASE_URL);
-          $("#apiLink").html(BASE_URL);
-        } else {
-          $("#apiLink").html("");
+function save() {
+    var content = JSON.stringify({
+        source_code: encode(sourceEditor.getValue()),
+        stdin: encode(stdinEditor.getValue()),
+        language_id: $selectLanguage.val()
+    });
+    var filename = "judge0-ide.json";
+    var data = {
+        content: content,
+        filename: filename
+    };
+
+    $.ajax({
+        url: pbUrl,
+        type: "POST",
+        async: true,
+        headers: {
+            "Accept": "application/json"
+        },
+        data: data,
+        success: function (data, textStatus, jqXHR) {
+            if (getIdFromURI() != data["long"]) {
+                window.history.replaceState(null, null, location.origin + location.pathname + "?" + data["long"]);
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            handleError(jqXHR, textStatus, errorThrown);
         }
-      }
-    } else if (keyCode == 118) { // F7
-      e.preventDefault();
-      WAIT=!WAIT;
-      localStorageSetItem("wait", WAIT);
-      alert(`Submission wait is ${WAIT ? "ON. Enjoy" : "OFF"}.`);
-    } else if (event.ctrlKey && keyCode == 83) { // Ctrl+S
-      e.preventDefault();
-      save();
+    });
+}
+
+function loadSavedSource() {
+    $.ajax({
+        url: pbUrl + "/" + getIdFromURI(),
+        type: "GET",
+        success: function (data, textStatus, jqXHR) {
+            sourceEditor.setValue(decode(data["source_code"]));
+            stdinEditor.setValue(decode(data["stdin"]));
+            $selectLanguage.dropdown("set selected", data["language_id"]);
+            setEditorMode();
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            showError("Not Found", "Code not found!");
+            window.history.replaceState(null, null, location.origin + location.pathname);
+            loadRandomLanguage();
+        }
+    });
+}
+
+function run() {
+    if (sourceEditor.getValue().trim() === "") {
+        showError("Error", "Source code can't be empty!");
+        return;
+    } else {
+        $runBtn.addClass("loading");
     }
-  });
 
-  $runBtn.click(function(e) {
-    run();
-  });
+    var sourceValue = encode(sourceEditor.getValue());
+    var stdinValue = encode(stdinEditor.getValue());
+    var languageId = $selectLanguage.val();
+    var data = {
+        source_code: sourceValue,
+        language_id: languageId,
+        stdin: stdinValue
+    };
 
-  CodeMirror.commands.save = function(){ save(); };
-  $saveBtn.click(function(e) {
-    save();
-  });
+    timeStart = performance.now();
+    $.ajax({
+        url: apiUrl + `/submissions?base64_encoded=true&wait=${wait}`,
+        type: "POST",
+        async: true,
+        contentType: "application/json",
+        data: JSON.stringify(data),
+        success: function (data, textStatus, jqXHR) {
+            console.log(`Your submission token is: ${data.token}`);
+            if (wait == true) {
+                handleResult(data);
+            } else {
+                setTimeout(fetchSubmission.bind(null, data.token), check_timeout);
+            }
+        },
+        error: handleRunError
+    });
+}
 
-  $vimCheckBox.change(function() {
-    toggleVim();
-  });
+function fetchSubmission(submission_token) {
+    $.ajax({
+        url: apiUrl + "/submissions/" + submission_token + "?base64_encoded=true",
+        type: "GET",
+        async: true,
+        success: function (data, textStatus, jqXHR) {
+            if (data.status.id <= 2) { // In Queue or Processing
+                setTimeout(fetchSubmission.bind(null, submission_token), check_timeout);
+                return;
+            }
+            handleResult(data);
+        },
+        error: handleRunError
+    });
+}
 
-  $("#downloadSourceBtn").click(function(e) {
-    var value = parseInt($selectLanguageBtn.val());
-    download(sourceEditor.getValue(), fileNames[value], "text/plain");
-  });
+function changeEditorLanguage() {
+    monaco.editor.setModelLanguage(sourceEditor.getModel(), $selectLanguage.find(":selected").attr("mode"));
+    $(".lm_title")[0].innerText = fileNames[currentLanguageId];
+}
 
-  $("#downloadInputBtn").click(function(e) {
-    download(inputEditor.getValue(), "input.txt", "text/plain");
-  });
+function insertTemplate() {
+    sourceEditor.setValue(sources[currentLanguageId]);
+    changeEditorLanguage();
+}
 
-  $("#downloadOutputBtn").click(function(e) {
-    download(outputEditor.getValue(), "output.txt", "text/plain");
-  });
+function loadRandomLanguage() {
+    $selectLanguage.dropdown("set selected", Math.floor(Math.random() * $selectLanguage[0].length));
+    currentLanguageId = parseInt($selectLanguage.val());
+    insertTemplate();
+}
+
+$(document).ready(function () {
+    console.log("Hey, Judge0 IDE is open-sourced: https://github.com/judge0/ide. Have fun!");
+
+    $selectLanguage = $("#select-language");
+    $selectLanguage.change(function (e) {
+        currentLanguageId = parseInt($selectLanguage.val());
+        if (!isEditorDirty) {
+            insertTemplate();
+        } else {
+            changeEditorLanguage();
+        }
+    });
+
+    $insertTemplateBtn = $("#insert-template-btn");
+    $insertTemplateBtn.click(function (e) {
+        if (isEditorDirty && confirm("Are you sure? Your current changes will be lost.")) {
+            insertTemplate();
+        }
+    });
+
+    $runBtn = $("#run-btn");
+    $runBtn.click(function (e) {
+        run();
+    });
+
+    $statusLine = $("#status-line");
+
+    $("body").keydown(function (e) {
+        var keyCode = e.keyCode || e.which;
+        if (keyCode == 120) { // F9
+            e.preventDefault();
+            run();
+        } else if (keyCode == 119) { // F8
+            e.preventDefault();
+            var url = prompt("Enter URL of Judge0 API:", apiUrl);
+            if (url != null) {
+                url = url.trim();
+            }
+            if (url != null && url != "") {
+                apiUrl = url;
+                localStorageSetItem("api-url", apiUrl);
+                showApiUrl();
+            }
+        } else if (keyCode == 118) { // F7
+            e.preventDefault();
+            wait = !wait;
+            localStorageSetItem("wait", wait);
+            alert(`Submission wait is ${wait ? "ON. Enjoy" : "OFF"}.`);
+        } else if (event.ctrlKey && keyCode == 83) { // Ctrl+S
+            e.preventDefault();
+            save();
+        }
+    });
+
+    $("select.dropdown").dropdown();
+    $(".ui.dropdown").dropdown();
+    $(".ui.dropdown.site-links").dropdown({action: "hide", on: "hover"});
+    $(".ui.checkbox").checkbox();
+    $(".message .close").on("click", function () {
+        $(this).closest(".message").transition("fade");
+    });
+
+    showApiUrl();
+
+    require(["vs/editor/editor.main"], function () {
+        layout = new GoldenLayout(layoutConfig, $("#site-content"));
+
+        layout.registerComponent("source", function (container, state) {
+            sourceEditor = monaco.editor.create(container.getElement()[0], {
+                automaticLayout: true,
+                theme: "vs-dark",
+                scrollBeyondLastLine: false,
+                readOnly: state.readOnly,
+                language: "cpp"
+            });
+
+            sourceEditor.getModel().onDidChangeContent(function (e) {
+                isEditorDirty = sourceEditor.getValue() != sources[currentLanguageId];
+            });
+        });
+
+        layout.registerComponent("stdin", function (container, state) {
+            stdinEditor = monaco.editor.create(container.getElement()[0], {
+                automaticLayout: true,
+                theme: "vs-dark",
+                scrollBeyondLastLine: false,
+                readOnly: state.readOnly,
+                language: "plaintext"
+            });
+        });
+
+        layout.registerComponent("stdout", function (container, state) {
+            stdoutEditor = monaco.editor.create(container.getElement()[0], {
+                automaticLayout: true,
+                theme: "vs-dark",
+                scrollBeyondLastLine: false,
+                readOnly: state.readOnly,
+                language: "plaintext"
+            });
+        });
+
+        layout.registerComponent("stderr", function (container, state) {
+            stderrEditor = monaco.editor.create(container.getElement()[0], {
+                automaticLayout: true,
+                theme: "vs-dark",
+                scrollBeyondLastLine: false,
+                readOnly: state.readOnly,
+                language: "plaintext"
+            });
+        });
+
+        layout.registerComponent("compile output", function (container, state) {
+            compileOutputEditor = monaco.editor.create(container.getElement()[0], {
+                automaticLayout: true,
+                theme: "vs-dark",
+                scrollBeyondLastLine: false,
+                readOnly: state.readOnly,
+                language: "plaintext"
+            });
+        });
+
+        layout.registerComponent("sandbox message", function (container, state) {
+            sandboxMessageEditor = monaco.editor.create(container.getElement()[0], {
+                automaticLayout: true,
+                theme: "vs-dark",
+                scrollBeyondLastLine: false,
+                readOnly: state.readOnly,
+                language: "plaintext"
+            });
+        });
+
+        layout.on("initialised", function () {
+            if (getIdFromURI()) {
+                loadSavedSource();
+            } else {
+                loadRandomLanguage();
+            }
+            $("#site-navigation").css("border-bottom", "1px solid black");
+        });
+
+        layout.init();
+    });
 });
 
 // Template Sources
@@ -390,7 +467,7 @@ var erlangSource = "\
 main(_) ->\n\
     io:fwrite(\"hello, world\\n\").\n";
 
-var goSource ="\
+var goSource = "\
 package main\n\
 \n\
 import \"fmt\"\n\
@@ -401,7 +478,7 @@ func main() {\n\
 
 var haskellSource = "main = putStrLn \"hello, world\"\n";
 
-var insectSource ="\
+var insectSource = "\
 2 min + 30 s\n\
 40 kg * 9.8 m/s^2 * 150 cm\n\
 sin(30°)\n";
@@ -437,93 +514,93 @@ fn main() {\n\
 var textSource = "hello, world\n";
 
 var sources = {
-  1: bashSource,
-  2: bashSource,
-  3: basicSource,
-  4: cSource,
-  5: cSource,
-  6: cSource,
-  7: cSource,
-  8: cSource,
-  9: cSource,
- 10: cppSource,
- 11: cppSource,
- 12: cppSource,
- 13: cppSource,
- 14: cppSource,
- 15: cppSource,
- 16: csharpSource,
- 17: csharpSource,
- 18: clojureSource,
- 19: crystalSource,
- 20: elixirSource,
- 21: erlangSource,
- 22: goSource,
- 23: haskellSource,
- 24: haskellSource,
- 25: insectSource,
- 26: javaSource,
- 27: javaSource,
- 28: javaSource,
- 29: javaScriptSource,
- 30: javaScriptSource,
- 31: ocamlSource,
- 32: octaveSource,
- 33: pascalSource,
- 34: pythonSource,
- 35: pythonSource,
- 36: pythonSource,
- 37: pythonSource,
- 38: rubySource,
- 39: rubySource,
- 40: rubySource,
- 41: rubySource,
- 42: rustSource,
- 43: textSource
+    1: bashSource,
+    2: bashSource,
+    3: basicSource,
+    4: cSource,
+    5: cSource,
+    6: cSource,
+    7: cSource,
+    8: cSource,
+    9: cSource,
+    10: cppSource,
+    11: cppSource,
+    12: cppSource,
+    13: cppSource,
+    14: cppSource,
+    15: cppSource,
+    16: csharpSource,
+    17: csharpSource,
+    18: clojureSource,
+    19: crystalSource,
+    20: elixirSource,
+    21: erlangSource,
+    22: goSource,
+    23: haskellSource,
+    24: haskellSource,
+    25: insectSource,
+    26: javaSource,
+    27: javaSource,
+    28: javaSource,
+    29: javaScriptSource,
+    30: javaScriptSource,
+    31: ocamlSource,
+    32: octaveSource,
+    33: pascalSource,
+    34: pythonSource,
+    35: pythonSource,
+    36: pythonSource,
+    37: pythonSource,
+    38: rubySource,
+    39: rubySource,
+    40: rubySource,
+    41: rubySource,
+    42: rustSource,
+    43: textSource
 };
 
 var fileNames = {
-  1: "script.sh",
-  2: "script.sh",
-  3: "main.bas",
-  4: "main.c",
-  5: "main.c",
-  6: "main.c",
-  7: "main.c",
-  8: "main.c",
-  9: "main.c",
- 10: "main.cpp",
- 11: "main.cpp",
- 12: "main.cpp",
- 13: "main.cpp",
- 14: "main.cpp",
- 15: "main.cpp",
- 16: "Main.cs",
- 17: "Main.cs",
- 18: "main.clj",
- 19: "main.cr",
- 20: "main.exs",
- 21: "main.erl",
- 22: "main.go",
- 23: "main.hs",
- 24: "main.hs",
- 25: "main.ins",
- 26: "Main.java",
- 27: "Main.java",
- 28: "Main.java",
- 29: "main.js",
- 30: "main.js",
- 31: "main.ml",
- 32: "file.m",
- 33: "main.pas",
- 34: "main.py",
- 35: "main.py",
- 36: "main.py",
- 37: "main.py",
- 38: "main.rb",
- 39: "main.rb",
- 40: "main.rb",
- 41: "main.rb",
- 42: "main.rs",
- 43: "source.txt"
+    1: "script.sh",
+    2: "script.sh",
+    3: "main.bas",
+    4: "main.c",
+    5: "main.c",
+    6: "main.c",
+    7: "main.c",
+    8: "main.c",
+    9: "main.c",
+    10: "main.cpp",
+    11: "main.cpp",
+    12: "main.cpp",
+    13: "main.cpp",
+    14: "main.cpp",
+    15: "main.cpp",
+    16: "Main.cs",
+    17: "Main.cs",
+    18: "main.clj",
+    19: "main.cr",
+    20: "main.exs",
+    21: "main.erl",
+    22: "main.go",
+    23: "main.hs",
+    24: "main.hs",
+    25: "main.ins",
+    26: "Main.java",
+    27: "Main.java",
+    28: "Main.java",
+    29: "main.js",
+    30: "main.js",
+    31: "main.ml",
+    32: "file.m",
+    33: "main.pas",
+    34: "main.py",
+    35: "main.py",
+    36: "main.py",
+    37: "main.py",
+    38: "main.rb",
+    39: "main.rb",
+    40: "main.rb",
+    41: "main.rb",
+    42: "main.rs",
+    43: "source.txt"
 };
