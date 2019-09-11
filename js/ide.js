@@ -171,8 +171,12 @@ function getIdFromURI() {
 function save() {
     var content = JSON.stringify({
         source_code: encode(sourceEditor.getValue()),
+        language_id: $selectLanguage.val(),
         stdin: encode(stdinEditor.getValue()),
-        language_id: $selectLanguage.val()
+        stdout: encode(stdoutEditor.getValue()),
+        stderr: encode(stderrEditor.getValue()),
+        compile_output: encode(compileOutputEditor.getValue()),
+        sandbox_message: encode(stderrEditor.getValue())
     });
     var filename = "judge0-ide.json";
     var data = {
@@ -205,9 +209,13 @@ function loadSavedSource() {
         type: "GET",
         success: function (data, textStatus, jqXHR) {
             sourceEditor.setValue(decode(data["source_code"]));
-            stdinEditor.setValue(decode(data["stdin"]));
             $selectLanguage.dropdown("set selected", data["language_id"]);
-            setEditorMode();
+            stdinEditor.setValue(decode(data["stdin"]));
+            stdoutEditor.setValue(decode(data["stdout"]));
+            stderrEditor.setValue(decode(data["stderr"]));
+            compileOutputEditor.setValue(decode(data["compile_output"]));
+            sandboxMessageEditor.setValue(decode(data["sandbox_message"]));
+            changeEditorLanguage();
         },
         error: function (jqXHR, textStatus, errorThrown) {
             showError("Not Found", "Code not found!");
