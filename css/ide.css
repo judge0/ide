@@ -68,7 +68,7 @@ body {
 }
 
 #site-footer, #status-line {
-    background-color: #2185d0;
+    background-color: #0E6EB8;
     bottom: 0;
     color: #fff;
     font-family: "Droid Sans Mono", monospace, monospace, "Droid Sans Fallback";
@@ -91,10 +91,11 @@ body {
 }
 
 #status-line {
-    width: 350px;
+    color: #fff;
+    float: right;
     right: 0;
     text-align: right;
-    float: right;
+    width: 100%;
 }
 
 .left-padding {

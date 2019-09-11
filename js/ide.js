@@ -203,9 +203,14 @@ function save() {
     });
 }
 
+function downloadSource() {
+    var value = parseInt($selectLanguage.val());
+    download(sourceEditor.getValue(), fileNames[value], "text/plain");
+}
+
 function loadSavedSource() {
     $.ajax({
-        url: pbUrl + "/" + getIdFromURI(),
+        url: pbUrl + "/" + getIdFromURI() + ".json",
         type: "GET",
         success: function (data, textStatus, jqXHR) {
             sourceEditor.setValue(decode(data["source_code"]));

@@ -25,6 +25,8 @@
 
     <link href="https://fonts.googleapis.com/css?family=Exo+2" rel="stylesheet">
 
+    <script type="text/javascript" src="third_party/download.js"></script>
+
     <script type="text/javascript" src="js/ide.js"></script>
 
     <link type="text/css" rel="stylesheet" href="css/ide.css">
@@ -44,97 +46,114 @@
         </div>
         <div class="left menu">
             <div class="ui dropdown item site-links on-hover">
-                File
-                <i class="dropdown icon"></i>
+                File <i class="dropdown icon"></i>
                 <div class="menu">
+                    <a class="item" target="_blank" href="/"><i class="file code icon"></i> New File</a>
                     <div class="item" onclick="save()"><i class="save icon"></i> Save (Ctrl + S)</div>
+                    <div class="item" onclick="downloadSource()"><i class="download icon"></i> Download</div>
                     <!-- <div class="item"><i class="share icon"></i> Share</div> -->
-                    <div id="insert-template-btn" class="item"><i class="file code outline icon"></i> Insert template for current language</div>
-                    <!-- <div class="item"><i class="download icon"></i> Download</div> -->
+                    <div id="insert-template-btn" class="item"><i class="file code outline icon"></i> Insert template
+                        for current language</div>
                 </div>
             </div>
             <!-- <div class="link item" onclick="$('#site-settings').modal('show')"><i class="cog icon"></i> Settings</div> -->
             <div class="item fitted borderless left-padding">
-                    <select id="select-language" class="ui dropdown">
-                        <option value="1" mode="shell">Bash (4.4)</option>
-                        <option value="2" mode="shell">Bash (4.0)</option>
-                        <option value="3" mode="text/x-pascal">Basic (fbc 1.05.0)</option>
-                        <option value="4" mode="c">C (gcc 7.2.0)</option>
-                        <option value="5" mode="c">C (gcc 6.4.0)</option>
-                        <option value="6" mode="c">C (gcc 6.3.0)</option>
-                        <option value="7" mode="c">C (gcc 5.4.0)</option>
-                        <option value="8" mode="c">C (gcc 4.9.4)</option>
-                        <option value="9" mode="c">C (gcc 4.8.5)</option>
-                        <option value="10" mode="cpp">C++ (g++ 7.2.0)</option>
-                        <option value="11" mode="cpp">C++ (g++ 6.4.0)</option>
-                        <option value="12" mode="cpp">C++ (g++ 6.3.0)</option>
-                        <option value="13" mode="cpp">C++ (g++ 5.4.0)</option>
-                        <option value="14" mode="cpp">C++ (g++ 4.9.4)</option>
-                        <option value="15" mode="cpp">C++ (g++ 4.8.5)</option>
-                        <option value="16" mode="csharp">C# (mono 5.4.0.167)</option>
-                        <option value="17" mode="csharp">C# (mono 5.2.0.224)</option>
-                        <option value="18" mode="clojure">Clojure (1.8.0)</option>
-                        <option value="19" mode="text/x-crystal">Crystal (0.23.1)</option>
-                        <option value="20" mode="text/x-elixir">Elixir (1.5.1)</option>
-                        <option value="21" mode="text/x-erlang">Erlang (OTP 20.0)</option>
-                        <option value="22" mode="go">Go (1.9)</option>
-                        <option value="23" mode="text/x-haskell">Haskell (ghc 8.2.1)</option>
-                        <option value="24" mode="text/x-haskell">Haskell (ghc 8.0.2)</option>
-                        <option value="25" mode="plaintext">Insect (5.0.0)</option>
-                        <option value="26" mode="java">Java (OpenJDK 9 with Eclipse OpenJ9)</option>
-                        <option value="27" mode="java">Java (OpenJDK 8)</option>
-                        <option value="28" mode="java">Java (OpenJDK 7)</option>
-                        <option value="29" mode="javascript">JavaScript (nodejs 8.5.0)</option>
-                        <option value="30" mode="javascript">JavaScript (nodejs 7.10.1)</option>
-                        <option value="31" mode="text/x-ocaml">OCaml (4.05.0)</option>
-                        <option value="32" mode="text/x-octave">Octave (4.2.0)</option>
-                        <option value="33" mode="pascal">Pascal (fpc 3.0.0)</option>
-                        <option value="34" mode="python">Python (3.6.0)</option>
-                        <option value="35" mode="python">Python (3.5.3)</option>
-                        <option value="36" mode="python">Python (2.7.9)</option>
-                        <option value="37" mode="python">Python (2.6.9)</option>
-                        <option value="38" mode="ruby">Ruby (2.4.0)</option>
-                        <option value="39" mode="ruby">Ruby (2.3.3)</option>
-                        <option value="40" mode="ruby">Ruby (2.2.6)</option>
-                        <option value="41" mode="ruby">Ruby (2.1.9)</option>
-                        <option value="42" mode="rust">Rust (1.20.0)</option>
-                        <option value="43" mode="plaintext">Text (plain text)</option>
-                    </select>
+                <select id="select-language" class="ui dropdown">
+                    <option value="1" mode="shell">Bash (4.4)</option>
+                    <option value="2" mode="shell">Bash (4.0)</option>
+                    <option value="3" mode="text/x-pascal">Basic (fbc 1.05.0)</option>
+                    <option value="4" mode="c">C (gcc 7.2.0)</option>
+                    <option value="5" mode="c">C (gcc 6.4.0)</option>
+                    <option value="6" mode="c">C (gcc 6.3.0)</option>
+                    <option value="7" mode="c">C (gcc 5.4.0)</option>
+                    <option value="8" mode="c">C (gcc 4.9.4)</option>
+                    <option value="9" mode="c">C (gcc 4.8.5)</option>
+                    <option value="10" mode="cpp">C++ (g++ 7.2.0)</option>
+                    <option value="11" mode="cpp">C++ (g++ 6.4.0)</option>
+                    <option value="12" mode="cpp">C++ (g++ 6.3.0)</option>
+                    <option value="13" mode="cpp">C++ (g++ 5.4.0)</option>
+                    <option value="14" mode="cpp">C++ (g++ 4.9.4)</option>
+                    <option value="15" mode="cpp">C++ (g++ 4.8.5)</option>
+                    <option value="16" mode="csharp">C# (mono 5.4.0.167)</option>
+                    <option value="17" mode="csharp">C# (mono 5.2.0.224)</option>
+                    <option value="18" mode="clojure">Clojure (1.8.0)</option>
+                    <option value="19" mode="text/x-crystal">Crystal (0.23.1)</option>
+                    <option value="20" mode="text/x-elixir">Elixir (1.5.1)</option>
+                    <option value="21" mode="text/x-erlang">Erlang (OTP 20.0)</option>
+                    <option value="22" mode="go">Go (1.9)</option>
+                    <option value="23" mode="text/x-haskell">Haskell (ghc 8.2.1)</option>
+                    <option value="24" mode="text/x-haskell">Haskell (ghc 8.0.2)</option>
+                    <option value="25" mode="plaintext">Insect (5.0.0)</option>
+                    <option value="26" mode="java">Java (OpenJDK 9 with Eclipse OpenJ9)</option>
+                    <option value="27" mode="java">Java (OpenJDK 8)</option>
+                    <option value="28" mode="java">Java (OpenJDK 7)</option>
+                    <option value="29" mode="javascript">JavaScript (nodejs 8.5.0)</option>
+                    <option value="30" mode="javascript">JavaScript (nodejs 7.10.1)</option>
+                    <option value="31" mode="text/x-ocaml">OCaml (4.05.0)</option>
+                    <option value="32" mode="text/x-octave">Octave (4.2.0)</option>
+                    <option value="33" mode="pascal">Pascal (fpc 3.0.0)</option>
+                    <option value="34" mode="python">Python (3.6.0)</option>
+                    <option value="35" mode="python">Python (3.5.3)</option>
+                    <option value="36" mode="python">Python (2.7.9)</option>
+                    <option value="37" mode="python">Python (2.6.9)</option>
+                    <option value="38" mode="ruby">Ruby (2.4.0)</option>
+                    <option value="39" mode="ruby">Ruby (2.3.3)</option>
+                    <option value="40" mode="ruby">Ruby (2.2.6)</option>
+                    <option value="41" mode="ruby">Ruby (2.1.9)</option>
+                    <option value="42" mode="rust">Rust (1.20.0)</option>
+                    <option value="43" mode="plaintext">Text (plain text)</option>
+                </select>
             </div>
             <div class="item fitted borderless left-padding">
                 <button id="run-btn" class="ui primary labeled icon button"><i class="play icon"></i>Run (F9)</button>
             </div>
         </div>
         <div class="right menu">
-            <a class="link item" target="_blank" href="https://judge0.com/about"><i class="info circle icon"></i> About</a>
-            <a id="api-url" class="link item" target="_blank" href="https://api.judge0.com"><i class="server icon"></i> API</a>
+            <a class="link item" target="_blank" href="https://judge0.com/about"><i class="info circle icon"></i>
+                About</a>
+            <a id="api-url" class="link item" target="_blank" href="https://api.judge0.com"><i class="server icon"></i>
+                API</a>
             <div class="ui dropdown item site-links">
                 Other
                 <i class="dropdown icon"></i>
                 <div class="menu">
-                    <a class="item" target="_blank" href="https://www.patreon.com/hermanzdosilovic"><i class="patreon icon"></i>
+                    <a class="item" target="_blank" href="https://www.patreon.com/hermanzdosilovic"><i
+                            class="patreon icon"></i>
                         Become a Patron</a>
-                    <a class="item" target="_blank" href="https://github.com/judge0/ide"><i class="github icon"></i> View source
+                    <div class="divider"></div>
+                    <a class="item" target="_blank" href="https://github.com/judge0/ide"><i class="github icon"></i>
+                        View source
                         code on Github</a>
-                    <a class="item" target="_blank" href="https://judge0.com/#subscribe"><i class="envelope icon"></i> Subscribe
-                        to Judge0 news</a>
                     <a class="item" target="_blank" href="https://github.com/judge0/ide/issues/new"><i
                             class="exclamation circle icon"></i> Report an issue</a>
-                    <a class="item" target="_blank" href="mailto:hermanz.dosilovic@gmail.com"><i class="paper plane icon"></i>
+                    <div class="divider"></div>
+                    <a class="item" target="_blank" href="https://judge0.com/#subscribe"><i class="envelope icon"></i>
+                        Subscribe
+                        to Judge0 news</a>
+                    <a class="item" target="_blank" href="https://discordapp.com/invite/e43pb7B"><i
+                            class="discord icon"></i> Join a Discord server</a>
+                    <div class="divider"></div>
+                    <a class="item" target="_blank" href="mailto:hermanz.dosilovic@gmail.com"><i
+                            class="paper plane icon"></i>
                         Contact the author</a>
-                    <a class="item" target="_blank" href="https://hermanz.dosilovic.com"><i class="user icon"></i> About the
+                    <a class="item" target="_blank" href="https://hermanz.dosilovic.com"><i class="user icon"></i> About
+                        the
                         author</a>
+                    <div class="divider"></div>
                     <a class="item" target="_blank"
                         href="https://www.reddit.com/submit?url=https%3A%2F%2Fide.judge0.com&title=Judge0%20IDE"
-                        style="background-color: #ff4500 !important; color: white !important;"><i class="reddit icon"></i> Share
+                        style="background-color: #ff4500 !important; color: white !important;"><i
+                            class="reddit icon"></i> Share
                         on Reddit</a>
                     <a class="item" target="_blank"
                         href="https://twitter.com/intent/tweet?text=Judge0%20IDE&url=https%3A%2F%2Fide.judge0.com&via=hermanzvonimir"
-                        style="background-color: #1da1f2 !important; color: white !important;"><i class="twitter icon"></i>
+                        style="background-color: #1da1f2 !important; color: white !important;"><i
+                            class="twitter icon"></i>
                         Share on Twitter</a>
                     <a class="item" target="_blank"
                         href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fide.judge0.com"
-                        style="background-color: #1877f2 !important; color: white !important;"><i class="facebook icon"></i>
+                        style="background-color: #1877f2 !important; color: white !important;"><i
+                            class="facebook icon"></i>
                         Share on Facebook</a>
                 </div>
             </div>
@@ -191,8 +210,8 @@
     </div>
 
     <div id="site-footer">
-        <span>© 2017-2019 <a href="https://judge0.com">Judge0</a> | Powered by <a href="https://api.judge0.com">Judge0
-                API</a> | Source code available on <a href="https://github.com/judge0/ide">GitHub</a></span>
+        <!-- <span>© 2017-2019 <a href="https://judge0.com">Judge0</a> | Powered by <a href="https://api.judge0.com">Judge0
+                API</a> | Source code available on <a href="https://github.com/judge0/ide">GitHub</a></span> -->
         <span id="status-line"></span>
     </div>
 </body>
