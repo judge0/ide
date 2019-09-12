@@ -229,8 +229,8 @@ function save() {
         },
         data: data,
         success: function (data, textStatus, jqXHR) {
-            if (getIdFromURI() != data["long"]) {
-                window.history.replaceState(null, null, location.origin + location.pathname + "?" + data["long"]);
+            if (getIdFromURI() != data["short"]) {
+                window.history.replaceState(null, null, location.origin + location.pathname + "?" + data["short"]);
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -330,17 +330,18 @@ function fetchSubmission(submission_token) {
 
 function changeEditorLanguage() {
     monaco.editor.setModelLanguage(sourceEditor.getModel(), $selectLanguage.find(":selected").attr("mode"));
+    currentLanguageId = parseInt($selectLanguage.val());
     $(".lm_title")[0].innerText = fileNames[currentLanguageId];
 }
 
 function insertTemplate() {
+    currentLanguageId = parseInt($selectLanguage.val());
     sourceEditor.setValue(sources[currentLanguageId]);
     changeEditorLanguage();
 }
 
 function loadRandomLanguage() {
     $selectLanguage.dropdown("set selected", Math.floor(Math.random() * $selectLanguage[0].length));
-    currentLanguageId = parseInt($selectLanguage.val());
     insertTemplate();
 }
 
@@ -353,7 +354,6 @@ $(document).ready(function () {
 
     $selectLanguage = $("#select-language");
     $selectLanguage.change(function (e) {
-        currentLanguageId = parseInt($selectLanguage.val());
         if (!isEditorDirty) {
             insertTemplate();
         } else {
@@ -425,6 +425,7 @@ $(document).ready(function () {
             });
 
             sourceEditor.getModel().onDidChangeContent(function (e) {
+                currentLanguageId = parseInt($selectLanguage.val());
                 isEditorDirty = sourceEditor.getValue() != sources[currentLanguageId];
             });
         });
