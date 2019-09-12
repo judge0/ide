@@ -1,4 +1,4 @@
-[![Judge0 IDE Screenshot](https://github.com/judge0/ide/blob/master/.github/Judge0IDE.png)](https://ide.judge0.com/?ANKj4C8qwgkGIA3-GfDlqoqmrLJ9)
+[![Judge0 IDE Screenshot](https://github.com/judge0/ide/blob/master/.github/Judge0_IDE_1366x768.png)](https://ide.judge0.com/?tyTK)
 
 # Judge0 IDE
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgray.svg)](https://github.com/judge0/ide/blob/master/LICENSE)
