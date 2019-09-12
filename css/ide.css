@@ -70,24 +70,28 @@ body {
 #site-footer, #status-line {
     background-color: #0E6EB8;
     bottom: 0;
-    color: #fff;
     font-family: "Droid Sans Mono", monospace, monospace, "Droid Sans Fallback";
     font-size: 13px;
     height: 19px;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 16px;
+    padding-right: 16px;
     position: fixed;
 }
 
 #site-footer {
+    color: #41a5f1;
     left: 0;
     text-align: center;
     width: 100%;
 }
 
 #site-footer a {
-    color: #fff;
+    color: #41a5f1;
     font-weight: bold;
+}
+
+#site-footer a:hover {
+    color: #a0d2f8;
 }
 
 #status-line {
@@ -95,9 +99,19 @@ body {
     float: right;
     right: 0;
     text-align: right;
-    width: 100%;
+    width: fit-content;
 }
 
 .left-padding {
     padding-left: 16px !important;
+}
+
+.blink {
+    animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+    50% {
+        background: #FFD700;
+    }
 }

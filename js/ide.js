@@ -3,6 +3,8 @@ var wait = localStorageGetItem("wait") || false;
 var pbUrl = "https://pb.judge0.com";
 var check_timeout = 200;
 
+var blinkStatusLine = ((localStorageGetItem("blink") || "true") === "true");
+
 var layout;
 
 var sourceEditor;
@@ -155,6 +157,15 @@ function handleResult(data) {
     var memory = (data.memory === null ? "-" : data.memory + "KB");
 
     $statusLine.html(`${status.description}, ${time}, ${memory}`);
+
+    if (blinkStatusLine) {
+        $statusLine.addClass("blink");
+        setTimeout(function() {
+            blinkStatusLine = false;
+            localStorageSetItem("blink", "false");
+            $statusLine.removeClass("blink");
+        }, 3000);
+    }
 
     stdoutEditor.setValue(stdout);
     stderrEditor.setValue(stderr);
