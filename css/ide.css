@@ -42,8 +42,8 @@ body {
 }
 
 #site-icon {
-    width: 45px;
-    height: 45px;
+    width: 30px;
+    height: 30px;
     vertical-align: middle;
 }
 
@@ -60,7 +60,7 @@ body {
 }
 
 #site-content {
-    height: calc(100% - 46px - 19px);
+    height: calc(100% - 45px - 19px);
 }
 
 #site-modal .header {
