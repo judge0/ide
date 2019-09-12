@@ -172,6 +172,31 @@ function handleResult(data) {
     compileOutputEditor.setValue(compile_output);
     sandboxMessageEditor.setValue(sandbox_message);
 
+    if (stdout !== "") {
+        var dot = document.getElementById("stdout-dot");
+        if (!dot.parentElement.classList.contains("lm_active")) {
+            dot.hidden = false;
+        }
+    }
+    if (stderr !== "") {
+        var dot = document.getElementById("stderr-dot");
+        if (!dot.parentElement.classList.contains("lm_active")) {
+            dot.hidden = false;
+        }
+    }
+    if (compile_output !== "") {
+        var dot = document.getElementById("compile-output-dot");
+        if (!dot.parentElement.classList.contains("lm_active")) {
+            dot.hidden = false;
+        }
+    }
+    if (sandbox_message !== "") {
+        var dot = document.getElementById("sandbox-message-dot");
+        if (!dot.parentElement.classList.contains("lm_active")) {
+            dot.hidden = false;
+        }
+    }
+
     $runBtn.removeClass("loading");
 }
 
@@ -249,6 +274,16 @@ function run() {
         $runBtn.addClass("loading");
     }
 
+    document.getElementById("stdout-dot").hidden = true;
+    document.getElementById("stderr-dot").hidden = true;
+    document.getElementById("compile-output-dot").hidden = true;
+    document.getElementById("sandbox-message-dot").hidden = true;
+
+    stdoutEditor.setValue("");
+    stderrEditor.setValue("");
+    compileOutputEditor.setValue("");
+    sandboxMessageEditor.setValue("");
+
     var sourceValue = encode(sourceEditor.getValue());
     var stdinValue = encode(stdinEditor.getValue());
     var languageId = $selectLanguage.val();
@@ -308,6 +343,10 @@ function loadRandomLanguage() {
     currentLanguageId = parseInt($selectLanguage.val());
     insertTemplate();
 }
+
+$(window).resize(function() {
+    layout.updateSize();
+});
 
 $(document).ready(function () {
     console.log("Hey, Judge0 IDE is open-sourced: https://github.com/judge0/ide. Have fun!");
@@ -408,6 +447,13 @@ $(document).ready(function () {
                 readOnly: state.readOnly,
                 language: "plaintext"
             });
+
+            container.on("tab", function(tab) {
+                tab.element.append("<span id=\"stdout-dot\" class=\"dot\" hidden></span>");
+                tab.element.on("mousedown", function(e) {
+                    e.target.closest(".lm_tab").children[3].hidden = true;
+                });
+            });
         });
 
         layout.registerComponent("stderr", function (container, state) {
@@ -417,6 +463,13 @@ $(document).ready(function () {
                 scrollBeyondLastLine: false,
                 readOnly: state.readOnly,
                 language: "plaintext"
+            });
+
+            container.on("tab", function(tab) {
+                tab.element.append("<span id=\"stderr-dot\" class=\"dot\" hidden></span>");
+                tab.element.on("mousedown", function(e) {
+                    e.target.closest(".lm_tab").children[3].hidden = true;
+                });
             });
         });
 
@@ -428,6 +481,13 @@ $(document).ready(function () {
                 readOnly: state.readOnly,
                 language: "plaintext"
             });
+
+            container.on("tab", function(tab) {
+                tab.element.append("<span id=\"compile-output-dot\" class=\"dot\" hidden></span>");
+                tab.element.on("mousedown", function(e) {
+                    e.target.closest(".lm_tab").children[3].hidden = true;
+                });
+            });
         });
 
         layout.registerComponent("sandbox message", function (container, state) {
@@ -437,6 +497,13 @@ $(document).ready(function () {
                 scrollBeyondLastLine: false,
                 readOnly: state.readOnly,
                 language: "plaintext"
+            });
+
+            container.on("tab", function(tab) {
+                tab.element.append("<span id=\"sandbox-message-dot\" class=\"dot\" hidden></span>");
+                tab.element.on("mousedown", function(e) {
+                    e.target.closest(".lm_tab").children[3].hidden = true;
+                });
             });
         });
 

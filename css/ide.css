@@ -115,3 +115,13 @@ body {
         background: #FFD700;
     }
 }
+
+.dot {
+    background: #0E6EB8;
+    position: absolute;
+    border-radius: 50px;
+    width: 5px;
+    height: 5px;
+    right: 7.5px;
+    top: 7.5px;
+}
