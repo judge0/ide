@@ -246,26 +246,49 @@ function downloadSource() {
 }
 
 function loadSavedSource() {
-    $.ajax({
-        url: pbUrl + "/" + getIdFromURI() + ".json",
-        type: "GET",
-        success: function (data, textStatus, jqXHR) {
-            sourceEditor.setValue(decode(data["source_code"]));
-            $selectLanguage.dropdown("set selected", data["language_id"]);
-            stdinEditor.setValue(decode(data["stdin"]));
-            stdoutEditor.setValue(decode(data["stdout"]));
-            stderrEditor.setValue(decode(data["stderr"]));
-            compileOutputEditor.setValue(decode(data["compile_output"]));
-            sandboxMessageEditor.setValue(decode(data["sandbox_message"]));
-            $statusLine.html(decode(data["status_line"]));
-            changeEditorLanguage();
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            showError("Not Found", "Code not found!");
-            window.history.replaceState(null, null, location.origin + location.pathname);
-            loadRandomLanguage();
-        }
-    });
+    snipped_id = getIdFromURI();
+
+    if (snipped_id.length == 36) {
+        $.ajax({
+            url: apiUrl + "/submissions/" + snipped_id + "?fields=source_code,language_id,stdin,stdout,stderr,compile_output,message,time,memory,status&base64_encoded=true",
+            type: "GET",
+            success: function(data, textStatus, jqXHR) {
+                sourceEditor.setValue(decode(data["source_code"]));
+                $selectLanguage.dropdown("set selected", data["language_id"]);
+                stdinEditor.setValue(decode(data["stdin"]));
+                stdoutEditor.setValue(decode(data["stdout"]));
+                stderrEditor.setValue(decode(data["stderr"]));
+                compileOutputEditor.setValue(decode(data["compile_output"]));
+                sandboxMessageEditor.setValue(decode(data["message"]));
+                var time = (data.time === null ? "-" : data.time + "s");
+                var memory = (data.memory === null ? "-" : data.memory + "KB");
+                $statusLine.html(`${data.status.description}, ${time}, ${memory}`);
+                changeEditorLanguage();
+            },
+            error: handleRunError
+        });
+    } else {
+        $.ajax({
+            url: pbUrl + "/" + snipped_id + ".json",
+            type: "GET",
+            success: function (data, textStatus, jqXHR) {
+                sourceEditor.setValue(decode(data["source_code"]));
+                $selectLanguage.dropdown("set selected", data["language_id"]);
+                stdinEditor.setValue(decode(data["stdin"]));
+                stdoutEditor.setValue(decode(data["stdout"]));
+                stderrEditor.setValue(decode(data["stderr"]));
+                compileOutputEditor.setValue(decode(data["compile_output"]));
+                sandboxMessageEditor.setValue(decode(data["sandbox_message"]));
+                $statusLine.html(decode(data["status_line"]));
+                changeEditorLanguage();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                showError("Not Found", "Code not found!");
+                window.history.replaceState(null, null, location.origin + location.pathname);
+                loadRandomLanguage();
+            }
+        });
+    }
 }
 
 function run() {
@@ -607,6 +630,11 @@ fn main() {\n\
 
 var textSource = "hello, world\n";
 
+var executableSource = "\
+#!/bin/bash\n\
+echo \"hello, world\"\n\
+";
+
 var sources = {
     1: bashSource,
     2: bashSource,
@@ -650,7 +678,8 @@ var sources = {
     40: rubySource,
     41: rubySource,
     42: rustSource,
-    43: textSource
+    43: textSource,
+    44: executableSource,
 };
 
 var fileNames = {
@@ -696,5 +725,6 @@ var fileNames = {
     40: "main.rb",
     41: "main.rb",
     42: "main.rs",
-    43: "source.txt"
+    43: "source.txt",
+    44: "a.out"
 };
