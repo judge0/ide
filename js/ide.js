@@ -312,6 +312,11 @@ function run() {
     var sourceValue = encode(sourceEditor.getValue());
     var stdinValue = encode(stdinEditor.getValue());
     var languageId = $selectLanguage.val();
+
+    if (languageId === "44") {
+        sourceValue = sourceEditor.getValue();
+    }
+
     var data = {
         source_code: sourceValue,
         language_id: languageId,
@@ -631,8 +636,15 @@ fn main() {\n\
 var textSource = "hello, world\n";
 
 var executableSource = "\
-#!/bin/bash\n\
-echo \"hello, world\"\n\
+Judge0 IDE assumes that content of executable is Base64 encoded.\n\
+\n\
+This means that you should Base64 encode content of your binary,\n\
+paste it here and click \"Run\".\n\
+\n\
+Here is an example of compiled \"hello, world\" NASM program.\n\
+Content of compiled binary is Base64 encoded and used as source code.\n\
+\n\
+https://ide.judge0.com/?kS_f\n\
 ";
 
 var sources = {
