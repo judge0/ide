@@ -212,7 +212,8 @@ function save() {
         stdout: encode(stdoutEditor.getValue()),
         stderr: encode(stderrEditor.getValue()),
         compile_output: encode(compileOutputEditor.getValue()),
-        sandbox_message: encode(stderrEditor.getValue())
+        sandbox_message: encode(stderrEditor.getValue()),
+        status_line: encode($statusLine.html())
     });
     var filename = "judge0-ide.json";
     var data = {
@@ -256,6 +257,7 @@ function loadSavedSource() {
             stderrEditor.setValue(decode(data["stderr"]));
             compileOutputEditor.setValue(decode(data["compile_output"]));
             sandboxMessageEditor.setValue(decode(data["sandbox_message"]));
+            $statusLine.html(decode(data["status_line"]));
             changeEditorLanguage();
         },
         error: function (jqXHR, textStatus, errorThrown) {
