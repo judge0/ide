@@ -216,7 +216,7 @@ function save() {
         stdout: encode(stdoutEditor.getValue()),
         stderr: encode(stderrEditor.getValue()),
         compile_output: encode(compileOutputEditor.getValue()),
-        sandbox_message: encode(stderrEditor.getValue()),
+        sandbox_message: encode(sandboxMessageEditor.getValue()),
         status_line: encode($statusLine.html())
     });
     var filename = "judge0-ide.json";
