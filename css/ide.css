@@ -102,10 +102,6 @@ body {
     width: fit-content;
 }
 
-.left-padding {
-    padding-left: 16px !important;
-}
-
 .blink {
     animation: blinker 1s linear infinite;
 }

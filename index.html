@@ -34,7 +34,7 @@
 </head>
 
 <body>
-    <div id="site-navigation" class="ui inverted menu">
+    <div id="site-navigation" class="ui small inverted menu">
         <div id="site-header" class="header item">
             <a href="/">
                 <img id="site-icon" src="./images/judge0_icon.png">
@@ -54,7 +54,7 @@
                 </div>
             </div>
             <!-- <div class="link item" onclick="$('#site-settings').modal('show')"><i class="cog icon"></i> Settings</div> -->
-            <div class="item fitted borderless left-padding">
+            <div class="item borderless">
                 <select id="select-language" class="ui dropdown">
                     <option value="1" mode="shell">Bash (4.4)</option>
                     <option value="2" mode="shell">Bash (4.0)</option>
@@ -102,17 +102,17 @@
                     <option value="44" mode="plaintext">Executable</option>
                 </select>
             </div>
-            <div class="item borderless">
+            <div class="item fitted borderless">
                 <div class="ui input">
                     <input id="compiler-options" type="text" placeholder="Compiler options"></input>
                 </div>
             </div>
-            <div class="item fitted borderless">
+            <div class="item borderless">
                 <div class="ui input">
                     <input id="command-line-arguments" type="text" placeholder="Command line arguments"></input>
                 </div>
             </div>
-            <div class="item fitted borderless left-padding">
+            <div class="item fitted borderless">
                 <button id="run-btn" class="ui primary labeled icon button"><i class="play icon"></i>Run (F9)</button>
             </div>
         </div>
