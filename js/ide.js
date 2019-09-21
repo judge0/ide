@@ -19,6 +19,7 @@ var currentLanguageId;
 
 var $selectLanguage;
 var $compilerOptions;
+var $commandLineArguments;
 var $insertTemplateBtn;
 var $runBtn;
 var $statusLine;
@@ -210,6 +211,7 @@ function save() {
         source_code: encode(sourceEditor.getValue()),
         language_id: $selectLanguage.val(),
         compiler_options: $compilerOptions.val(),
+        command_line_arguments: $commandLineArguments.val(),
         stdin: encode(stdinEditor.getValue()),
         stdout: encode(stdoutEditor.getValue()),
         stderr: encode(stderrEditor.getValue()),
@@ -252,12 +254,13 @@ function loadSavedSource() {
 
     if (snipped_id.length == 36) {
         $.ajax({
-            url: apiUrl + "/submissions/" + snipped_id + "?fields=source_code,language_id,stdin,stdout,stderr,compile_output,message,time,memory,status,compiler_options&base64_encoded=true",
+            url: apiUrl + "/submissions/" + snipped_id + "?fields=source_code,language_id,stdin,stdout,stderr,compile_output,message,time,memory,status,compiler_options,command_line_arguments&base64_encoded=true",
             type: "GET",
             success: function(data, textStatus, jqXHR) {
                 sourceEditor.setValue(decode(data["source_code"]));
                 $selectLanguage.dropdown("set selected", data["language_id"]);
                 $compilerOptions.val(data["compiler_options"]);
+                $commandLineArguments.val(data["command_line_arguments"]);
                 stdinEditor.setValue(decode(data["stdin"]));
                 stdoutEditor.setValue(decode(data["stdout"]));
                 stderrEditor.setValue(decode(data["stderr"]));
@@ -278,6 +281,7 @@ function loadSavedSource() {
                 sourceEditor.setValue(decode(data["source_code"]));
                 $selectLanguage.dropdown("set selected", data["language_id"]);
                 $compilerOptions.val(data["compiler_options"]);
+                $commandLineArguments.val(data["command_line_arguments"]);
                 stdinEditor.setValue(decode(data["stdin"]));
                 stdoutEditor.setValue(decode(data["stdout"]));
                 stderrEditor.setValue(decode(data["stderr"]));
@@ -317,6 +321,7 @@ function run() {
     var stdinValue = encode(stdinEditor.getValue());
     var languageId = $selectLanguage.val();
     var compilerOptions = $compilerOptions.val();
+    var commandLineArguments = $commandLineArguments.val();
 
     if (languageId === "44") {
         sourceValue = sourceEditor.getValue();
@@ -326,7 +331,8 @@ function run() {
         source_code: sourceValue,
         language_id: languageId,
         stdin: stdinValue,
-        compiler_options: compilerOptions
+        compiler_options: compilerOptions,
+        command_line_arguments: commandLineArguments
     };
 
     timeStart = performance.now();
@@ -398,6 +404,8 @@ $(document).ready(function () {
     });
 
     $compilerOptions = $("#compiler-options");
+    $commandLineArguments = $("#command-line-arguments");
+    $commandLineArguments.attr("size", $commandLineArguments.attr("placeholder").length);
 
     $insertTemplateBtn = $("#insert-template-btn");
     $insertTemplateBtn.click(function (e) {
