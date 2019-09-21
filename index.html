@@ -102,7 +102,12 @@
                     <option value="44" mode="plaintext">Executable</option>
                 </select>
             </div>
-            <div class="item fitted borderless left-padding">
+            <div class="item borderless">
+                <div class="ui input">
+                    <input id="compiler-options" type="text" placeholder="Compiler options"></input>
+                </div>
+            </div>
+            <div class="item fitted borderless">
                 <button id="run-btn" class="ui primary labeled icon button"><i class="play icon"></i>Run (F9)</button>
             </div>
         </div>
@@ -160,14 +165,14 @@
 
     <div id="site-content"></div>
 
-    <div id="site-modal" class="ui basic modal">
+    <div id="site-modal" class="ui modal">
         <div class="header">
             <i class="close icon"></i>
             <span id="title"></span>
         </div>
-        <div class="content"></div>
+        <div class="scrolling content"></div>
         <div class="actions">
-            <div class="ui small inverted labeled icon cancel button">
+            <div class="ui small labeled icon cancel button">
                 <i class="remove icon"></i>
                 Close (ESC)
             </div>

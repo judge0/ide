@@ -18,6 +18,7 @@ var isEditorDirty = false;
 var currentLanguageId;
 
 var $selectLanguage;
+var $compilerOptions;
 var $insertTemplateBtn;
 var $runBtn;
 var $statusLine;
@@ -208,6 +209,7 @@ function save() {
     var content = JSON.stringify({
         source_code: encode(sourceEditor.getValue()),
         language_id: $selectLanguage.val(),
+        compiler_options: $compilerOptions.val(),
         stdin: encode(stdinEditor.getValue()),
         stdout: encode(stdoutEditor.getValue()),
         stderr: encode(stderrEditor.getValue()),
@@ -250,11 +252,12 @@ function loadSavedSource() {
 
     if (snipped_id.length == 36) {
         $.ajax({
-            url: apiUrl + "/submissions/" + snipped_id + "?fields=source_code,language_id,stdin,stdout,stderr,compile_output,message,time,memory,status&base64_encoded=true",
+            url: apiUrl + "/submissions/" + snipped_id + "?fields=source_code,language_id,stdin,stdout,stderr,compile_output,message,time,memory,status,compiler_options&base64_encoded=true",
             type: "GET",
             success: function(data, textStatus, jqXHR) {
                 sourceEditor.setValue(decode(data["source_code"]));
                 $selectLanguage.dropdown("set selected", data["language_id"]);
+                $compilerOptions.val(data["compiler_options"]);
                 stdinEditor.setValue(decode(data["stdin"]));
                 stdoutEditor.setValue(decode(data["stdout"]));
                 stderrEditor.setValue(decode(data["stderr"]));
@@ -274,6 +277,7 @@ function loadSavedSource() {
             success: function (data, textStatus, jqXHR) {
                 sourceEditor.setValue(decode(data["source_code"]));
                 $selectLanguage.dropdown("set selected", data["language_id"]);
+                $compilerOptions.val(data["compiler_options"]);
                 stdinEditor.setValue(decode(data["stdin"]));
                 stdoutEditor.setValue(decode(data["stdout"]));
                 stderrEditor.setValue(decode(data["stderr"]));
@@ -312,6 +316,7 @@ function run() {
     var sourceValue = encode(sourceEditor.getValue());
     var stdinValue = encode(stdinEditor.getValue());
     var languageId = $selectLanguage.val();
+    var compilerOptions = $compilerOptions.val();
 
     if (languageId === "44") {
         sourceValue = sourceEditor.getValue();
@@ -320,7 +325,8 @@ function run() {
     var data = {
         source_code: sourceValue,
         language_id: languageId,
-        stdin: stdinValue
+        stdin: stdinValue,
+        compiler_options: compilerOptions
     };
 
     timeStart = performance.now();
@@ -390,6 +396,8 @@ $(document).ready(function () {
             changeEditorLanguage();
         }
     });
+
+    $compilerOptions = $("#compiler-options");
 
     $insertTemplateBtn = $("#insert-template-btn");
     $insertTemplateBtn.click(function (e) {
