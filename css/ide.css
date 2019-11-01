@@ -17,10 +17,6 @@ body {
     border-radius: 0 .28571429rem .28571429rem 0;
 }
 
-.ui.selection.dropdown {
-    width: 300px;
-}
-
 .lm_header .lm_tab {
     padding-bottom: 3px;
     height: 16px;
