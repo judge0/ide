@@ -3,6 +3,8 @@ var wait = localStorageGetItem("wait") || false;
 var pbUrl = "https://pb.judge0.com";
 var check_timeout = 200;
 
+var blinkStatusLine = ((localStorageGetItem("blink") || "true") === "true");
+
 var layout;
 
 var sourceEditor;
@@ -16,6 +18,8 @@ var isEditorDirty = false;
 var currentLanguageId;
 
 var $selectLanguage;
+var $compilerOptions;
+var $commandLineArguments;
 var $insertTemplateBtn;
 var $runBtn;
 var $statusLine;
@@ -156,10 +160,44 @@ function handleResult(data) {
 
     $statusLine.html(`${status.description}, ${time}, ${memory}`);
 
+    if (blinkStatusLine) {
+        $statusLine.addClass("blink");
+        setTimeout(function() {
+            blinkStatusLine = false;
+            localStorageSetItem("blink", "false");
+            $statusLine.removeClass("blink");
+        }, 3000);
+    }
+
     stdoutEditor.setValue(stdout);
     stderrEditor.setValue(stderr);
     compileOutputEditor.setValue(compile_output);
     sandboxMessageEditor.setValue(sandbox_message);
+
+    if (stdout !== "") {
+        var dot = document.getElementById("stdout-dot");
+        if (!dot.parentElement.classList.contains("lm_active")) {
+            dot.hidden = false;
+        }
+    }
+    if (stderr !== "") {
+        var dot = document.getElementById("stderr-dot");
+        if (!dot.parentElement.classList.contains("lm_active")) {
+            dot.hidden = false;
+        }
+    }
+    if (compile_output !== "") {
+        var dot = document.getElementById("compile-output-dot");
+        if (!dot.parentElement.classList.contains("lm_active")) {
+            dot.hidden = false;
+        }
+    }
+    if (sandbox_message !== "") {
+        var dot = document.getElementById("sandbox-message-dot");
+        if (!dot.parentElement.classList.contains("lm_active")) {
+            dot.hidden = false;
+        }
+    }
 
     $runBtn.removeClass("loading");
 }
@@ -171,8 +209,15 @@ function getIdFromURI() {
 function save() {
     var content = JSON.stringify({
         source_code: encode(sourceEditor.getValue()),
+        language_id: $selectLanguage.val(),
+        compiler_options: $compilerOptions.val(),
+        command_line_arguments: $commandLineArguments.val(),
         stdin: encode(stdinEditor.getValue()),
-        language_id: $selectLanguage.val()
+        stdout: encode(stdoutEditor.getValue()),
+        stderr: encode(stderrEditor.getValue()),
+        compile_output: encode(compileOutputEditor.getValue()),
+        sandbox_message: encode(sandboxMessageEditor.getValue()),
+        status_line: encode($statusLine.html())
     });
     var filename = "judge0-ide.json";
     var data = {
@@ -189,8 +234,8 @@ function save() {
         },
         data: data,
         success: function (data, textStatus, jqXHR) {
-            if (getIdFromURI() != data["long"]) {
-                window.history.replaceState(null, null, location.origin + location.pathname + "?" + data["long"]);
+            if (getIdFromURI() != data["short"]) {
+                window.history.replaceState(null, null, location.origin + location.pathname + "?" + data["short"]);
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -199,22 +244,59 @@ function save() {
     });
 }
 
+function downloadSource() {
+    var value = parseInt($selectLanguage.val());
+    download(sourceEditor.getValue(), fileNames[value], "text/plain");
+}
+
 function loadSavedSource() {
-    $.ajax({
-        url: pbUrl + "/" + getIdFromURI(),
-        type: "GET",
-        success: function (data, textStatus, jqXHR) {
-            sourceEditor.setValue(decode(data["source_code"]));
-            stdinEditor.setValue(decode(data["stdin"]));
-            $selectLanguage.dropdown("set selected", data["language_id"]);
-            setEditorMode();
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            showError("Not Found", "Code not found!");
-            window.history.replaceState(null, null, location.origin + location.pathname);
-            loadRandomLanguage();
-        }
-    });
+    snipped_id = getIdFromURI();
+
+    if (snipped_id.length == 36) {
+        $.ajax({
+            url: apiUrl + "/submissions/" + snipped_id + "?fields=source_code,language_id,stdin,stdout,stderr,compile_output,message,time,memory,status,compiler_options,command_line_arguments&base64_encoded=true",
+            type: "GET",
+            success: function(data, textStatus, jqXHR) {
+                sourceEditor.setValue(decode(data["source_code"]));
+                $selectLanguage.dropdown("set selected", data["language_id"]);
+                $compilerOptions.val(data["compiler_options"]);
+                $commandLineArguments.val(data["command_line_arguments"]);
+                stdinEditor.setValue(decode(data["stdin"]));
+                stdoutEditor.setValue(decode(data["stdout"]));
+                stderrEditor.setValue(decode(data["stderr"]));
+                compileOutputEditor.setValue(decode(data["compile_output"]));
+                sandboxMessageEditor.setValue(decode(data["message"]));
+                var time = (data.time === null ? "-" : data.time + "s");
+                var memory = (data.memory === null ? "-" : data.memory + "KB");
+                $statusLine.html(`${data.status.description}, ${time}, ${memory}`);
+                changeEditorLanguage();
+            },
+            error: handleRunError
+        });
+    } else {
+        $.ajax({
+            url: pbUrl + "/" + snipped_id + ".json",
+            type: "GET",
+            success: function (data, textStatus, jqXHR) {
+                sourceEditor.setValue(decode(data["source_code"]));
+                $selectLanguage.dropdown("set selected", data["language_id"]);
+                $compilerOptions.val(data["compiler_options"]);
+                $commandLineArguments.val(data["command_line_arguments"]);
+                stdinEditor.setValue(decode(data["stdin"]));
+                stdoutEditor.setValue(decode(data["stdout"]));
+                stderrEditor.setValue(decode(data["stderr"]));
+                compileOutputEditor.setValue(decode(data["compile_output"]));
+                sandboxMessageEditor.setValue(decode(data["sandbox_message"]));
+                $statusLine.html(decode(data["status_line"]));
+                changeEditorLanguage();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                showError("Not Found", "Code not found!");
+                window.history.replaceState(null, null, location.origin + location.pathname);
+                loadRandomLanguage();
+            }
+        });
+    }
 }
 
 function run() {
@@ -225,13 +307,32 @@ function run() {
         $runBtn.addClass("loading");
     }
 
+    document.getElementById("stdout-dot").hidden = true;
+    document.getElementById("stderr-dot").hidden = true;
+    document.getElementById("compile-output-dot").hidden = true;
+    document.getElementById("sandbox-message-dot").hidden = true;
+
+    stdoutEditor.setValue("");
+    stderrEditor.setValue("");
+    compileOutputEditor.setValue("");
+    sandboxMessageEditor.setValue("");
+
     var sourceValue = encode(sourceEditor.getValue());
     var stdinValue = encode(stdinEditor.getValue());
     var languageId = $selectLanguage.val();
+    var compilerOptions = $compilerOptions.val();
+    var commandLineArguments = $commandLineArguments.val();
+
+    if (languageId === "44") {
+        sourceValue = sourceEditor.getValue();
+    }
+
     var data = {
         source_code: sourceValue,
         language_id: languageId,
-        stdin: stdinValue
+        stdin: stdinValue,
+        compiler_options: compilerOptions,
+        command_line_arguments: commandLineArguments
     };
 
     timeStart = performance.now();
@@ -271,32 +372,40 @@ function fetchSubmission(submission_token) {
 
 function changeEditorLanguage() {
     monaco.editor.setModelLanguage(sourceEditor.getModel(), $selectLanguage.find(":selected").attr("mode"));
+    currentLanguageId = parseInt($selectLanguage.val());
     $(".lm_title")[0].innerText = fileNames[currentLanguageId];
 }
 
 function insertTemplate() {
+    currentLanguageId = parseInt($selectLanguage.val());
     sourceEditor.setValue(sources[currentLanguageId]);
     changeEditorLanguage();
 }
 
 function loadRandomLanguage() {
     $selectLanguage.dropdown("set selected", Math.floor(Math.random() * $selectLanguage[0].length));
-    currentLanguageId = parseInt($selectLanguage.val());
     insertTemplate();
 }
+
+$(window).resize(function() {
+    layout.updateSize();
+});
 
 $(document).ready(function () {
     console.log("Hey, Judge0 IDE is open-sourced: https://github.com/judge0/ide. Have fun!");
 
     $selectLanguage = $("#select-language");
     $selectLanguage.change(function (e) {
-        currentLanguageId = parseInt($selectLanguage.val());
         if (!isEditorDirty) {
             insertTemplate();
         } else {
             changeEditorLanguage();
         }
     });
+
+    $compilerOptions = $("#compiler-options");
+    $commandLineArguments = $("#command-line-arguments");
+    $commandLineArguments.attr("size", $commandLineArguments.attr("placeholder").length);
 
     $insertTemplateBtn = $("#insert-template-btn");
     $insertTemplateBtn.click(function (e) {
@@ -362,6 +471,7 @@ $(document).ready(function () {
             });
 
             sourceEditor.getModel().onDidChangeContent(function (e) {
+                currentLanguageId = parseInt($selectLanguage.val());
                 isEditorDirty = sourceEditor.getValue() != sources[currentLanguageId];
             });
         });
@@ -384,6 +494,13 @@ $(document).ready(function () {
                 readOnly: state.readOnly,
                 language: "plaintext"
             });
+
+            container.on("tab", function(tab) {
+                tab.element.append("<span id=\"stdout-dot\" class=\"dot\" hidden></span>");
+                tab.element.on("mousedown", function(e) {
+                    e.target.closest(".lm_tab").children[3].hidden = true;
+                });
+            });
         });
 
         layout.registerComponent("stderr", function (container, state) {
@@ -393,6 +510,13 @@ $(document).ready(function () {
                 scrollBeyondLastLine: false,
                 readOnly: state.readOnly,
                 language: "plaintext"
+            });
+
+            container.on("tab", function(tab) {
+                tab.element.append("<span id=\"stderr-dot\" class=\"dot\" hidden></span>");
+                tab.element.on("mousedown", function(e) {
+                    e.target.closest(".lm_tab").children[3].hidden = true;
+                });
             });
         });
 
@@ -404,6 +528,13 @@ $(document).ready(function () {
                 readOnly: state.readOnly,
                 language: "plaintext"
             });
+
+            container.on("tab", function(tab) {
+                tab.element.append("<span id=\"compile-output-dot\" class=\"dot\" hidden></span>");
+                tab.element.on("mousedown", function(e) {
+                    e.target.closest(".lm_tab").children[3].hidden = true;
+                });
+            });
         });
 
         layout.registerComponent("sandbox message", function (container, state) {
@@ -413,6 +544,13 @@ $(document).ready(function () {
                 scrollBeyondLastLine: false,
                 readOnly: state.readOnly,
                 language: "plaintext"
+            });
+
+            container.on("tab", function(tab) {
+                tab.element.append("<span id=\"sandbox-message-dot\" class=\"dot\" hidden></span>");
+                tab.element.on("mousedown", function(e) {
+                    e.target.closest(".lm_tab").children[3].hidden = true;
+                });
             });
         });
 
@@ -433,9 +571,9 @@ $(document).ready(function () {
 var nimSource = "echo \"hello, world\"";
 
 var sources = {
-    1: nimSource,
+    1: nimSource
 };
 
 var fileNames = {
-    1: "main.nim",
+    1: "main.nim"
 };

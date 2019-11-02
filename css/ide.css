@@ -17,10 +17,6 @@ body {
     border-radius: 0 .28571429rem .28571429rem 0;
 }
 
-.ui.selection.dropdown {
-    width: 300px;
-}
-
 .lm_header .lm_tab {
     padding-bottom: 3px;
     height: 16px;
@@ -42,8 +38,8 @@ body {
 }
 
 #site-icon {
-    width: 45px;
-    height: 45px;
+    width: 30px;
+    height: 30px;
     vertical-align: middle;
 }
 
@@ -60,7 +56,7 @@ body {
 }
 
 #site-content {
-    height: calc(100% - 46px - 19px);
+    height: calc(100% - 45px - 19px);
 }
 
 #site-modal .header {
@@ -68,35 +64,56 @@ body {
 }
 
 #site-footer, #status-line {
-    background-color: #2185d0;
+    background-color: #0E6EB8;
     bottom: 0;
-    color: #fff;
     font-family: "Droid Sans Mono", monospace, monospace, "Droid Sans Fallback";
     font-size: 13px;
     height: 19px;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 16px;
+    padding-right: 16px;
     position: fixed;
 }
 
 #site-footer {
+    color: #41a5f1;
     left: 0;
     text-align: center;
     width: 100%;
 }
 
 #site-footer a {
-    color: #fff;
+    color: #41a5f1;
     font-weight: bold;
 }
 
-#status-line {
-    width: 350px;
-    right: 0;
-    text-align: right;
-    float: right;
+#site-footer a:hover {
+    color: #a0d2f8;
 }
 
-.left-padding {
-    padding-left: 16px !important;
+#status-line {
+    color: #fff;
+    float: right;
+    right: 0;
+    text-align: right;
+    width: fit-content;
+}
+
+.blink {
+    animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+    50% {
+        background: #FFD700;
+    }
+}
+
+.dot {
+    background: #0E6EB8;
+    position: absolute;
+    border-radius: 50px;
+    width: 5px;
+    height: 5px;
+    right: 7.5px;
+    top: 7.5px;
 }
