@@ -8,6 +8,7 @@ var editorMode = localStorageGetItem("editorMode") || "normal";
 var editorModeObject = null;
 
 var MonacoVim;
+var MonacoEmacs;
 
 var layout;
 
@@ -399,12 +400,29 @@ function resizeEditor(layoutInfo) {
     }
 }
 
-function changeEditorMode() {
-    if (editorMode == "vim" && editorModeObject == null) {
-        editorModeObject = MonacoVim.initVimMode(sourceEditor, $("#editor-status-line")[0]);
-    } else if (editorMode == "normal" && editorModeObject != null) {
+function disposeEditorModeObject() {
+    try {
         editorModeObject.dispose();
         editorModeObject = null;
+    } catch(ignorable) {
+    }
+}
+
+function changeEditorMode() {
+    disposeEditorModeObject();
+
+    if (editorMode == "vim") {
+        editorModeObject = MonacoVim.initVimMode(sourceEditor, $("#editor-status-line")[0]);
+    } else if (editorMode == "emacs") {
+        var statusNode = $("#editor-status-line")[0];
+        editorModeObject = new MonacoEmacs.EmacsExtension(sourceEditor);
+        editorModeObject.onDidMarkChange(function(e) {
+          statusNode.textContent = e ? "Mark Set!" : "Mark Unset";
+        });
+        editorModeObject.onDidChangeKey(function(str) {
+          statusNode.textContent = str;
+        });
+        editorModeObject.start();
     }
 }
 
@@ -492,10 +510,11 @@ $(document).ready(function () {
 
     showApiUrl();
 
-    require(["vs/editor/editor.main", "monaco-vim"], function (ignorable, MVim) {
+    require(["vs/editor/editor.main", "monaco-vim", "monaco-emacs"], function (ignorable, MVim, MEmacs) {
         layout = new GoldenLayout(layoutConfig, $("#site-content"));
 
         MonacoVim = MVim;
+        MonacoEmacs = MEmacs;
 
         layout.registerComponent("source", function (container, state) {
             sourceEditor = monaco.editor.create(container.getElement()[0], {
