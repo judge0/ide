@@ -102,6 +102,28 @@ body {
     width: fit-content;
 }
 
+#editor-status-line {
+    background: transparent;
+    color: #fff;
+    font-family: monospace;
+    height: 19px;
+    padding: 0px 16px;
+    width: inherit;
+}
+
+#editor-status-line input[type=text] {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-family: monospace;
+    outline: none;
+}
+
+#editor-status-line input[type=text]::selection {
+    background-color: #cce2ff;
+    color: #fff;
+}
+
 .blink {
     animation: blinker 1s linear infinite;
 }

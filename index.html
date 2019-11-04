@@ -14,8 +14,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/css/goldenlayout-base.css" integrity="sha256-oIDR18yKFZtfjCJfDsJYpTBv1S9QmxYopeqw2dO96xM=" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/css/goldenlayout-dark-theme.css" integrity="sha256-ygw8PvSDJJUGLf6Q9KIQsYR3mOmiQNlDaxMLDOx9xL0=" crossorigin="anonymous" />
 
-    <script type="text/javascript" src="third_party/monaco-editor-0.18.0/min/vs/loader.js"></script>
-    <script>require.config({ paths: { "vs": "third_party/monaco-editor-0.18.0/min/vs" } });</script>
+    <script>
+        var require = {
+            paths: {
+                "vs": "https://unpkg.com/monaco-editor/min/vs",
+                "monaco-vim": "https://unpkg.com/monaco-vim/dist/monaco-vim",
+            }
+        };
+    </script>
+    <script src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
+    <script src="https://unpkg.com/monaco-editor@0.17.1/min/vs/editor/editor.main.nls.js"></script>
+    <script src="https://unpkg.com/monaco-editor@0.17.1/min/vs/editor/editor.main.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" integrity="sha256-9mbkOfVho3ZPXfM7W8sV2SndrGDuh7wuyLjtsWeTI1Q=" crossorigin="anonymous" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js" integrity="sha256-t8GepnyPmw9t+foMh3mKNvcorqNHamSKtKRxxpUEgFI=" crossorigin="anonymous"></script>
@@ -53,7 +62,7 @@
                         for current language</div>
                 </div>
             </div>
-            <!-- <div class="link item" onclick="$('#site-settings').modal('show')"><i class="cog icon"></i> Settings</div> -->
+            <div class="link item" onclick="$('#site-settings').modal('show')"><i class="cog icon"></i> Settings</div>
             <div class="item borderless">
                 <select id="select-language" class="ui dropdown">
                     <option value="1" mode="shell">Bash (4.4)</option>
@@ -198,28 +207,29 @@
                     <label>Editor Mode</label>
                     <div class="field">
                         <div class="ui radio checkbox">
-                            <input type="radio" name="editor-mode" checked="checked">
+                            <input type="radio" name="editor-mode" value="normal" checked="checked">
                             <label>Normal</label>
                         </div>
                     </div>
                     <div class="field">
                         <div class="ui radio checkbox">
-                            <input type="radio" name="editor-mode">
+                            <input type="radio" name="editor-mode" value="vim">
                             <label>Vim</label>
                         </div>
                     </div>
-                    <div class="field">
+                    <!-- <div class="field">
                         <div class="ui radio checkbox">
-                            <input type="radio" name="editor-mode">
+                            <input type="radio" name="editor-mode" value="emacs">
                             <label>Emacs</label>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
     </div>
 
     <div id="site-footer">
+        <div id="editor-status-line"></div>
         <span>© 2017-2019 <a href="https://judge0.com">Judge0</a> | Powered by <a href="https://api.judge0.com">Judge0
                 API</a> | Source code available on <a href="https://github.com/judge0/ide">GitHub</a></span>
         <span id="status-line"></span>

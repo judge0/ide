@@ -4,6 +4,10 @@ var pbUrl = "https://pb.judge0.com";
 var check_timeout = 200;
 
 var blinkStatusLine = ((localStorageGetItem("blink") || "true") === "true");
+var editorMode = localStorageGetItem("editorMode") || "normal";
+var editorModeObject = null;
+
+var MonacoVim;
 
 var layout;
 
@@ -387,6 +391,23 @@ function loadRandomLanguage() {
     insertTemplate();
 }
 
+function resizeEditor(layoutInfo) {
+    if (editorMode != "normal") {
+        var statusLineHeight = $("#editor-status-line").height();
+        layoutInfo.height -= statusLineHeight;
+        layoutInfo.contentHeight -= statusLineHeight;
+    }
+}
+
+function changeEditorMode() {
+    if (editorMode == "vim" && editorModeObject == null) {
+        editorModeObject = MonacoVim.initVimMode(sourceEditor, $("#editor-status-line")[0]);
+    } else if (editorMode == "normal" && editorModeObject != null) {
+        editorModeObject.dispose();
+        editorModeObject = null;
+    }
+}
+
 $(window).resize(function() {
     layout.updateSize();
 });
@@ -417,6 +438,19 @@ $(document).ready(function () {
     $runBtn = $("#run-btn");
     $runBtn.click(function (e) {
         run();
+    });
+
+    $(`input[name="editor-mode"][value="${editorMode}"]`).prop("checked", true);
+    $("input[name=\"editor-mode\"]").on("change", function(e) {
+        $('#site-settings').modal('hide');
+
+        editorMode = e.target.value;
+        localStorageSetItem("editorMode", editorMode);
+
+        resizeEditor(sourceEditor.getLayoutInfo());
+        changeEditorMode();
+
+        sourceEditor.focus();
     });
 
     $statusLine = $("#status-line");
@@ -458,8 +492,10 @@ $(document).ready(function () {
 
     showApiUrl();
 
-    require(["vs/editor/editor.main"], function () {
+    require(["vs/editor/editor.main", "monaco-vim"], function (ignorable, MVim) {
         layout = new GoldenLayout(layoutConfig, $("#site-content"));
+
+        MonacoVim = MVim;
 
         layout.registerComponent("source", function (container, state) {
             sourceEditor = monaco.editor.create(container.getElement()[0], {
@@ -467,13 +503,20 @@ $(document).ready(function () {
                 theme: "vs-dark",
                 scrollBeyondLastLine: false,
                 readOnly: state.readOnly,
-                language: "cpp"
+                language: "cpp",
+                minimap: {
+                    enabled: false
+                }
             });
+
+            changeEditorMode();
 
             sourceEditor.getModel().onDidChangeContent(function (e) {
                 currentLanguageId = parseInt($selectLanguage.val());
                 isEditorDirty = sourceEditor.getValue() != sources[currentLanguageId];
             });
+
+            sourceEditor.onDidLayoutChange(resizeEditor);
         });
 
         layout.registerComponent("stdin", function (container, state) {
@@ -482,7 +525,10 @@ $(document).ready(function () {
                 theme: "vs-dark",
                 scrollBeyondLastLine: false,
                 readOnly: state.readOnly,
-                language: "plaintext"
+                language: "plaintext",
+                minimap: {
+                    enabled: false
+                }
             });
         });
 
@@ -492,7 +538,10 @@ $(document).ready(function () {
                 theme: "vs-dark",
                 scrollBeyondLastLine: false,
                 readOnly: state.readOnly,
-                language: "plaintext"
+                language: "plaintext",
+                minimap: {
+                    enabled: false
+                }
             });
 
             container.on("tab", function(tab) {
@@ -509,7 +558,10 @@ $(document).ready(function () {
                 theme: "vs-dark",
                 scrollBeyondLastLine: false,
                 readOnly: state.readOnly,
-                language: "plaintext"
+                language: "plaintext",
+                minimap: {
+                    enabled: false
+                }
             });
 
             container.on("tab", function(tab) {
@@ -526,7 +578,10 @@ $(document).ready(function () {
                 theme: "vs-dark",
                 scrollBeyondLastLine: false,
                 readOnly: state.readOnly,
-                language: "plaintext"
+                language: "plaintext",
+                minimap: {
+                    enabled: false
+                }
             });
 
             container.on("tab", function(tab) {
@@ -543,7 +598,10 @@ $(document).ready(function () {
                 theme: "vs-dark",
                 scrollBeyondLastLine: false,
                 readOnly: state.readOnly,
-                language: "plaintext"
+                language: "plaintext",
+                minimap: {
+                    enabled: false
+                }
             });
 
             container.on("tab", function(tab) {
@@ -555,12 +613,14 @@ $(document).ready(function () {
         });
 
         layout.on("initialised", function () {
+            $(".monaco-editor")[0].appendChild($("#editor-status-line")[0]);
             if (getIdFromURI()) {
                 loadSavedSource();
             } else {
                 loadRandomLanguage();
             }
             $("#site-navigation").css("border-bottom", "1px solid black");
+            sourceEditor.focus();
         });
 
         layout.init();
