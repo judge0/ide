@@ -8,6 +8,8 @@ var blinkStatusLine = ((localStorageGetItem("blink") || "true") === "true");
 var editorMode = localStorageGetItem("editorMode") || "normal";
 var editorModeObject = null;
 
+var fontSize = 14;
+
 var MonacoVim;
 var MonacoEmacs;
 
@@ -441,6 +443,15 @@ function resolveApiUrl(id) {
     return languageApiUrlTable[id] || defaultUrl;
 }
 
+function editorsUpdateFontSize(fontSize) {
+    sourceEditor.updateOptions({fontSize: fontSize});
+    stdinEditor.updateOptions({fontSize: fontSize});
+    stdoutEditor.updateOptions({fontSize: fontSize});
+    stderrEditor.updateOptions({fontSize: fontSize});
+    compileOutputEditor.updateOptions({fontSize: fontSize});
+    sandboxMessageEditor.updateOptions({fontSize: fontSize});
+}
+
 $(window).resize(function() {
     layout.updateSize();
 });
@@ -512,6 +523,14 @@ $(document).ready(function () {
         } else if (event.ctrlKey && keyCode == 83) { // Ctrl+S
             e.preventDefault();
             save();
+        } else if (event.ctrlKey && keyCode == 107) { // Ctrl++
+            e.preventDefault();
+            fontSize += 1;
+            editorsUpdateFontSize(fontSize);
+        } else if (event.ctrlKey && keyCode == 109) { // Ctrl+-
+            e.preventDefault();
+            fontSize -= 1;
+            editorsUpdateFontSize(fontSize);
         }
     });
 
