@@ -818,7 +818,9 @@ var sources = {
     43: textSource,
     44: executableSource,
     45: vSource,
-    46: nimSource
+    46: nimSource,
+    47: cSource,
+    48: cppSource,
 };
 
 var fileNames = {
@@ -867,15 +869,21 @@ var fileNames = {
     43: "source.txt",
     44: "a.out",
     45: "main.v",
-    46: "main.nim"
+    46: "main.nim",
+    47: "main.c",
+    48: "main.cpp",
 };
 
 var languageIdTable = {
     45: 1,
-    46: 1
+    46: 1,
+    47: 1,
+    48: 2
 }
 
 var languageApiUrlTable = {
     45: "https://vlang.api.judge0.com",
-    46: "https://nim.api.judge0.com"
+    46: "https://nim.api.judge0.com",
+    47: "https://gcc.api.judge0.com",
+    48: "https://gcc.api.judge0.com"
 }
