@@ -1,4 +1,5 @@
-var apiUrl = localStorageGetItem("api-url") || "https://api.judge0.com";
+var defaultUrl = localStorageGetItem("api-url") || "https://api.judge0.com";
+var apiUrl = defaultUrl;
 var wait = localStorageGetItem("wait") || false;
 var pbUrl = "https://pb.judge0.com";
 var check_timeout = 200;
@@ -324,7 +325,7 @@ function run() {
 
     var sourceValue = encode(sourceEditor.getValue());
     var stdinValue = encode(stdinEditor.getValue());
-    var languageId = $selectLanguage.val();
+    var languageId = resolveLanguageId($selectLanguage.val());
     var compilerOptions = $compilerOptions.val();
     var commandLineArguments = $commandLineArguments.val();
 
@@ -379,6 +380,8 @@ function changeEditorLanguage() {
     monaco.editor.setModelLanguage(sourceEditor.getModel(), $selectLanguage.find(":selected").attr("mode"));
     currentLanguageId = parseInt($selectLanguage.val());
     $(".lm_title")[0].innerText = fileNames[currentLanguageId];
+    apiUrl = resolveApiUrl($selectLanguage.val());
+    showApiUrl();
 }
 
 function insertTemplate() {
@@ -389,6 +392,8 @@ function insertTemplate() {
 
 function loadRandomLanguage() {
     $selectLanguage.dropdown("set selected", Math.floor(Math.random() * $selectLanguage[0].length));
+    apiUrl = resolveApiUrl($selectLanguage.val());
+    showApiUrl();
     insertTemplate();
 }
 
@@ -424,6 +429,16 @@ function changeEditorMode() {
         });
         editorModeObject.start();
     }
+}
+
+function resolveLanguageId(id) {
+    id = parseInt(id);
+    return languageIdTable[id] || id;
+}
+
+function resolveApiUrl(id) {
+    id = parseInt(id);
+    return languageApiUrlTable[id] || defaultUrl;
 }
 
 $(window).resize(function() {
@@ -742,6 +757,15 @@ Content of compiled binary is Base64 encoded and used as source code.\n\
 https://ide.judge0.com/?kS_f\n\
 ";
 
+// Sources from external languages.
+var vSource = "\
+fn main() {\n\
+    println('hello, world')\n\
+}\n\
+";
+
+var nimSource = "echo \"hello, world\"";
+
 var sources = {
     1: bashSource,
     2: bashSource,
@@ -787,6 +811,8 @@ var sources = {
     42: rustSource,
     43: textSource,
     44: executableSource,
+    45: vSource,
+    46: nimSource
 };
 
 var fileNames = {
@@ -833,5 +859,17 @@ var fileNames = {
     41: "main.rb",
     42: "main.rs",
     43: "source.txt",
-    44: "a.out"
+    44: "a.out",
+    45: "main.v",
+    46: "main.nim"
 };
+
+var languageIdTable = {
+    45: 1,
+    46: 1
+}
+
+var languageApiUrlTable = {
+    45: "https://vlang.api.judge0.com",
+    46: "https://nim.api.judge0.com"
+}
