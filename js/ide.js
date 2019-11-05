@@ -535,12 +535,13 @@ $(document).ready(function () {
             sourceEditor = monaco.editor.create(container.getElement()[0], {
                 automaticLayout: true,
                 theme: "vs-dark",
-                scrollBeyondLastLine: false,
+                scrollBeyondLastLine: true,
                 readOnly: state.readOnly,
                 language: "cpp",
                 minimap: {
                     enabled: false
-                }
+                },
+                rulers: [80, 120]
             });
 
             changeEditorMode();
@@ -759,12 +760,17 @@ https://ide.judge0.com/?kS_f\n\
 
 // Sources from external languages.
 var vSource = "\
+// On the Judge0 IDE, V is automatically\n\
+// updated every hour to the latest version.\n\
 fn main() {\n\
     println('hello, world')\n\
 }\n\
 ";
 
-var nimSource = "echo \"hello, world\"";
+var nimSource = "\
+# On the Judge0 IDE, Nim is automatically\n\
+# updated every day to the latest stable version.\n\
+echo \"hello, world\"";
 
 var sources = {
     1: bashSource,
