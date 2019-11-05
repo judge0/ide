@@ -331,7 +331,7 @@ function run() {
     var compilerOptions = $compilerOptions.val();
     var commandLineArguments = $commandLineArguments.val();
 
-    if (languageId === "44") {
+    if (parseInt(languageId) === 44) {
         sourceValue = sourceEditor.getValue();
     }
 
