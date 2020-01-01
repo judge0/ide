@@ -18,7 +18,7 @@ body {
 }
 
 .ui.selection.dropdown {
-    width: 300px;
+    width: 205px;
 }
 
 .lm_header .lm_tab {
@@ -67,7 +67,7 @@ body {
     color: #db2828;
 }
 
-#site-footer, #status-line {
+#site-footer, #status-line, #donate-line {
     background-color: #0E6EB8;
     bottom: 0;
     font-family: "Droid Sans Mono", monospace, monospace, "Droid Sans Fallback";
@@ -92,6 +92,13 @@ body {
 
 #site-footer a:hover {
     color: #a0d2f8;
+}
+
+#donate-line {
+    float: left;
+    left: 0;
+    text-align: left;
+    width: fit-content;
 }
 
 #status-line {

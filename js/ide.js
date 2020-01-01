@@ -682,9 +682,32 @@ $(document).ready(function () {
 });
 
 // Template Sources
-var bashSource = "echo \"hello, world\"\n";
+var assemblySource = "\
+section	.text\n\
+    global _start\n\
+\n\
+_start:\n\
+\n\
+    xor	eax, eax\n\
+    lea	edx, [rax+len]\n\
+    mov	al, 1\n\
+    mov	esi, msg\n\
+    mov	edi, eax\n\
+    syscall\n\
+\n\
+    xor	edi, edi\n\
+    lea	eax, [rdi+60]\n\
+    syscall\n\
+\n\
+section	.rodata\n\
+\n\
+msg	db 'hello, world', 0xa\n\
+len	equ	$ - msg\n\
+";
 
-var basicSource = "PRINT \"hello, world\"\n";
+var bashSource = "echo \"hello, world\"";
+
+var basicSource = "PRINT \"hello, world\"";
 
 var cSource = "\
 #include <stdio.h>\n\
@@ -692,7 +715,16 @@ var cSource = "\
 int main(void) {\n\
     printf(\"hello, world\\n\");\n\
     return 0;\n\
-}\n";
+}\n\
+";
+
+var csharpSource = "\
+public class Hello {\n\
+    public static void Main() {\n\
+        System.Console.WriteLine(\"hello, world\");\n\
+    }\n\
+}\n\
+";
 
 var cppSource = "\
 #include <iostream>\n\
@@ -700,70 +732,26 @@ var cppSource = "\
 int main() {\n\
     std::cout << \"hello, world\" << std::endl;\n\
     return 0;\n\
-}\n";
+}\n\
+";
 
-var csharpSource = "\
-public class Hello {\n\
-    public static void Main() {\n\
-        System.Console.WriteLine(\"hello, world\");\n\
-    }\n\
-}\n";
+var lispSource = "(write-line \"hello, world\")";
 
-var clojureSource = "(println \"hello, world\")\n";
+var dSource = "\
+import std.stdio;\n\
+\n\
+void main()\n\
+{\n\
+    writeln(\"hello, world\");\n\
+}\n\
+";
 
-var crystalSource = "puts \"hello, world\"\n";
-
-var elixirSource = "IO.puts \"hello, world\"\n";
+var elixirSource = "IO.puts \"hello, world\"";
 
 var erlangSource = "\
 main(_) ->\n\
-    io:fwrite(\"hello, world\\n\").\n";
-
-var goSource = "\
-package main\n\
-\n\
-import \"fmt\"\n\
-\n\
-func main() {\n\
-    fmt.Println(\"hello, world\")\n\
-}\n";
-
-var haskellSource = "main = putStrLn \"hello, world\"\n";
-
-var insectSource = "\
-2 min + 30 s\n\
-40 kg * 9.8 m/s^2 * 150 cm\n\
-sin(30°)\n";
-
-var javaSource = "\
-public class Main {\n\
-    public static void main(String[] args) {\n\
-        System.out.println(\"hello, world\");\n\
-    }\n\
-}\n";
-
-var javaScriptSource = "console.log(\"hello, world\");\n";
-
-var ocamlSource = "print_endline \"hello, world\";;\n";
-
-var octaveSource = "printf(\"hello, world\\n\");\n";
-
-var pascalSource = "\
-program Hello;\n\
-begin\n\
-    writeln ('hello, world')\n\
-end.\n";
-
-var pythonSource = "print(\"hello, world\")\n";
-
-var rubySource = "puts \"hello, world\"\n";
-
-var rustSource = "\
-fn main() {\n\
-    println!(\"hello, world\");\n\
-}\n"
-
-var textSource = "hello, world\n";
+    io:fwrite(\"hello, world\\n\").\n\
+";
 
 var executableSource = "\
 Judge0 IDE assumes that content of executable is Base64 encoded.\n\
@@ -777,7 +765,78 @@ Content of compiled binary is Base64 encoded and used as source code.\n\
 https://ide.judge0.com/?kS_f\n\
 ";
 
-// Sources from external languages.
+var fortranSource = "\
+program main\n\
+    print *, \"hello, world\"\n\
+end\n\
+";
+
+var goSource = "\
+package main\n\
+\n\
+import \"fmt\"\n\
+\n\
+func main() {\n\
+    fmt.Println(\"hello, world\")\n\
+}\n\
+";
+
+var haskellSource = "main = putStrLn \"hello, world\"";
+
+var javaSource = "\
+public class Main {\n\
+    public static void main(String[] args) {\n\
+        System.out.println(\"hello, world\");\n\
+    }\n\
+}\n\
+";
+
+var javaScriptSource = "console.log(\"hello, world\");";
+
+var luaSource = "print(\"hello, world\")";
+
+var nimSource = "\
+# On the Judge0 IDE, Nim is automatically\n\
+# updated every day to the latest stable version.\n\
+echo \"hello, world\"\n\
+";
+
+var ocamlSource = "print_endline \"hello, world\"";
+
+var octaveSource = "printf(\"hello, world\\n\");";
+
+var pascalSource = "\
+program Hello;\n\
+begin\n\
+    writeln ('hello, world')\n\
+end.\n\
+";
+
+var phpSource = "\
+<?php\n\
+print(\"hello, world\\n\");\n\
+?>\n\
+";
+
+var plainTextSource = "hello, world\n";
+
+var prologSource = "\
+:- initialization(main).\n\
+main :- write('hello, world\\n').\n\
+";
+
+var pythonSource = "print(\"hello, world\")";
+
+var rubySource = "puts \"hello, world\"";
+
+var rustSource = "\
+fn main() {\n\
+    println!(\"hello, world\");\n\
+}\n\
+"
+
+var typescriptSource = "console.log(\"hello, world\");";
+
 var vSource = "\
 // On the Judge0 IDE, V is automatically\n\
 // updated every hour to the latest version.\n\
@@ -786,123 +845,86 @@ fn main() {\n\
 }\n\
 ";
 
-var nimSource = "\
-# On the Judge0 IDE, Nim is automatically\n\
-# updated every day to the latest stable version.\n\
-echo \"hello, world\"";
-
 var sources = {
-    1: bashSource,
-    2: bashSource,
-    3: basicSource,
-    4: cSource,
-    5: cSource,
-    6: cSource,
-    7: cSource,
-    8: cSource,
-    9: cSource,
-    10: cppSource,
-    11: cppSource,
-    12: cppSource,
-    13: cppSource,
-    14: cppSource,
-    15: cppSource,
-    16: csharpSource,
-    17: csharpSource,
-    18: clojureSource,
-    19: crystalSource,
-    20: elixirSource,
-    21: erlangSource,
-    22: goSource,
-    23: haskellSource,
-    24: haskellSource,
-    25: insectSource,
-    26: javaSource,
-    27: javaSource,
-    28: javaSource,
-    29: javaScriptSource,
-    30: javaScriptSource,
-    31: ocamlSource,
-    32: octaveSource,
-    33: pascalSource,
-    34: pythonSource,
-    35: pythonSource,
-    36: pythonSource,
-    37: pythonSource,
-    38: rubySource,
-    39: rubySource,
-    40: rubySource,
-    41: rubySource,
-    42: rustSource,
-    43: textSource,
+    45: assemblySource,
+    46: bashSource,
+    47: basicSource,
+    48: cSource,
+    49: cSource,
+    50: cSource,
+    51: csharpSource,
+    52: cppSource,
+    53: cppSource,
+    54: cppSource,
+    55: lispSource,
+    56: dSource,
+    57: elixirSource,
+    58: erlangSource,
     44: executableSource,
-    45: vSource,
-    46: nimSource,
-    47: cSource,
-    48: cppSource,
+    59: fortranSource,
+    60: goSource,
+    61: haskellSource,
+    62: javaSource,
+    63: javaScriptSource,
+    64: luaSource,
+    1000: nimSource,
+    65: ocamlSource,
+    66: octaveSource,
+    67: pascalSource,
+    68: phpSource,
+    43: plainTextSource,
+    69: prologSource,
+    70: pythonSource,
+    71: pythonSource,
+    72: rubySource,
+    73: rustSource,
+    74: typescriptSource,
+    1001: vSource
 };
 
 var fileNames = {
-    1: "script.sh",
-    2: "script.sh",
-    3: "main.bas",
-    4: "main.c",
-    5: "main.c",
-    6: "main.c",
-    7: "main.c",
-    8: "main.c",
-    9: "main.c",
-    10: "main.cpp",
-    11: "main.cpp",
-    12: "main.cpp",
-    13: "main.cpp",
-    14: "main.cpp",
-    15: "main.cpp",
-    16: "Main.cs",
-    17: "Main.cs",
-    18: "main.clj",
-    19: "main.cr",
-    20: "main.exs",
-    21: "main.erl",
-    22: "main.go",
-    23: "main.hs",
-    24: "main.hs",
-    25: "main.ins",
-    26: "Main.java",
-    27: "Main.java",
-    28: "Main.java",
-    29: "main.js",
-    30: "main.js",
-    31: "main.ml",
-    32: "file.m",
-    33: "main.pas",
-    34: "main.py",
-    35: "main.py",
-    36: "main.py",
-    37: "main.py",
-    38: "main.rb",
-    39: "main.rb",
-    40: "main.rb",
-    41: "main.rb",
-    42: "main.rs",
-    43: "source.txt",
+    45: "main.asm",
+    46: "script.sh",
+    47: "main.bas",
+    48: "main.c",
+    49: "main.c",
+    50: "main.c",
+    51: "Main.cs",
+    52: "main.cpp",
+    53: "main.cpp",
+    54: "main.cpp",
+    55: "script.lisp",
+    56: "main.d",
+    57: "script.exs",
+    58: "main.erl",
     44: "a.out",
-    45: "main.v",
-    46: "main.nim",
-    47: "main.c",
-    48: "main.cpp",
+    59: "main.f90",
+    60: "main.go",
+    61: "main.hs",
+    62: "Main.java",
+    63: "script.js",
+    64: "script.lua",
+    1000: "main.nim",
+    65: "main.ml",
+    66: "script.m",
+    67: "main.pas",
+    68: "script.php",
+    43: "text.txt",
+    69: "main.pro",
+    70: "script.py",
+    71: "script.py",
+    72: "script.rb",
+    73: "main.rs",
+    74: "script.ts",
+    1001: "main.v"
 };
 
 var languageIdTable = {
-    45: 1,
-    46: 1,
-    47: 1,
-    48: 2
+    1000: 1,
+    1001: 1
 }
 
 var languageApiUrlTable = {
-    45: "https://vlang.api.judge0.com",
-    46: "https://nim.api.judge0.com",
-    47: "https://gcc.api.judge0.com",
-    48: "https://gcc.api.judge0.com"
+    1000: "https://nim.api.judge0.com",
+    1001: "https://vlang.api.judge0.com"
 }

@@ -68,54 +68,40 @@
             <div class="link item" onclick="$('#site-settings').modal('show')"><i class="cog icon"></i> Settings</div>
             <div class="item borderless">
                 <select id="select-language" class="ui dropdown">
-                    <option value="1" mode="shell">Bash (4.4)</option>
-                    <option value="2" mode="shell">Bash (4.0)</option>
-                    <option value="3" mode="text/x-pascal">Basic (fbc 1.05.0)</option>
-                    <option value="47" mode="c">C (gcc 9.2.0)</option>
-                    <option value="4" mode="c">C (gcc 7.2.0)</option>
-                    <option value="5" mode="c">C (gcc 6.4.0)</option>
-                    <option value="6" mode="c">C (gcc 6.3.0)</option>
-                    <option value="7" mode="c">C (gcc 5.4.0)</option>
-                    <option value="8" mode="c">C (gcc 4.9.4)</option>
-                    <option value="9" mode="c">C (gcc 4.8.5)</option>
-                    <option value="48" mode="cpp">C++ (g++ 9.2.0)</option>
-                    <option value="10" mode="cpp">C++ (g++ 7.2.0)</option>
-                    <option value="11" mode="cpp">C++ (g++ 6.4.0)</option>
-                    <option value="12" mode="cpp">C++ (g++ 6.3.0)</option>
-                    <option value="13" mode="cpp">C++ (g++ 5.4.0)</option>
-                    <option value="14" mode="cpp">C++ (g++ 4.9.4)</option>
-                    <option value="15" mode="cpp">C++ (g++ 4.8.5)</option>
-                    <option value="16" mode="csharp">C# (mono 5.4.0.167)</option>
-                    <option value="17" mode="csharp">C# (mono 5.2.0.224)</option>
-                    <option value="18" mode="clojure">Clojure (1.8.0)</option>
-                    <option value="19" mode="text/x-crystal">Crystal (0.23.1)</option>
-                    <option value="20" mode="text/x-elixir">Elixir (1.5.1)</option>
-                    <option value="21" mode="text/x-erlang">Erlang (OTP 20.0)</option>
-                    <option value="22" mode="go">Go (1.9)</option>
-                    <option value="23" mode="text/x-haskell">Haskell (ghc 8.2.1)</option>
-                    <option value="24" mode="text/x-haskell">Haskell (ghc 8.0.2)</option>
-                    <option value="25" mode="plaintext">Insect (5.0.0)</option>
-                    <option value="26" mode="java">Java (OpenJDK 9 with Eclipse OpenJ9)</option>
-                    <option value="27" mode="java">Java (OpenJDK 8)</option>
-                    <option value="28" mode="java">Java (OpenJDK 7)</option>
-                    <option value="29" mode="javascript">JavaScript (nodejs 8.5.0)</option>
-                    <option value="30" mode="javascript">JavaScript (nodejs 7.10.1)</option>
-                    <option value="46" mode="python">Nim (stable)</option>
-                    <option value="31" mode="text/x-ocaml">OCaml (4.05.0)</option>
-                    <option value="32" mode="text/x-octave">Octave (4.2.0)</option>
-                    <option value="33" mode="pascal">Pascal (fpc 3.0.0)</option>
-                    <option value="34" mode="python">Python (3.6.0)</option>
-                    <option value="35" mode="python">Python (3.5.3)</option>
-                    <option value="36" mode="python">Python (2.7.9)</option>
-                    <option value="37" mode="python">Python (2.6.9)</option>
-                    <option value="38" mode="ruby">Ruby (2.4.0)</option>
-                    <option value="39" mode="ruby">Ruby (2.3.3)</option>
-                    <option value="40" mode="ruby">Ruby (2.2.6)</option>
-                    <option value="41" mode="ruby">Ruby (2.1.9)</option>
-                    <option value="42" mode="rust">Rust (1.20.0)</option>
-                    <option value="43" mode="plaintext">Text (plain text)</option>
-                    <option value="45" mode="rust">V (latest)</option>
+                    <option value="45" mode="UNKNOWN">Assembly (NASM 2.14.02)</option> <!-- Unknown mode. Help needed. -->
+                    <option value="46" mode="shell">Bash (5.0.0)</option>
+                    <option value="47" mode="UNKNOWN">Basic (FBC 1.07.1)</option> <!-- Unknown mode. Help needed. -->
+                    <option value="48" mode="c">C (GCC 7.4.0)</option>
+                    <option value="49" mode="c">C (GCC 8.3.0)</option>
+                    <option value="50" mode="c">C (GCC 9.2.0)</option>
+                    <option value="51" mode="csharp">C# (Mono 6.6.0.161)</option>
+                    <option value="52" mode="cpp">C++ (GCC 7.4.0)</option>
+                    <option value="53" mode="cpp">C++ (GCC 8.3.0)</option>
+                    <option value="54" mode="cpp">C++ (GCC 9.2.0)</option>
+                    <option value="55" mode="UNKNOWN">Common Lisp (SBCL 2.0.0)</option> <!-- Unknown mode. Help needed. -->
+                    <option value="56" mode="UNKNOWN">D (DMD 2.089.1)</option> <!-- Unknown mode. Help needed. -->
+                    <option value="57" mode="UNKNOWN">Elixir (1.9.4)</option> <!-- Unknown mode. Help needed. -->
+                    <option value="58" mode="UNKNOWN">Erlang (OTP 22.2)</option> <!-- Unknown mode. Help needed. -->
                     <option value="44" mode="plaintext">Executable</option>
+                    <option value="59" mode="UNKNOWN">Fortran (GFortran 9.2.0)</option> <!-- Unknown mode. Help needed. -->
+                    <option value="60" mode="go">Go (1.13.5)</option>
+                    <option value="61" mode="UNKNOWN">Haskell (GHC 8.8.1)</option> <!-- Unknown mode. Help needed. -->
+                    <option value="62" mode="java">Java (OpenJDK 13.0.1)</option>
+                    <option value="63" mode="javascript">JavaScript (Node.js 12.14.0)</option>
+                    <option value="64" mode="lua">Lua (5.3.5)</option>
+                    <option value="1000" mode="python">Nim (stable)</option> <!-- Replacement mode. Help needed. -->
+                    <option value="65" mode="UNKNOWN">OCaml (4.09.0)</option> <!-- Unknown mode. Help needed. -->
+                    <option value="66" mode="UNKNOWN">Octave (5.1.0)</option> <!-- Unknown mode. Help needed. -->
+                    <option value="67" mode="pascal">Pascal (FPC 3.0.4)</option>
+                    <option value="68" mode="php">PHP (7.4.1)</option>
+                    <option value="43" mode="plaintext">Plain Text</option>
+                    <option value="69" mode="UNKNOWN">Prolog (GNU Prolog 1.4.5)</option> <!-- Unknown mode. Help needed. -->
+                    <option value="70" mode="python">Python (2.7.17)</option>
+                    <option value="71" mode="python">Python (3.8.1)</option>
+                    <option value="72" mode="ruby">Ruby (2.7.0)</option>
+                    <option value="73" mode="rust">Rust (1.40.0)</option>
+                    <option value="74" mode="rust">TypeScript (3.7.4)</option>
+                    <option value="1001" mode="rust">V (latest)</option> <!-- Replacement mode. Help needed. -->
                 </select>
             </div>
             <div class="item fitted borderless">
@@ -142,6 +128,9 @@
                     <a class="item" target="_blank" href="https://www.patreon.com/hermanzdosilovic"><i
                             class="patreon icon"></i>
                         Become a Patron</a>
+                    <a class="item" target="_blank" href="https://www.paypal.me/hermanzdosilovic"><i
+                            class="paypal icon"></i>
+                        Donate with PayPal</a>
                     <div class="divider"></div>
                     <a class="item" target="_blank" href="https://github.com/judge0/ide"><i class="github icon"></i>
                         View source
@@ -234,9 +223,14 @@
     </div>
 
     <div id="site-footer">
+        <span id="donate-line">
+            <a class="item" target="_blank" href="https://www.patreon.com/hermanzdosilovic"><i class="patreon icon" style="color: #f06553;"></i> Become a Patron</a>
+            ·
+            <a class="item" target="_blank" href="https://www.paypal.me/hermanzdosilovic"><i class="paypal icon" style="color: #00457c;"></i></i> Donate with PayPal</a>
+        </span>
         <div id="editor-status-line"></div>
-        <span>© 2017-2019 <a href="https://judge0.com">Judge0</a> | Powered by <a href="https://api.judge0.com">Judge0
-                API</a> | Source code available on <a href="https://github.com/judge0/ide">GitHub</a></span>
+        <span>© 2016-2020 <a href="https://judge0.com">Judge0</a> · Powered by <a href="https://api.judge0.com">Judge0
+                API</a> · Source code available on <a href="https://github.com/judge0/ide">GitHub</a></span>
         <span id="status-line"></span>
     </div>
 </body>
