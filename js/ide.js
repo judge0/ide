@@ -393,7 +393,11 @@ function insertTemplate() {
 }
 
 function loadRandomLanguage() {
-    $selectLanguage.dropdown("set selected", Math.floor(Math.random() * $selectLanguage[0].length));
+    var values = [];
+    for (var i = 0; i < $selectLanguage[0].options.length; ++i) {
+        values.push($selectLanguage[0].options[i].value);
+    }
+    $selectLanguage.dropdown("set selected", values[Math.floor(Math.random() * $selectLanguage[0].length)]);
     apiUrl = resolveApiUrl($selectLanguage.val());
     showApiUrl();
     insertTemplate();
