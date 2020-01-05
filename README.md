@@ -1,9 +1,13 @@
 # Judge0 IDE
 [![Judge0 IDE Screenshot](https://github.com/judge0/ide/blob/master/.github/screenshot.png?raw=true)](https://ide.judge0.com/?7U55)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-lightgray.svg)](https://github.com/judge0/ide/blob/master/LICENSE)
-[![Become a Patron](https://img.shields.io/badge/Donate-Patreon-orange)](https://www.patreon.com/hermanzdosilovic)
-[![Donate with PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/hermanzdosilovic)
+[![License](https://img.shields.io/github/license/judge0/ide?color=2185d0&style=flat-square)](https://github.com/judge0/ide/blob/master/LICENSE)
+[![Release](https://img.shields.io/github/v/release/judge0/ide?color=2185d0&style=flat-square)](https://github.com/judge0/ide/releases)
+[![Stars](https://img.shields.io/github/stars/judge0/ide?color=2185d0&style=flat-square)](https://github.com/judge0/ide/stargazers)
+
+<a href="https://www.producthunt.com/posts/judge0-ide" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=179885&theme=light" alt="" height="43px" /></a>
+<a href="https://patreon.com/hermanzdosilovic" target="_blank"><img src="https://c5.patreon.com/external/logo/become_a_patron_button@2x.png" alt="" height="43px" /></a>
+<a href="https://paypal.me/hermanzdosilovic" target="_blank"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" alt="Donate with PayPal" height="43px" /></a>
 
 ## About
 [**Judge0 IDE**](https://ide.judge0.com) is a free and open-source online code editor that allows you to write and execute code from a rich set of languages. It's perfect for anybody who just wants to quickly write and run some code without opening a full-featured IDE on their computer. Moreover, it is also useful for teaching and learning or just trying out a new language.
@@ -18,7 +22,7 @@ Or you just want to follow Judge0 news?
 Check out these links:
 
 * [Subscribe to Judge0 news](https://judge0.com/#subscribe)
-* [Join a Discord server](https://discordapp.com/invite/e43pb7B)
+* [Join a Discord server](https://discord.gg/6dvxeA8)
 * [Report an issue](https://github.com/judge0/ide/issues/new)
 * [Contact the author](https://github.com/hermanzdosilovic)
 
@@ -28,10 +32,10 @@ Judge0 IDE was created by [Herman Zvonimir Došilović](https://github.com/herma
 Thanks a lot to all [contributors](https://github.com/judge0/ide/graphs/contributors) for their contributions in this project.
 
 ## Supporters
-Thanks a lot to all my [Patrons](https://www.patreon.com/hermanzdosilovic) and [PayPal](https://www.paypal.me/hermanzdosilovic) donors that helped me keep Judge0 IDE free for everybody around the World. Thank you ♥
+Thanks a lot to all my [Patrons](https://www.patreon.com/hermanzdosilovic) and [PayPal](https://paypal.me/hermanzdosilovic) donors that helped me keep Judge0 IDE free for everybody around the World. Thank you ♥
 
 ## Donate
-Your are more than welcome to support Judge0 on [Patreon](https://www.patreon.com/hermanzdosilovic) or via [PayPal](https://www.paypal.me/hermanzdosilovic). Your monthly or one-time donation will help pay server costs and will improve future development and maintenance. Thank you ♥
+Your are more than welcome to support Judge0 on [Patreon](https://www.patreon.com/hermanzdosilovic) or via [PayPal](https://paypal.me/hermanzdosilovic). Your monthly or one-time donation will help pay server costs and will improve future development and maintenance. Thank you ♥
 
 ## License
 Judge0 IDE is licensed under the [MIT License](https://github.com/judge0/ide/blob/master/LICENSE).
