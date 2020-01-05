@@ -56,14 +56,14 @@ body {
     100% { transform: translateX(-100%); }
 }
 
-.text {
+.navigation-message-text {
     white-space: nowrap;
     -moz-animation: slide 60s linear infinite;
     -webkit-animation: slide 60s linear infinite;
     animation: slide 60s linear infinite;
 }
 
-.text:hover {
+.navigation-message-text:hover {
     -moz-animation-play-state: paused;
     -webkit-animation-play-state: paused;
     animation-play-state: paused;
