@@ -30,10 +30,14 @@ var $compilerOptions;
 var $commandLineArguments;
 var $insertTemplateBtn;
 var $runBtn;
+var $navigationMessage;
+var $about;
 var $statusLine;
 
 var timeStart;
 var timeEnd;
+
+var messagesData;
 
 var layoutConfig = {
     settings: {
@@ -133,6 +137,44 @@ function localStorageGetItem(key) {
   } catch (ignorable) {
     return null;
   }
+}
+
+function showMessages() {
+    var width = $about.offset().left - parseFloat($about.css("padding-left")) -
+                $navigationMessage.parent().offset().left - parseFloat($navigationMessage.parent().css("padding-left")) - 5;
+
+    if (width < 200 || messagesData === undefined) {
+        return;
+    }
+
+    var messages = messagesData["messages"];
+
+    $navigationMessage.css("animation-duration", messagesData["duration"]);
+    $navigationMessage.parent().width(width - 5);
+
+    var combinedMessage = "";
+    for (var i = 0; i < messages.length; ++i) {
+        combinedMessage += `${messages[i]}`;
+        if (i != messages.length - 1) {
+            combinedMessage += "&nbsp".repeat(Math.min(200, messages[i].length));
+        }
+    }
+
+    $navigationMessage.html(combinedMessage);
+}
+
+function loadMessages() {
+    $.ajax({
+        url: "https://minio.judge0.com/public/messages.json",
+        type: "GET",
+        headers: {
+            "Accept": "application/json"
+        },
+        success: function (data, textStatus, jqXHR) {
+            messagesData = data;
+            showMessages();
+        }
+    });
 }
 
 function showApiUrl() {
@@ -258,11 +300,11 @@ function downloadSource() {
 }
 
 function loadSavedSource() {
-    snipped_id = getIdFromURI();
+    snippet_id = getIdFromURI();
 
-    if (snipped_id.length == 36) {
+    if (snippet_id.length == 36) {
         $.ajax({
-            url: apiUrl + "/submissions/" + snipped_id + "?fields=source_code,language_id,stdin,stdout,stderr,compile_output,message,time,memory,status,compiler_options,command_line_arguments&base64_encoded=true",
+            url: apiUrl + "/submissions/" + snippet_id + "?fields=source_code,language_id,stdin,stdout,stderr,compile_output,message,time,memory,status,compiler_options,command_line_arguments&base64_encoded=true",
             type: "GET",
             success: function(data, textStatus, jqXHR) {
                 sourceEditor.setValue(decode(data["source_code"]));
@@ -281,9 +323,9 @@ function loadSavedSource() {
             },
             error: handleRunError
         });
-    } else {
+    } else if (snippet_id.length == 4) {
         $.ajax({
-            url: pbUrl + "/" + snipped_id + ".json",
+            url: pbUrl + "/" + snippet_id + ".json",
             type: "GET",
             success: function (data, textStatus, jqXHR) {
                 sourceEditor.setValue(decode(data["source_code"]));
@@ -458,6 +500,7 @@ function editorsUpdateFontSize(fontSize) {
 
 $(window).resize(function() {
     layout.updateSize();
+    showMessages();
 });
 
 $(document).ready(function () {
@@ -487,6 +530,9 @@ $(document).ready(function () {
     $runBtn.click(function (e) {
         run();
     });
+
+    $navigationMessage = $("#navigation-message span");
+    $about = $("#about");
 
     $(`input[name="editor-mode"][value="${editorMode}"]`).prop("checked", true);
     $("input[name=\"editor-mode\"]").on("change", function(e) {
@@ -547,6 +593,7 @@ $(document).ready(function () {
     });
 
     showApiUrl();
+    loadMessages();
 
     require(["vs/editor/editor.main", "monaco-vim", "monaco-emacs"], function (ignorable, MVim, MEmacs) {
         layout = new GoldenLayout(layoutConfig, $("#site-content"));

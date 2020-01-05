@@ -41,6 +41,39 @@ body {
     height: 45px;
 }
 
+#navigation-message {
+    font-size: 1.2em;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+@keyframes slide {
+    0% { transform: translateX(570px); }
+    100% { transform: translateX(-100%); }
+}
+@-webkit-keyframes slide {
+    0% { transform: translateX(570px); }
+    100% { transform: translateX(-100%); }
+}
+
+.text {
+    white-space: nowrap;
+    -moz-animation: slide 60s linear infinite;
+    -webkit-animation: slide 60s linear infinite;
+    animation: slide 60s linear infinite;
+}
+
+.text:hover {
+    -moz-animation-play-state: paused;
+    -webkit-animation-play-state: paused;
+    animation-play-state: paused;
+}
+
+#navigation-message a {
+    color: #41a5f1;
+    font-weight: bold;
+}
+
 #site-icon {
     width: 30px;
     height: 30px;
@@ -149,4 +182,8 @@ body {
     height: 5px;
     right: 7.5px;
     top: 7.5px;
+}
+
+.no-left-padding {
+    padding-left: 0;
 }

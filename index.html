@@ -121,12 +121,15 @@
                     <input id="command-line-arguments" type="text" placeholder="Command line arguments"></input>
                 </div>
             </div>
-            <div class="item fitted borderless">
+            <div class="item no-left-padding borderless">
                 <button id="run-btn" class="ui primary labeled icon button"><i class="play icon"></i>Run (F9)</button>
+            </div>
+            <div id="navigation-message" class="item borderless">
+                <span class="text"></span>
             </div>
         </div>
         <div class="right menu">
-            <a class="link item" target="_blank" href="https://judge0.com/about"><i class="info circle icon"></i> About</a>
+            <a id="about" class="link item" target="_blank" href="https://judge0.com/about"><i class="info circle icon"></i> About</a>
             <a id="api-url" class="link item" target="_blank" href="https://api.judge0.com"><i class="server icon"></i> API</a>
             <div class="ui dropdown item site-links">
                 More
