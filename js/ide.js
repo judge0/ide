@@ -38,7 +38,7 @@ var timeEnd;
 var layoutConfig = {
     settings: {
         showPopoutIcon: false,
-        reorderEnabled: false
+        reorderEnabled: true
     },
     dimensions: {
         borderWidth: 3,
