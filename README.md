@@ -1,5 +1,5 @@
 # Judge0 IDE
-[![Judge0 IDE Wallpaper](https://github.com/judge0/ide/blob/master/.github/Judge0_IDE_1366x768.png)](https://ide.judge0.com/?7U55)
+[![Judge0 IDE Screenshot](https://github.com/judge0/ide/blob/master/.github/screenshot.png)](https://ide.judge0.com/?7U55)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgray.svg)](https://github.com/judge0/ide/blob/master/LICENSE)
 [![Become a Patron](https://img.shields.io/badge/Donate-Patreon-orange)](https://www.patreon.com/hermanzdosilovic)
