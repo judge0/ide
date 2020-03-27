@@ -165,7 +165,7 @@ function showMessages() {
 
 function loadMessages() {
     $.ajax({
-        url: "https://minio.judge0.com/public/messages.json",
+        url: `https://minio.judge0.com/public/messages.json?${Date.now()}`,
         type: "GET",
         headers: {
             "Accept": "application/json"
