@@ -25,6 +25,8 @@ Check out these links:
 * [Join a Discord server](https://discord.gg/6dvxeA8)
 * [Report an issue](https://github.com/judge0/ide/issues/new)
 * [Contact the author](https://github.com/hermanzdosilovic)
+* [Get free online support](https://judge0.appointlet.com)
+* [Schedule an online meeting with the author](https://judge0.appointlet.com)
 
 ## Author and Contributors
 Judge0 IDE was created by [Herman Zvonimir Došilović](https://github.com/hermanzdosilovic).
@@ -32,10 +34,10 @@ Judge0 IDE was created by [Herman Zvonimir Došilović](https://github.com/herma
 Thanks a lot to all [contributors](https://github.com/judge0/ide/graphs/contributors) for their contributions in this project.
 
 ## Supporters
-Thanks a lot to all my [Patrons](https://www.patreon.com/hermanzdosilovic) and [PayPal](https://paypal.me/hermanzdosilovic) donors that helped me keep Judge0 IDE free for everybody around the World. Thank you ♥
+Thanks a lot to all my [Patrons](https://www.patreon.com/hermanzdosilovic) and [PayPal](https://paypal.me/hermanzdosilovic) donors that helped me keep Judge0 IDE free for everybody around the World. Thank you! ♥
 
 ## Donate
-Your are more than welcome to support Judge0 on [Patreon](https://www.patreon.com/hermanzdosilovic) or via [PayPal](https://paypal.me/hermanzdosilovic). Your monthly or one-time donation will help pay server costs and will improve future development and maintenance. Thank you ♥
+Your are more than welcome to support Judge0 on [Patreon](https://www.patreon.com/hermanzdosilovic) or via [PayPal](https://paypal.me/hermanzdosilovic). Your monthly or one-time donation will help pay server costs and will improve future development and maintenance. Thank you! ♥
 
 ## License
 Judge0 IDE is licensed under the [MIT License](https://github.com/judge0/ide/blob/master/LICENSE).
