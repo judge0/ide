@@ -6,6 +6,7 @@ var check_timeout = 200;
 
 var blinkStatusLine = ((localStorageGetItem("blink") || "true") === "true");
 var editorMode = localStorageGetItem("editorMode") || "normal";
+var redirectStderrToStdout = ((localStorageGetItem("redirectStderrToStdout") || "true") === "true");
 var editorModeObject = null;
 
 var fontSize = 14;
@@ -382,7 +383,8 @@ function run() {
         language_id: languageId,
         stdin: stdinValue,
         compiler_options: compilerOptions,
-        command_line_arguments: commandLineArguments
+        command_line_arguments: commandLineArguments,
+        redirect_stderr_to_stdout: redirectStderrToStdout
     };
 
     timeStart = performance.now();
@@ -536,8 +538,6 @@ $(document).ready(function () {
 
     $(`input[name="editor-mode"][value="${editorMode}"]`).prop("checked", true);
     $("input[name=\"editor-mode\"]").on("change", function(e) {
-        $('#site-settings').modal('hide');
-
         editorMode = e.target.value;
         localStorageSetItem("editorMode", editorMode);
 
@@ -545,6 +545,12 @@ $(document).ready(function () {
         changeEditorMode();
 
         sourceEditor.focus();
+    });
+
+    $("input[name=\"redirect-output\"]").prop("checked", redirectStderrToStdout)
+    $("input[name=\"redirect-output\"]").on("change", function(e) {
+        redirectStderrToStdout = e.target.checked;
+        localStorageSetItem("redirectStderrToStdout", redirectStderrToStdout);
     });
 
     $statusLine = $("#status-line");
