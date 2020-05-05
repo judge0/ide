@@ -166,7 +166,7 @@ function showMessages() {
 
 function loadMessages() {
     $.ajax({
-        url: `https://minio.judge0.com/public/messages.json?${Date.now()}`,
+        url: `https://minio.judge0.com/public/ide/messages.json?${Date.now()}`,
         type: "GET",
         headers: {
             "Accept": "application/json"
@@ -387,23 +387,51 @@ function run() {
         redirect_stderr_to_stdout: redirectStderrToStdout
     };
 
-    timeStart = performance.now();
-    $.ajax({
-        url: apiUrl + `/submissions?base64_encoded=true&wait=${wait}`,
-        type: "POST",
-        async: true,
-        contentType: "application/json",
-        data: JSON.stringify(data),
-        success: function (data, textStatus, jqXHR) {
-            console.log(`Your submission token is: ${data.token}`);
-            if (wait == true) {
-                handleResult(data);
-            } else {
-                setTimeout(fetchSubmission.bind(null, data.token), check_timeout);
-            }
-        },
-        error: handleRunError
-    });
+    var sendRequest = function(data) {
+        timeStart = performance.now();
+        $.ajax({
+            url: apiUrl + `/submissions?base64_encoded=true&wait=${wait}`,
+            type: "POST",
+            async: true,
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            success: function (data, textStatus, jqXHR) {
+                console.log(`Your submission token is: ${data.token}`);
+                if (wait == true) {
+                    handleResult(data);
+                } else {
+                    setTimeout(fetchSubmission.bind(null, data.token), check_timeout);
+                }
+            },
+            error: handleRunError
+        });
+    }
+
+    var fetchAdditionalFiles = false;
+    if (parseInt(languageId) === 82) {
+        if (sqliteAdditionalFiles === "") {
+            fetchAdditionalFiles = true;
+            $.ajax({
+                url: `https://minio.judge0.com/public/ide/sqliteAdditionalFiles.base64.txt?${Date.now()}`,
+                type: "GET",
+                async: true,
+                contentType: "text/plain",
+                success: function (responseData, textStatus, jqXHR) {
+                    sqliteAdditionalFiles = responseData;
+                    data["additional_files"] = sqliteAdditionalFiles;
+                    sendRequest(data);
+                },
+                error: handleRunError
+            });
+        }
+        else {
+            data["additional_files"] = sqliteAdditionalFiles;
+        }
+    }
+
+    if (!fetchAdditionalFiles) {
+        sendRequest(data);
+    }
 }
 
 function fetchSubmission(submission_token) {
@@ -792,6 +820,14 @@ int main() {\n\
 }\n\
 ";
 
+var cobolSource = "\
+IDENTIFICATION DIVISION.\n\
+PROGRAM-ID. MAIN.\n\
+PROCEDURE DIVISION.\n\
+DISPLAY \"hello, world\".\n\
+STOP RUN.\n\
+";
+
 var lispSource = "(write-line \"hello, world\")";
 
 var dSource = "\
@@ -850,12 +886,26 @@ public class Main {\n\
 
 var javaScriptSource = "console.log(\"hello, world\");";
 
+var kotlinSource = "\
+fun main() {\n\
+    println(\"hello, world\")\n\
+}\n\
+";
+
 var luaSource = "print(\"hello, world\")";
 
-var nimSource = "\
-# On the Judge0 IDE, Nim is automatically\n\
-# updated every day to the latest stable version.\n\
-echo \"hello, world\"\n\
+var objectiveCSource = "\
+#import <Foundation/Foundation.h>\n\
+\n\
+int main() {\n\
+    @autoreleasepool {\n\
+        char name[10];\n\
+        scanf(\"%s\", name);\n\
+        NSString *message = [NSString stringWithFormat:@\"hello, %s\\n\", name];\n\
+        printf(\"%s\", message.UTF8String);\n\
+    }\n\
+    return 0;\n\
+}\n\
 ";
 
 var ocamlSource = "print_endline \"hello, world\"";
@@ -884,15 +934,59 @@ main :- write('hello, world\\n').\n\
 
 var pythonSource = "print(\"hello, world\")";
 
+var rSource = "cat(\"hello, world\\n\")";
+
 var rubySource = "puts \"hello, world\"";
 
 var rustSource = "\
 fn main() {\n\
     println!(\"hello, world\");\n\
 }\n\
-"
+";
+
+var scalaSource = "\
+object Main {\n\
+    def main(args: Array[String]) = {\n\
+        val name = scala.io.StdIn.readLine()\n\
+        println(\"hello, \"+ name)\n\
+    }\n\
+}\n\
+";
+
+var sqliteSource = "\
+-- On Judge0 IDE your SQL script is run on chinook database (https://www.sqlitetutorial.net/sqlite-sample-database).\n\
+-- For more information about how to use SQL with Judge0 API please\n\
+-- watch this asciicast: https://asciinema.org/a/326975.\n\
+SELECT\n\
+    Name, COUNT(*) AS num_albums\n\
+FROM artists JOIN albums\n\
+ON albums.ArtistID = artists.ArtistID\n\
+GROUP BY Name\n\
+ORDER BY num_albums DESC\n\
+LIMIT 4;\n\
+";
+var sqliteAdditionalFiles = "";
+
+var swiftSource = "\
+let name = readLine()\n\
+print(\"hello, \\(name!)\")\n\
+";
 
 var typescriptSource = "console.log(\"hello, world\");";
+
+var vbSource = "\
+Public Module Program\n\
+   Public Sub Main()\n\
+      Console.WriteLine(\"hello, world\")\n\
+   End Sub\n\
+End Module\n\
+";
+
+var nimSource = "\
+# On the Judge0 IDE, Nim is automatically\n\
+# updated every day to the latest stable version.\n\
+echo \"hello, world\"\n\
+";
 
 var vSource = "\
 // On the Judge0 IDE, V is automatically\n\
@@ -924,7 +1018,6 @@ var sources = {
     62: javaSource,
     63: javaScriptSource,
     64: luaSource,
-    1000: nimSource,
     65: ocamlSource,
     66: octaveSource,
     67: pascalSource,
@@ -936,6 +1029,17 @@ var sources = {
     72: rubySource,
     73: rustSource,
     74: typescriptSource,
+    75: cSource,
+    76: cppSource,
+    77: cobolSource,
+    78: kotlinSource,
+    79: objectiveCSource,
+    80: rSource,
+    81: scalaSource,
+    82: sqliteSource,
+    83: swiftSource,
+    84: vbSource,
+    1000: nimSource,
     1001: vSource
 };
 
@@ -961,7 +1065,6 @@ var fileNames = {
     62: "Main.java",
     63: "script.js",
     64: "script.lua",
-    1000: "main.nim",
     65: "main.ml",
     66: "script.m",
     67: "main.pas",
@@ -973,6 +1076,17 @@ var fileNames = {
     72: "script.rb",
     73: "main.rs",
     74: "script.ts",
+    75: "main.c",
+    76: "main.cpp",
+    77: "main.cob",
+    78: "Main.kt",
+    79: "main.m",
+    80: "script.r",
+    81: "Main.scala",
+    82: "script.sql",
+    83: "Main.swift",
+    84: "Main.vb",
+    1000: "main.nim",
     1001: "main.v"
 };
 
