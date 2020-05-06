@@ -6,7 +6,7 @@ var check_timeout = 200;
 
 var blinkStatusLine = ((localStorageGetItem("blink") || "true") === "true");
 var editorMode = localStorageGetItem("editorMode") || "normal";
-var redirectStderrToStdout = ((localStorageGetItem("redirectStderrToStdout") || "true") === "true");
+var redirectStderrToStdout = ((localStorageGetItem("redirectStderrToStdout") || "false") === "true");
 var editorModeObject = null;
 
 var fontSize = 14;
@@ -968,6 +968,7 @@ LIMIT 4;\n\
 var sqliteAdditionalFiles = "";
 
 var swiftSource = "\
+import Foundation\n\
 let name = readLine()\n\
 print(\"hello, \\(name!)\")\n\
 ";
