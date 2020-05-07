@@ -1019,6 +1019,7 @@ class MainTest {\n\
 ";
 
 var mpiccSource = "\
+// Try adding \"-n 5\" (without quotes) into command line arguments. \n\
 #include <mpi.h>\n\
 \n\
 #include <stdio.h>\n\
@@ -1042,6 +1043,7 @@ int main()\n\
 ";
 
 var mpicxxSource = "\
+// Try adding \"-n 5\" (without quotes) into command line arguments. \n\
 #include <mpi.h>\n\
 \n\
 #include <iostream>\n\
@@ -1066,6 +1068,7 @@ int main()\n\
 ";
 
 var mpipySource = "\
+# Try adding \"-n 5\" (without quotes) into command line arguments. \n\
 from mpi4py import MPI\n\
 \n\
 comm = MPI.COMM_WORLD\n\
