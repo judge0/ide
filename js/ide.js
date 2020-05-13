@@ -522,12 +522,22 @@ function editorsUpdateFontSize(fontSize) {
     sandboxMessageEditor.updateOptions({fontSize: fontSize});
 }
 
+function updateScreenElements() {
+    var display = window.innerWidth <= 1200 ? "none" : "";
+    $(".wide.screen.only").each(function(index) {
+        $(this).css("display", display);
+    });
+}
+
 $(window).resize(function() {
     layout.updateSize();
+    updateScreenElements();
     showMessages();
 });
 
 $(document).ready(function () {
+    updateScreenElements();
+
     console.log("Hey, Judge0 IDE is open-sourced: https://github.com/judge0/ide. Have fun!");
 
     $selectLanguage = $("#select-language");
