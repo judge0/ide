@@ -32,7 +32,7 @@ var $commandLineArguments;
 var $insertTemplateBtn;
 var $runBtn;
 var $navigationMessage;
-var $about;
+var $updates;
 var $statusLine;
 
 var timeStart;
@@ -141,7 +141,7 @@ function localStorageGetItem(key) {
 }
 
 function showMessages() {
-    var width = $about.offset().left - parseFloat($about.css("padding-left")) -
+    var width = $updates.offset().left - parseFloat($updates.css("padding-left")) -
                 $navigationMessage.parent().offset().left - parseFloat($navigationMessage.parent().css("padding-left")) - 5;
 
     if (width < 200 || messagesData === undefined) {
@@ -176,10 +176,6 @@ function loadMessages() {
             showMessages();
         }
     });
-}
-
-function showApiUrl() {
-    $("#api-url").attr("href", apiUrl);
 }
 
 function showError(title, content) {
@@ -455,7 +451,6 @@ function changeEditorLanguage() {
     currentLanguageId = parseInt($selectLanguage.val());
     $(".lm_title")[0].innerText = fileNames[currentLanguageId];
     apiUrl = resolveApiUrl($selectLanguage.val());
-    showApiUrl();
 }
 
 function insertTemplate() {
@@ -471,7 +466,6 @@ function loadRandomLanguage() {
     }
     $selectLanguage.dropdown("set selected", values[Math.floor(Math.random() * $selectLanguage[0].length)]);
     apiUrl = resolveApiUrl($selectLanguage.val());
-    showApiUrl();
     insertTemplate();
 }
 
@@ -562,7 +556,7 @@ $(document).ready(function () {
     });
 
     $navigationMessage = $("#navigation-message span");
-    $about = $("#about");
+    $updates = $("#updates");
 
     $(`input[name="editor-mode"][value="${editorMode}"]`).prop("checked", true);
     $("input[name=\"editor-mode\"]").on("change", function(e) {
@@ -597,7 +591,6 @@ $(document).ready(function () {
             if (url != null && url != "") {
                 apiUrl = url;
                 localStorageSetItem("api-url", apiUrl);
-                showApiUrl();
             }
         } else if (keyCode == 118) { // F7
             e.preventDefault();
@@ -626,7 +619,6 @@ $(document).ready(function () {
         $(this).closest(".message").transition("fade");
     });
 
-    showApiUrl();
     loadMessages();
 
     require(["vs/editor/editor.main", "monaco-vim", "monaco-emacs"], function (ignorable, MVim, MEmacs) {

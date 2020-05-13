@@ -129,6 +129,7 @@
                     <option value="84" mode="vb">Visual Basic.Net</option> <!-- (vbnc 0.0.0.5943) -->
                 </select>
             </div>
+
             <div class="item fitted borderless">
                 <div class="ui input">
                     <input id="compiler-options" type="text" placeholder="Compiler options"></input>
@@ -147,12 +148,15 @@
             </div>
         </div>
         <div class="right menu">
-            <a id="about" class="link item" target="_blank" href="https://judge0.com/about"><i class="info circle icon"></i> About</a>
-            <a id="api-url" class="link item" target="_blank" href="https://api.judge0.com"><i class="server icon"></i> API</a>
+            <div id="updates" class="link item changelogfy-widget">
+                <i class="fitted bell icon"></i>
+            </div>
             <div class="ui dropdown item site-links">
                 More
                 <i class="dropdown icon"></i>
                 <div class="menu">
+                    <a id="about" class="link item" target="_blank" href="https://judge0.com/about"><i class="info circle icon"></i> About</a>
+                    <div class="divider"></div>
                     <a class="item" target="_blank" href="https://www.patreon.com/hermanzdosilovic"><i
                             class="patreon icon"></i>
                         Become a Patron</a>
@@ -166,9 +170,9 @@
                     <a class="item" target="_blank" href="https://github.com/judge0/ide/issues/new"><i
                             class="exclamation circle icon"></i> Report an issue</a>
                     <div class="divider"></div>
-                    <a class="item" target="_blank" href="https://judge0.com/#subscribe"><i class="envelope icon"></i>
+                    <a class="item" target="_blank" href="https://forms.gle/p3KpGYSjxAbvGUft9"><i class="envelope icon"></i>
                         Subscribe
-                        to Judge0 news</a>
+                        to Judge0 newsletter</a>
                     <a class="item" target="_blank" href="https://discord.gg/6dvxeA8"><i
                             class="discord icon"></i> Join a Discord server</a>
                     <div class="divider"></div>
@@ -265,6 +269,13 @@
                 API</a> · Source code available on <a href="https://github.com/judge0/ide">GitHub</a></span>
         <span id="status-line"></span>
     </div>
+    <script>
+        let CLF_config = {
+            selector: ".changelogfy-widget",
+            app_id: "f6f982d0-3d91-4b1c-a3ce-b0eb54606c4e"
+        };
+    </script>
+    <script async src="https://widget.changelogfy.com/index.js"></script>
 </body>
 
 </html>

@@ -185,5 +185,9 @@ body {
 }
 
 .no-left-padding {
-    padding-left: 0;
+    padding-left: 0 !important;
+}
+
+input[type="text"] {
+    width: 205px !important;
 }
