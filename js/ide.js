@@ -250,7 +250,8 @@ function handleResult(data) {
 }
 
 function getIdFromURI() {
-  return location.search.substr(1).trim();
+  var uri = location.search.substr(1).trim();
+  return uri.split("&")[0];
 }
 
 function save() {
@@ -343,6 +344,8 @@ function loadSavedSource() {
                 loadRandomLanguage();
             }
         });
+    } else {
+        loadRandomLanguage();
     }
 }
 
