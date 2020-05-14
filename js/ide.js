@@ -1,4 +1,4 @@
-var defaultUrl = localStorageGetItem("api-url") || "https://preview.api.judge0.com";
+var defaultUrl = localStorageGetItem("api-url") || "https://api.judge0.com";
 var apiUrl = defaultUrl;
 var wait = localStorageGetItem("wait") || false;
 var pbUrl = "https://pb.judge0.com";
@@ -1219,7 +1219,7 @@ var languageIdTable = {
     1010: 10
 }
 
-var extraApiUrl = "https://preview.extra.api.judge0.com";
+var extraApiUrl = "https://extra.api.judge0.com";
 var languageApiUrlTable = {
     1001: extraApiUrl,
     1002: extraApiUrl,
