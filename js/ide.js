@@ -1099,6 +1099,54 @@ import sklearn\n\
 print(\"hello, world\")\n\
 ";
 
+var bosqueSource = "\
+// On the Judge0 IDE, Bosque (https://github.com/microsoft/BosqueLanguage)\n\
+// is automatically updated every hour to the latest commit on master branch.\n\
+\n\
+namespace NSMain;\n\
+\n\
+concept WithName {\n\
+    invariant $name != \"\";\n\
+\n\
+    field name: String;\n\
+}\n\
+\n\
+concept Greeting {\n\
+    abstract method sayHello(): String;\n\
+    \n\
+    virtual method sayGoodbye(): String {\n\
+        return \"goodbye\";\n\
+    }\n\
+}\n\
+\n\
+entity GenericGreeting provides Greeting {\n\
+    const instance: GenericGreeting = GenericGreeting@{};\n\
+\n\
+    override method sayHello(): String {\n\
+        return \"hello world\";\n\
+    }\n\
+}\n\
+\n\
+entity NamedGreeting provides WithName, Greeting {\n\
+    override method sayHello(): String {\n\
+        return String::concat(\"hello\", \" \", this.name);\n\
+    }\n\
+}\n\
+\n\
+entrypoint function main(arg?: String): String {\n\
+    var val = arg ?| \"\";\n\
+    if (val == \"1\") {\n\
+        return GenericGreeting@{}->sayHello();\n\
+    }\n\
+    elif (val == \"2\") {\n\
+        return GenericGreeting::instance->sayHello();\n\
+    }\n\
+    else {\n\
+        return NamedGreeting@{name=\"bob\"}->sayHello();\n\
+    }\n\
+}\n\
+";
+
 var sources = {
     45: assemblySource,
     46: bashSource,
@@ -1151,7 +1199,8 @@ var sources = {
     1007: mpicxxSource,
     1008: mpipySource,
     1009: nimSource,
-    1010: pythonForMlSource
+    1010: pythonForMlSource,
+    1011: bosqueSource
 };
 
 var fileNames = {
@@ -1206,7 +1255,8 @@ var fileNames = {
     1007: "main.cpp",
     1008: "script.py",
     1009: "main.nim",
-    1010: "script.py"
+    1010: "script.py",
+    1011: "main.bsq"
 };
 
 var languageIdTable = {
@@ -1219,7 +1269,8 @@ var languageIdTable = {
     1007: 7,
     1008: 8,
     1009: 9,
-    1010: 10
+    1010: 10,
+    1011: 11
 }
 
 var extraApiUrl = "https://extra.api.judge0.com";
@@ -1233,5 +1284,6 @@ var languageApiUrlTable = {
     1007: extraApiUrl,
     1008: extraApiUrl,
     1009: extraApiUrl,
-    1010: extraApiUrl
+    1010: extraApiUrl,
+    1011: extraApiUrl
 }
