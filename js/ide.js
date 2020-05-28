@@ -395,7 +395,7 @@ function run() {
             contentType: "application/json",
             data: JSON.stringify(data),
             xhrFields: {
-                withCredentials: parseInt($selectLanguage.val()) >= 1000 ? false : true
+                withCredentials: apiUrl.indexOf("/secure") != -1 ? true : false
             },
             success: function (data, textStatus, jqXHR) {
                 console.log(`Your submission token is: ${data.token}`);
@@ -828,6 +828,8 @@ int main() {\n\
 }\n\
 ";
 
+var clojureSource = "(println \"hello, world\")\n";
+
 var cobolSource = "\
 IDENTIFICATION DIVISION.\n\
 PROGRAM-ID. MAIN.\n\
@@ -866,6 +868,8 @@ Content of compiled binary is Base64 encoded and used as source code.\n\
 https://ide.judge0.com/?kS_f\n\
 ";
 
+var fsharpSource = "printfn \"hello, world\"\n";
+
 var fortranSource = "\
 program main\n\
     print *, \"hello, world\"\n\
@@ -881,6 +885,8 @@ func main() {\n\
     fmt.Println(\"hello, world\")\n\
 }\n\
 ";
+
+var groovySource = "println \"hello, world\"\n";
 
 var haskellSource = "main = putStrLn \"hello, world\"";
 
@@ -925,6 +931,11 @@ program Hello;\n\
 begin\n\
     writeln ('hello, world')\n\
 end.\n\
+";
+
+var perlSource = "\
+my $name = <STDIN>;\n\
+print \"hello, $name\";\n\
 ";
 
 var phpSource = "\
@@ -1193,6 +1204,10 @@ var sources = {
     82: sqliteSource,
     83: swiftSource,
     84: vbSource,
+    85: perlSource,
+    86: clojureSource,
+    87: fsharpSource,
+    88: groovySource,
     1001: cSource,
     1002: cppSource,
     1003: c3Source,
@@ -1249,6 +1264,10 @@ var fileNames = {
     82: "script.sql",
     83: "Main.swift",
     84: "Main.vb",
+    85: "script.pl",
+    86: "main.clj",
+    87: "script.fsx",
+    88: "script.groovy",
     1001: "main.c",
     1002: "main.cpp",
     1003: "main.c3",
