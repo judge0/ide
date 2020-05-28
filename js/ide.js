@@ -395,7 +395,7 @@ function run() {
             contentType: "application/json",
             data: JSON.stringify(data),
             xhrFields: {
-                withCredentials: true
+                withCredentials: parseInt($selectLanguage.val()) >= 1000 ? false : true
             },
             success: function (data, textStatus, jqXHR) {
                 console.log(`Your submission token is: ${data.token}`);
