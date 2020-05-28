@@ -1,4 +1,4 @@
-var defaultUrl = localStorageGetItem("api-url") || "https://api.judge0.com";
+var defaultUrl = localStorageGetItem("api-url") || "https://api.judge0.com/secure";
 var apiUrl = defaultUrl;
 var wait = localStorageGetItem("wait") || false;
 var pbUrl = "https://pb.judge0.com";
@@ -394,6 +394,9 @@ function run() {
             async: true,
             contentType: "application/json",
             data: JSON.stringify(data),
+            xhrFields: {
+                withCredentials: true
+            },
             success: function (data, textStatus, jqXHR) {
                 console.log(`Your submission token is: ${data.token}`);
                 if (wait == true) {
