@@ -1,4 +1,4 @@
-var defaultUrl = localStorageGetItem("api-url") || "https://api.judge0.com/secure";
+var defaultUrl = localStorageGetItem("api-url") || "https://secure.judge0.com/standard";
 var apiUrl = defaultUrl;
 var wait = localStorageGetItem("wait") || false;
 var pbUrl = "https://pb.judge0.com";
@@ -1150,13 +1150,13 @@ entity NamedGreeting provides WithName, Greeting {\n\
 entrypoint function main(arg?: String): String {\n\
     var val = arg ?| \"\";\n\
     if (val == \"1\") {\n\
-        return GenericGreeting@{}->sayHello();\n\
+        return GenericGreeting@{}.sayHello();\n\
     }\n\
     elif (val == \"2\") {\n\
-        return GenericGreeting::instance->sayHello();\n\
+        return GenericGreeting::instance.sayHello();\n\
     }\n\
     else {\n\
-        return NamedGreeting@{name=\"bob\"}->sayHello();\n\
+        return NamedGreeting@{name=\"bob\"}.sayHello();\n\
     }\n\
 }\n\
 ";
@@ -1295,7 +1295,7 @@ var languageIdTable = {
     1011: 11
 }
 
-var extraApiUrl = "https://extra.api.judge0.com";
+var extraApiUrl = "https://secure.judge0.com/extra";
 var languageApiUrlTable = {
     1001: extraApiUrl,
     1002: extraApiUrl,
