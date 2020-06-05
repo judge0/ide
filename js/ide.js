@@ -1,5 +1,16 @@
-var defaultUrl = localStorageGetItem("api-url") || "https://secure.judge0.com/standard";
-var apiUrl = defaultUrl;
+// RapidAPI Configuration (https://rapidapi.com/hermanzdosilovic/api/judge0)
+var useRapidAPI = false;
+var apiAuth = {};
+var defaultUrl = "https://secure.judge0.com/standard";
+if (useRapidAPI) {
+    defaultUrl = "https://judge0.p.rapidapi.com";
+    apiAuth = {
+        "x-rapidapi-host": "judge0.p.rapidapi.com",
+        "x-rapidapi-key": "" // Your RapidAPI Key
+    };
+}
+
+var apiUrl = localStorageGetItem("api-url") || defaultUrl;
 var wait = localStorageGetItem("wait") || false;
 var pbUrl = "https://pb.judge0.com";
 var check_timeout = 200;
@@ -304,6 +315,7 @@ function loadSavedSource() {
         $.ajax({
             url: apiUrl + "/submissions/" + snippet_id + "?fields=source_code,language_id,stdin,stdout,stderr,compile_output,message,time,memory,status,compiler_options,command_line_arguments&base64_encoded=true",
             type: "GET",
+            headers: apiAuth,
             success: function(data, textStatus, jqXHR) {
                 sourceEditor.setValue(decode(data["source_code"]));
                 $selectLanguage.dropdown("set selected", data["language_id"]);
@@ -391,6 +403,7 @@ function run() {
         $.ajax({
             url: apiUrl + `/submissions?base64_encoded=true&wait=${wait}`,
             type: "POST",
+            headers: apiAuth,
             async: true,
             contentType: "application/json",
             data: JSON.stringify(data),
@@ -440,6 +453,7 @@ function fetchSubmission(submission_token) {
     $.ajax({
         url: apiUrl + "/submissions/" + submission_token + "?base64_encoded=true",
         type: "GET",
+        headers: apiAuth,
         async: true,
         success: function (data, textStatus, jqXHR) {
             if (data.status.id <= 2) { // In Queue or Processing
