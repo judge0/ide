@@ -1,16 +1,9 @@
 // RapidAPI Configuration (https://rapidapi.com/hermanzdosilovic/api/judge0)
-var useRapidAPI = false;
-var apiAuth = {};
-var defaultUrl = "https://secure.judge0.com/standard";
-if (useRapidAPI) {
-    defaultUrl = "https://judge0.p.rapidapi.com";
-    apiAuth = {
-        "x-rapidapi-host": "judge0.p.rapidapi.com",
-        "x-rapidapi-key": "" // Your RapidAPI Key
-    };
-}
-
-var apiUrl = localStorageGetItem("api-url") || defaultUrl;
+var apiUrl = "https://judge0.p.rapidapi.com";
+var apiAuth = {
+    "x-rapidapi-host": "judge0.p.rapidapi.com",
+    "x-rapidapi-key": "" // Your RapidAPI Key
+};
 var wait = localStorageGetItem("wait") || false;
 var pbUrl = "https://pb.judge0.com";
 var check_timeout = 200;
