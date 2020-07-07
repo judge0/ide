@@ -6,7 +6,7 @@ var apiAuth = {
 };
 var wait = localStorageGetItem("wait") || false;
 var pbUrl = "https://pb.judge0.com";
-var check_timeout = 200;
+var check_timeout = 1000;
 
 var blinkStatusLine = ((localStorageGetItem("blink") || "true") === "true");
 var editorMode = localStorageGetItem("editorMode") || "normal";
