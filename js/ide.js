@@ -1161,6 +1161,29 @@ entrypoint function main(arg?: String): String {\n\
 }\n\
 ";
 
+var cppTestSource = "\
+#include <gtest/gtest.h>\n\
+\n\
+int add(int x, int y) {\n\
+    return x + y;\n\
+}\n\
+\n\
+TEST(AdditionTest, NeutralElement) {\n\
+    EXPECT_EQ(1, add(1, 0));\n\
+    EXPECT_EQ(1, add(0, 1));\n\
+    EXPECT_EQ(0, add(0, 0));\n\
+}\n\
+\n\
+TEST(AdditionTest, CommutativeProperty) {\n\
+    EXPECT_EQ(add(2, 3), add(3, 2));\n\
+}\n\
+\n\
+int main(int argc, char **argv) {\n\
+    ::testing::InitGoogleTest(&argc, argv);\n\
+    return RUN_ALL_TESTS();\n\
+}\n\
+";
+
 var sources = {
     45: assemblySource,
     46: bashSource,
@@ -1218,7 +1241,8 @@ var sources = {
     1008: mpipySource,
     1009: nimSource,
     1010: pythonForMlSource,
-    1011: bosqueSource
+    1011: bosqueSource,
+    1012: cppTestSource
 };
 
 var fileNames = {
@@ -1278,7 +1302,8 @@ var fileNames = {
     1008: "script.py",
     1009: "main.nim",
     1010: "script.py",
-    1011: "main.bsq"
+    1011: "main.bsq",
+    1012: "main.cpp"
 };
 
 var languageIdTable = {
@@ -1292,7 +1317,8 @@ var languageIdTable = {
     1008: 8,
     1009: 9,
     1010: 10,
-    1011: 11
+    1011: 11,
+    1012: 12
 }
 
 var extraApiUrl = "https://secure.judge0.com/extra";
@@ -1307,5 +1333,6 @@ var languageApiUrlTable = {
     1008: extraApiUrl,
     1009: extraApiUrl,
     1010: extraApiUrl,
-    1011: extraApiUrl
+    1011: extraApiUrl,
+    1012: extraApiUrl
 }
