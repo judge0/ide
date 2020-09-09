@@ -1184,6 +1184,44 @@ int main(int argc, char **argv) {\n\
 }\n\
 ";
 
+var csharpTestSource ="\
+using NUnit.Framework;\n\
+\n\
+public class Calculator\n\
+{\n\
+    public int add(int a, int b)\n\
+    {\n\
+        return a + b;\n\
+    }\n\
+}\n\
+\n\
+[TestFixture]\n\
+public class Tests\n\
+{\n\
+    private Calculator calculator;\n\
+\n\
+    [SetUp]\n\
+    protected void SetUp()\n\
+    {\n\
+        calculator = new Calculator();\n\
+    }\n\
+\n\
+    [Test]\n\
+    public void NeutralElement()\n\
+    {\n\
+        Assert.AreEqual(1, calculator.add(1, 0));\n\
+        Assert.AreEqual(1, calculator.add(0, 1));\n\
+        Assert.AreEqual(0, calculator.add(0, 0));\n\
+    }\n\
+\n\
+    [Test]\n\
+    public void CommutativeProperty()\n\
+    {\n\
+        Assert.AreEqual(calculator.add(2, 3), calculator.add(3, 2));\n\
+    }\n\
+}\n\
+";
+
 var sources = {
     45: assemblySource,
     46: bashSource,
@@ -1242,7 +1280,14 @@ var sources = {
     1009: nimSource,
     1010: pythonForMlSource,
     1011: bosqueSource,
-    1012: cppTestSource
+    1012: cppTestSource,
+    1013: cSource,
+    1014: cppSource,
+    1015: cppTestSource,
+    1016: csharpSource,
+    1017: csharpSource,
+    1018: csharpTestSource,
+    1019: fsharpSource
 };
 
 var fileNames = {
@@ -1303,7 +1348,14 @@ var fileNames = {
     1009: "main.nim",
     1010: "script.py",
     1011: "main.bsq",
-    1012: "main.cpp"
+    1012: "main.cpp",
+    1013: "main.c",
+    1014: "main.cpp",
+    1015: "main.cpp",
+    1016: "Main.cs",
+    1017: "Main.cs",
+    1018: "Test.cs",
+    1019: "script.fsx"
 };
 
 var languageIdTable = {
@@ -1318,7 +1370,14 @@ var languageIdTable = {
     1009: 9,
     1010: 10,
     1011: 11,
-    1012: 12
+    1012: 12,
+    1013: 13,
+    1014: 14,
+    1015: 15,
+    1016: 16,
+    1017: 17,
+    1018: 18,
+    1019: 19
 }
 
 var extraApiUrl = "https://secure.judge0.com/extra";
@@ -1334,5 +1393,12 @@ var languageApiUrlTable = {
     1009: extraApiUrl,
     1010: extraApiUrl,
     1011: extraApiUrl,
-    1012: extraApiUrl
+    1012: extraApiUrl,
+    1013: extraApiUrl,
+    1014: extraApiUrl,
+    1015: extraApiUrl,
+    1016: extraApiUrl,
+    1017: extraApiUrl,
+    1018: extraApiUrl,
+    1019: extraApiUrl
 }
