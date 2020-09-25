@@ -2,7 +2,7 @@
 var apiUrl = "https://judge0.p.rapidapi.com";
 var apiAuth = {
     "x-rapidapi-host": "judge0.p.rapidapi.com",
-    "x-rapidapi-key": "" // Your RapidAPI Key
+    "x-rapidapi-key": "0d007e305emshec1a36888d89e4ep142bdcjsndad7b2d80e61" // Your RapidAPI Key
 };
 var wait = localStorageGetItem("wait") || false;
 var pbUrl = "https://pb.judge0.com";
