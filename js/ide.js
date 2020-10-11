@@ -281,6 +281,9 @@ function save() {
             "Accept": "application/json"
         },
         data: data,
+        xhrFields: {
+            withCredentials: true
+        },
         success: function (data, textStatus, jqXHR) {
             if (getIdFromURI() != data["short"]) {
                 window.history.replaceState(null, null, location.origin + location.pathname + "?" + data["short"]);
