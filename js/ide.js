@@ -1287,10 +1287,10 @@ var sources = {
     1013: cSource,
     1014: cppSource,
     1015: cppTestSource,
-    1016: csharpSource,
-    1017: csharpSource,
-    1018: csharpTestSource,
-    1019: fsharpSource
+    1021: csharpSource,
+    1022: csharpSource,
+    1023: csharpTestSource,
+    1024: fsharpSource
 };
 
 var fileNames = {
@@ -1355,10 +1355,10 @@ var fileNames = {
     1013: "main.c",
     1014: "main.cpp",
     1015: "main.cpp",
-    1016: "Main.cs",
-    1017: "Main.cs",
-    1018: "Test.cs",
-    1019: "script.fsx"
+    1021: "Main.cs",
+    1022: "Main.cs",
+    1023: "Test.cs",
+    1024: "script.fsx"
 };
 
 var languageIdTable = {
@@ -1377,10 +1377,10 @@ var languageIdTable = {
     1013: 13,
     1014: 14,
     1015: 15,
-    1016: 16,
-    1017: 17,
-    1018: 18,
-    1019: 19
+    1021: 21,
+    1022: 22,
+    1023: 23,
+    1024: 24
 }
 
 var extraApiUrl = "https://secure.judge0.com/extra";
@@ -1400,8 +1400,8 @@ var languageApiUrlTable = {
     1013: extraApiUrl,
     1014: extraApiUrl,
     1015: extraApiUrl,
-    1016: extraApiUrl,
-    1017: extraApiUrl,
-    1018: extraApiUrl,
-    1019: extraApiUrl
+    1021: extraApiUrl,
+    1022: extraApiUrl,
+    1023: extraApiUrl,
+    1024: extraApiUrl
 }
