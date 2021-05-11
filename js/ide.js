@@ -1,7 +1,7 @@
-var defaultUrl = localStorageGetItem("api-url") || "https://secure.judge0.com/standard";
+var defaultUrl = localStorageGetItem("api-url") || "https://ce.judge0.com";
 var apiUrl = defaultUrl;
 var wait = localStorageGetItem("wait") || false;
-var check_timeout = 200;
+var check_timeout = 300;
 
 var blinkStatusLine = ((localStorageGetItem("blink") || "true") === "true");
 var editorMode = localStorageGetItem("editorMode") || "normal";
@@ -57,7 +57,8 @@ var layoutConfig = {
             isClosable: false,
             componentState: {
                 readOnly: false
-            }
+            },
+            width: 60
         }, {
             type: "column",
             content: [{
@@ -408,7 +409,8 @@ function loadRandomLanguage() {
     for (var i = 0; i < $selectLanguage[0].options.length; ++i) {
         values.push($selectLanguage[0].options[i].value);
     }
-    $selectLanguage.dropdown("set selected", values[Math.floor(Math.random() * $selectLanguage[0].length)]);
+    // $selectLanguage.dropdown("set selected", values[Math.floor(Math.random() * $selectLanguage[0].length)]);
+    $selectLanguage.dropdown("set selected", values[9]);
     apiUrl = resolveApiUrl($selectLanguage.val());
     insertTemplate();
 }
@@ -510,7 +512,7 @@ $(document).ready(function () {
     });
 
     $navigationMessage = $("#navigation-message span");
-    $updates = $("#updates");
+    $updates = $("#judge0-more");
 
     $(`input[name="editor-mode"][value="${editorMode}"]`).prop("checked", true);
     $("input[name=\"editor-mode\"]").on("change", function(e) {
@@ -587,8 +589,7 @@ $(document).ready(function () {
                 language: "cpp",
                 minimap: {
                     enabled: false
-                },
-                rulers: [80, 120]
+                }
             });
 
             changeEditorMode();
@@ -703,6 +704,7 @@ $(document).ready(function () {
             }
             $("#site-navigation").css("border-bottom", "1px solid black");
             sourceEditor.focus();
+            editorsUpdateFontSize(fontSize);
         });
 
         layout.init();
@@ -738,10 +740,11 @@ var bashSource = "echo \"hello, world\"";
 var basicSource = "PRINT \"hello, world\"";
 
 var cSource = "\
+// Powered by Judge0\n\
 #include <stdio.h>\n\
 \n\
 int main(void) {\n\
-    printf(\"hello, world\\n\");\n\
+    printf(\"Hello Judge0!\\n\");\n\
     return 0;\n\
 }\n\
 ";
@@ -1315,7 +1318,7 @@ var languageIdTable = {
     1024: 24
 }
 
-var extraApiUrl = "https://secure.judge0.com/extra";
+var extraApiUrl = "https://extra-ce.judge0.com";
 var languageApiUrlTable = {
     1001: extraApiUrl,
     1002: extraApiUrl,
