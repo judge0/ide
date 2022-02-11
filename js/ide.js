@@ -5,7 +5,6 @@ var check_timeout = 300;
 
 var blinkStatusLine = ((localStorageGetItem("blink") || "true") === "true");
 var editorMode = localStorageGetItem("editorMode") || "normal";
-var redirectStderrToStdout = ((localStorageGetItem("redirectStderrToStdout") || "false") === "true");
 var editorModeObject = null;
 
 var fontSize = 14;
@@ -18,9 +17,6 @@ var layout;
 var sourceEditor;
 var stdinEditor;
 var stdoutEditor;
-var stderrEditor;
-var compileOutputEditor;
-var sandboxMessageEditor;
 
 var isEditorDirty = false;
 var currentLanguageId;
@@ -49,64 +45,34 @@ var layoutConfig = {
         headerHeight: 22
     },
     content: [{
-        type: "row",
+        type: "column",
         content: [{
             type: "component",
+            height: 70,
             componentName: "source",
             title: "SOURCE",
             isClosable: false,
             componentState: {
                 readOnly: false
-            },
-            width: 60
+            }
         }, {
-            type: "column",
+            type: "stack",
             content: [{
-                type: "stack",
-                content: [{
-                    type: "component",
-                    componentName: "stdin",
-                    title: "STDIN",
-                    isClosable: false,
-                    componentState: {
-                        readOnly: false
-                    }
-                }]
+                type: "component",
+                componentName: "stdin",
+                title: "Input",
+                isClosable: false,
+                componentState: {
+                    readOnly: true
+                }
             }, {
-                type: "stack",
-                content: [{
-                        type: "component",
-                        componentName: "stdout",
-                        title: "STDOUT",
-                        isClosable: false,
-                        componentState: {
-                            readOnly: true
-                        }
-                    }, {
-                        type: "component",
-                        componentName: "stderr",
-                        title: "STDERR",
-                        isClosable: false,
-                        componentState: {
-                            readOnly: true
-                        }
-                    }, {
-                        type: "component",
-                        componentName: "compile output",
-                        title: "COMPILE OUTPUT",
-                        isClosable: false,
-                        componentState: {
-                            readOnly: true
-                        }
-                    }, {
-                        type: "component",
-                        componentName: "sandbox message",
-                        title: "SANDBOX MESSAGE",
-                        isClosable: false,
-                        componentState: {
-                            readOnly: true
-                        }
-                    }]
+                type: "component",
+                componentName: "stdout",
+                title: "Output",
+                isClosable: false,
+                componentState: {
+                    readOnly: false
+                }
             }]
         }]
     }]
@@ -199,9 +165,7 @@ function handleResult(data) {
 
     var status = data.status;
     var stdout = decode(data.stdout);
-    var stderr = decode(data.stderr);
     var compile_output = decode(data.compile_output);
-    var sandbox_message = decode(data.message);
     var time = (data.time === null ? "-" : data.time + "s");
     var memory = (data.memory === null ? "-" : data.memory + "KB");
 
@@ -216,31 +180,12 @@ function handleResult(data) {
         }, 3000);
     }
 
-    stdoutEditor.setValue(stdout);
-    stderrEditor.setValue(stderr);
-    compileOutputEditor.setValue(compile_output);
-    sandboxMessageEditor.setValue(sandbox_message);
+    var output = [compile_output, stdout].join("\n").trim();
 
-    if (stdout !== "") {
+    stdoutEditor.setValue(output);
+
+    if (output !== "") {
         var dot = document.getElementById("stdout-dot");
-        if (!dot.parentElement.classList.contains("lm_active")) {
-            dot.hidden = false;
-        }
-    }
-    if (stderr !== "") {
-        var dot = document.getElementById("stderr-dot");
-        if (!dot.parentElement.classList.contains("lm_active")) {
-            dot.hidden = false;
-        }
-    }
-    if (compile_output !== "") {
-        var dot = document.getElementById("compile-output-dot");
-        if (!dot.parentElement.classList.contains("lm_active")) {
-            dot.hidden = false;
-        }
-    }
-    if (sandbox_message !== "") {
-        var dot = document.getElementById("sandbox-message-dot");
         if (!dot.parentElement.classList.contains("lm_active")) {
             dot.hidden = false;
         }
@@ -273,9 +218,6 @@ function loadSavedSource() {
                 $commandLineArguments.val(data["command_line_arguments"]);
                 stdinEditor.setValue(decode(data["stdin"]));
                 stdoutEditor.setValue(decode(data["stdout"]));
-                stderrEditor.setValue(decode(data["stderr"]));
-                compileOutputEditor.setValue(decode(data["compile_output"]));
-                sandboxMessageEditor.setValue(decode(data["message"]));
                 var time = (data.time === null ? "-" : data.time + "s");
                 var memory = (data.memory === null ? "-" : data.memory + "KB");
                 $statusLine.html(`${data.status.description}, ${time}, ${memory}`);
@@ -297,14 +239,8 @@ function run() {
     }
 
     document.getElementById("stdout-dot").hidden = true;
-    document.getElementById("stderr-dot").hidden = true;
-    document.getElementById("compile-output-dot").hidden = true;
-    document.getElementById("sandbox-message-dot").hidden = true;
 
     stdoutEditor.setValue("");
-    stderrEditor.setValue("");
-    compileOutputEditor.setValue("");
-    sandboxMessageEditor.setValue("");
 
     var sourceValue = encode(sourceEditor.getValue());
     var stdinValue = encode(stdinEditor.getValue());
@@ -322,7 +258,7 @@ function run() {
         stdin: stdinValue,
         compiler_options: compilerOptions,
         command_line_arguments: commandLineArguments,
-        redirect_stderr_to_stdout: redirectStderrToStdout
+        redirect_stderr_to_stdout: true
     };
 
     var sendRequest = function(data) {
@@ -401,6 +337,8 @@ function changeEditorLanguage() {
 function insertTemplate() {
     currentLanguageId = parseInt($selectLanguage.val());
     sourceEditor.setValue(sources[currentLanguageId]);
+    stdinEditor.setValue(inputs[currentLanguageId] || "");
+    $compilerOptions.val(compilerOptions[currentLanguageId] || "");
     changeEditorLanguage();
 }
 
@@ -410,8 +348,8 @@ function loadRandomLanguage() {
         values.push($selectLanguage[0].options[i].value);
     }
     // $selectLanguage.dropdown("set selected", values[Math.floor(Math.random() * $selectLanguage[0].length)]);
-    $selectLanguage.dropdown("set selected", values[9]);
-    apiUrl = resolveApiUrl($selectLanguage.val());
+    $selectLanguage.dropdown("set selected", values[19]);
+    apiUrl = resolveApiUrl($selectLanguage.val())
     insertTemplate();
 }
 
@@ -463,9 +401,6 @@ function editorsUpdateFontSize(fontSize) {
     sourceEditor.updateOptions({fontSize: fontSize});
     stdinEditor.updateOptions({fontSize: fontSize});
     stdoutEditor.updateOptions({fontSize: fontSize});
-    stderrEditor.updateOptions({fontSize: fontSize});
-    compileOutputEditor.updateOptions({fontSize: fontSize});
-    sandboxMessageEditor.updateOptions({fontSize: fontSize});
 }
 
 function updateScreenElements() {
@@ -525,15 +460,9 @@ $(document).ready(function () {
         sourceEditor.focus();
     });
 
-    $("input[name=\"redirect-output\"]").prop("checked", redirectStderrToStdout)
-    $("input[name=\"redirect-output\"]").on("change", function(e) {
-        redirectStderrToStdout = e.target.checked;
-        localStorageSetItem("redirectStderrToStdout", redirectStderrToStdout);
-    });
-
     $statusLine = $("#status-line");
 
-    $("body").keydown(function (e) {
+    $(document).on("keydown", "body", function (e) {
         var keyCode = e.keyCode || e.which;
         if (keyCode == 120) { // F9
             e.preventDefault();
@@ -635,66 +564,6 @@ $(document).ready(function () {
             });
         });
 
-        layout.registerComponent("stderr", function (container, state) {
-            stderrEditor = monaco.editor.create(container.getElement()[0], {
-                automaticLayout: true,
-                theme: "vs-dark",
-                scrollBeyondLastLine: false,
-                readOnly: state.readOnly,
-                language: "plaintext",
-                minimap: {
-                    enabled: false
-                }
-            });
-
-            container.on("tab", function(tab) {
-                tab.element.append("<span id=\"stderr-dot\" class=\"dot\" hidden></span>");
-                tab.element.on("mousedown", function(e) {
-                    e.target.closest(".lm_tab").children[3].hidden = true;
-                });
-            });
-        });
-
-        layout.registerComponent("compile output", function (container, state) {
-            compileOutputEditor = monaco.editor.create(container.getElement()[0], {
-                automaticLayout: true,
-                theme: "vs-dark",
-                scrollBeyondLastLine: false,
-                readOnly: state.readOnly,
-                language: "plaintext",
-                minimap: {
-                    enabled: false
-                }
-            });
-
-            container.on("tab", function(tab) {
-                tab.element.append("<span id=\"compile-output-dot\" class=\"dot\" hidden></span>");
-                tab.element.on("mousedown", function(e) {
-                    e.target.closest(".lm_tab").children[3].hidden = true;
-                });
-            });
-        });
-
-        layout.registerComponent("sandbox message", function (container, state) {
-            sandboxMessageEditor = monaco.editor.create(container.getElement()[0], {
-                automaticLayout: true,
-                theme: "vs-dark",
-                scrollBeyondLastLine: false,
-                readOnly: state.readOnly,
-                language: "plaintext",
-                minimap: {
-                    enabled: false
-                }
-            });
-
-            container.on("tab", function(tab) {
-                tab.element.append("<span id=\"sandbox-message-dot\" class=\"dot\" hidden></span>");
-                tab.element.on("mousedown", function(e) {
-                    e.target.closest(".lm_tab").children[3].hidden = true;
-                });
-            });
-        });
-
         layout.on("initialised", function () {
             $(".monaco-editor")[0].appendChild($("#editor-status-line")[0]);
             if (getIdFromURI()) {
@@ -762,6 +631,127 @@ var cppSource = "\
 \n\
 int main() {\n\
     std::cout << \"hello, world\" << std::endl;\n\
+    return 0;\n\
+}\n\
+";
+
+var competitiveProgrammingSource = "\
+/*\n\
+ *        _____                  __                       ______         ______  _______   ________ \n\
+ *       /     |                /  |                     /      \\       /      |/       \\ /        |\n\
+ *       $$$$$ | __    __   ____$$ |  ______    ______  /$$$$$$  |      $$$$$$/ $$$$$$$  |$$$$$$$$/ \n\
+ *          $$ |/  |  /  | /    $$ | /      \\  /      \\ $$$  \\$$ |        $$ |  $$ |  $$ |$$ |__    \n\
+ *     __   $$ |$$ |  $$ |/$$$$$$$ |/$$$$$$  |/$$$$$$  |$$$$  $$ |        $$ |  $$ |  $$ |$$    |   \n\
+ *    /  |  $$ |$$ |  $$ |$$ |  $$ |$$ |  $$ |$$    $$ |$$ $$ $$ |        $$ |  $$ |  $$ |$$$$$/    \n\
+ *    $$ \\__$$ |$$ \\__$$ |$$ \\__$$ |$$ \\__$$ |$$$$$$$$/ $$ \\$$$$ |       _$$ |_ $$ |__$$ |$$ |_____ \n\
+ *    $$    $$/ $$    $$/ $$    $$ |$$    $$ |$$       |$$   $$$/       / $$   |$$    $$/ $$       |\n\
+ *     $$$$$$/   $$$$$$/   $$$$$$$/  $$$$$$$ | $$$$$$$/  $$$$$$/        $$$$$$/ $$$$$$$/  $$$$$$$$/ \n\
+ *                                  /  \\__$$ |                                                      \n\
+ *                                  $$    $$/                                                       \n\
+ *                                   $$$$$$/                                                        \n\
+ */\n\
+#include <algorithm>\n\
+#include <cstdint>\n\
+#include <iostream>\n\
+#include <limits>\n\
+#include <set>\n\
+#include <utility>\n\
+#include <vector>\n\
+\n\
+using Vertex    = std::uint16_t;\n\
+using Cost      = std::uint16_t;\n\
+using Edge      = std::pair< Vertex, Cost >;\n\
+using Graph     = std::vector< std::vector< Edge > >;\n\
+using CostTable = std::vector< std::uint64_t >;\n\
+\n\
+constexpr auto kInfiniteCost{ std::numeric_limits< CostTable::value_type >::max() };\n\
+\n\
+auto dijkstra( Vertex const start, Vertex const end, Graph const & graph, CostTable & costTable )\n\
+{\n\
+    std::fill( costTable.begin(), costTable.end(), kInfiniteCost );\n\
+    costTable[ start ] = 0;\n\
+\n\
+    std::set< std::pair< CostTable::value_type, Vertex > > minHeap;\n\
+    minHeap.emplace( 0, start );\n\
+\n\
+    while ( !minHeap.empty() )\n\
+    {\n\
+        auto const vertexCost{ minHeap.begin()->first  };\n\
+        auto const vertex    { minHeap.begin()->second };\n\
+\n\
+        minHeap.erase( minHeap.begin() );\n\
+\n\
+        if ( vertex == end )\n\
+        {\n\
+            break;\n\
+        }\n\
+\n\
+        for ( auto const & neighbourEdge : graph[ vertex ] )\n\
+        {\n\
+            auto const & neighbour{ neighbourEdge.first };\n\
+            auto const & cost{ neighbourEdge.second };\n\
+\n\
+            if ( costTable[ neighbour ] > vertexCost + cost )\n\
+            {\n\
+                minHeap.erase( { costTable[ neighbour ], neighbour } );\n\
+                costTable[ neighbour ] = vertexCost + cost;\n\
+                minHeap.emplace( costTable[ neighbour ], neighbour );\n\
+            }\n\
+        }\n\
+    }\n\
+\n\
+    return costTable[ end ];\n\
+}\n\
+\n\
+int main()\n\
+{\n\
+    constexpr std::uint16_t maxVertices{ 10000 };\n\
+\n\
+    Graph     graph    ( maxVertices );\n\
+    CostTable costTable( maxVertices );\n\
+\n\
+    std::uint16_t testCases;\n\
+    std::cin >> testCases;\n\
+\n\
+    while ( testCases-- > 0 )\n\
+    {\n\
+        for ( auto i{ 0 }; i < maxVertices; ++i )\n\
+        {\n\
+            graph[ i ].clear();\n\
+        }\n\
+\n\
+        std::uint16_t numberOfVertices;\n\
+        std::uint16_t numberOfEdges;\n\
+\n\
+        std::cin >> numberOfVertices >> numberOfEdges;\n\
+\n\
+        for ( auto i{ 0 }; i < numberOfEdges; ++i )\n\
+        {\n\
+            Vertex from;\n\
+            Vertex to;\n\
+            Cost   cost;\n\
+\n\
+            std::cin >> from >> to >> cost;\n\
+            graph[ from ].emplace_back( to, cost );\n\
+        }\n\
+\n\
+        Vertex start;\n\
+        Vertex end;\n\
+\n\
+        std::cin >> start >> end;\n\
+\n\
+        auto const result{ dijkstra( start, end, graph, costTable ) };\n\
+\n\
+        if ( result == kInfiniteCost )\n\
+        {\n\
+            std::cout << \"NO\\n\";\n\
+        }\n\
+        else\n\
+        {\n\
+            std::cout << result << '\\n';\n\
+        }\n\
+    }\n\
+\n\
     return 0;\n\
 }\n\
 ";
@@ -1170,7 +1160,7 @@ var sources = {
     51: csharpSource,
     52: cppSource,
     53: cppSource,
-    54: cppSource,
+    54: competitiveProgrammingSource,
     55: lispSource,
     56: dSource,
     57: elixirSource,
@@ -1339,4 +1329,30 @@ var languageApiUrlTable = {
     1022: extraApiUrl,
     1023: extraApiUrl,
     1024: extraApiUrl
+}
+
+var competitiveProgrammingInput = "\
+3\n\
+3 2\n\
+1 2 5\n\
+2 3 7\n\
+1 3\n\
+3 3\n\
+1 2 4\n\
+1 3 7\n\
+2 3 1\n\
+1 3\n\
+3 1\n\
+1 2 4\n\
+1 3\n\
+";
+
+var inputs = {
+    54: competitiveProgrammingInput
+}
+
+var competitiveProgrammingCompilerOptions = "-O3 --std=c++17 -Wall -Wextra -Wold-style-cast -Wuseless-cast -Wnull-dereference -Werror -Wfatal-errors -pedantic -pedantic-errors";
+
+var compilerOptions = {
+    54: competitiveProgrammingCompilerOptions
 }
