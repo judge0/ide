@@ -1,3 +1,21 @@
+:root {
+    --judge0-black: #333;
+    --judge0-gray: #CED4DA;
+    --judge0-red: #FF8787;
+    --judge0-pink: #F783AC;
+    --judge0-grape: #DA77F2;
+    --judge0-violet: #9775FA;
+    --judge0-indigo: #748FFC;
+    --judge0-blue: #4DABF7;
+    --judge0-cyan: #3BC9DB;
+    --judge0-teal: #38D9A9;
+    --judge0-green: #69DB7C;
+    --judge0-lime: #A9E34B;
+    --judge0-yellow: #FFD43B;
+    --judge0-orange: #FFA94D;
+    --judge0-theme: var(--judge0-indigo);
+}
+
 html, body {
     height: 100%;
     min-height: 100%;
@@ -70,7 +88,7 @@ body {
 }
 
 #navigation-message a {
-    color: #41a5f1;
+    color: var(--judge0-theme);
     font-weight: bold;
 }
 
@@ -100,8 +118,12 @@ body {
     color: #db2828;
 }
 
+#run-btn {
+    background-color: var(--judge0-theme);
+}
+
 #site-footer, #status-line {
-    background-color: #0E6EB8;
+    background-color: var(--judge0-theme);
     bottom: 0;
     font-family: "Droid Sans Mono", monospace, monospace, "Droid Sans Fallback";
     font-size: 13px;
@@ -112,19 +134,19 @@ body {
 }
 
 #site-footer {
-    color: #41a5f1;
+    color: white;
     left: 0;
     text-align: center;
     width: 100%;
 }
 
 #site-footer a {
-    color: #41a5f1;
+    color: white;
     font-weight: bold;
 }
 
 #site-footer a:hover {
-    color: #a0d2f8;
+    color: #333;
 }
 
 #status-line {
