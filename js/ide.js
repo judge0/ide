@@ -1,6 +1,6 @@
 var defaultUrl = localStorageGetItem("api-url") || "https://ce.judge0.com";
 var apiUrl = defaultUrl;
-var wait = localStorageGetItem("wait") || false;
+var wait = localStorageGetItem("wait") || true;
 var check_timeout = 300;
 
 var blinkStatusLine = ((localStorageGetItem("blink") || "true") === "true");
@@ -50,6 +50,7 @@ var layoutConfig = {
             type: "component",
             height: 70,
             componentName: "source",
+            id: "source",
             title: "SOURCE",
             isClosable: false,
             componentState: {
@@ -60,6 +61,7 @@ var layoutConfig = {
             content: [{
                 type: "component",
                 componentName: "stdin",
+                id: "stdin",
                 title: "Input",
                 isClosable: false,
                 componentState: {
@@ -68,6 +70,7 @@ var layoutConfig = {
             }, {
                 type: "component",
                 componentName: "stdout",
+                id: "stdout",
                 title: "Output",
                 isClosable: false,
                 componentState: {
@@ -241,6 +244,9 @@ function run() {
     document.getElementById("stdout-dot").hidden = true;
 
     stdoutEditor.setValue("");
+
+    var x = layout.root.getItemsById("stdout")[0];
+    x.parent.header.parent.setActiveContentItem(x);
 
     var sourceValue = encode(sourceEditor.getValue());
     var stdinValue = encode(stdinEditor.getValue());
