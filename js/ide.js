@@ -65,7 +65,7 @@ var layoutConfig = {
                 title: "Input",
                 isClosable: false,
                 componentState: {
-                    readOnly: true
+                    readOnly: false
                 }
             }, {
                 type: "component",
@@ -74,7 +74,7 @@ var layoutConfig = {
                 title: "Output",
                 isClosable: false,
                 componentState: {
-                    readOnly: false
+                    readOnly: true
                 }
             }]
         }]
