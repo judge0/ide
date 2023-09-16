@@ -1,4 +1,4 @@
-var defaultUrl = localStorageGetItem("api-url") || "https://ce.judge0.com";
+var defaultUrl = localStorageGetItem("api-url") || "https://judge0-ce.p.rapidapi.com";
 var apiUrl = defaultUrl;
 var wait = localStorageGetItem("wait") || true;
 var check_timeout = 300;
@@ -138,7 +138,9 @@ function loadMessages() {
         url: `https://minio.judge0.com/public/ide/messages.json?${Date.now()}`,
         type: "GET",
         headers: {
-            "Accept": "application/json"
+            "Accept": "application/json",
+            'X-RapidAPI-Key': '6b1e10460fmshd091fd5cd9d3c4cp1434d7jsn3183d95b4815',
+            'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com'
         },
         success: function (data, textStatus, jqXHR) {
             messagesData = data;
@@ -214,6 +216,10 @@ function loadSavedSource() {
         $.ajax({
             url: apiUrl + "/submissions/" + snippet_id + "?fields=source_code,language_id,stdin,stdout,stderr,compile_output,message,time,memory,status,compiler_options,command_line_arguments&base64_encoded=true",
             type: "GET",
+            headers: {
+                'X-RapidAPI-Key': '6b1e10460fmshd091fd5cd9d3c4cp1434d7jsn3183d95b4815',
+                'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com'
+            },
             success: function(data, textStatus, jqXHR) {
                 sourceEditor.setValue(decode(data["source_code"]));
                 $selectLanguage.dropdown("set selected", data["language_id"]);
@@ -274,6 +280,10 @@ function run() {
             type: "POST",
             async: true,
             contentType: "application/json",
+            headers: {
+                'X-RapidAPI-Key': '6b1e10460fmshd091fd5cd9d3c4cp1434d7jsn3183d95b4815',
+                'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com'
+            },
             data: JSON.stringify(data),
             xhrFields: {
                 withCredentials: apiUrl.indexOf("/secure") != -1 ? true : false
@@ -322,6 +332,10 @@ function fetchSubmission(submission_token) {
         url: apiUrl + "/submissions/" + submission_token + "?base64_encoded=true",
         type: "GET",
         async: true,
+        headers: {
+            'X-RapidAPI-Key': '6b1e10460fmshd091fd5cd9d3c4cp1434d7jsn3183d95b4815',
+            'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com'
+        },
         success: function (data, textStatus, jqXHR) {
             if (data.status.id <= 2) { // In Queue or Processing
                 setTimeout(fetchSubmission.bind(null, submission_token), check_timeout);
