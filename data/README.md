@@ -1,1 +1,1 @@
-Chinook database was download from this repository: https://github.com/lerocha/chinook-database
+Chinook database was download from here: https://www.sqlitetutorial.net/sqlite-sample-database
