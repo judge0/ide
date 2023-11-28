@@ -257,7 +257,7 @@ function run() {
         if (sqliteAdditionalFiles === "") {
             fetchAdditionalFiles = true;
             $.ajax({
-                url: `https://minio.judge0.com/public/ide/sqliteAdditionalFiles.base64.txt?${Date.now()}`,
+                url: `./data/additional_files_zip_base64.txt`,
                 type: "GET",
                 async: true,
                 contentType: "text/plain",
