@@ -337,24 +337,6 @@ function disposeEditorModeObject() {
     }
 }
 
-function changeEditorMode() {
-    disposeEditorModeObject();
-
-    if (editorMode == "vim") {
-        editorModeObject = MonacoVim.initVimMode(sourceEditor, $("#editor-status-line")[0]);
-    } else if (editorMode == "emacs") {
-        var statusNode = $("#editor-status-line")[0];
-        editorModeObject = new MonacoEmacs.EmacsExtension(sourceEditor);
-        editorModeObject.onDidMarkChange(function(e) {
-          statusNode.textContent = e ? "Mark Set!" : "Mark Unset";
-        });
-        editorModeObject.onDidChangeKey(function(str) {
-          statusNode.textContent = str;
-        });
-        editorModeObject.start();
-    }
-}
-
 function resolveLanguageId(id) {
     id = parseInt(id);
     return languageIdTable[id] || id;
@@ -416,17 +398,6 @@ $(document).ready(function () {
     $navigationMessage = $("#navigation-message span");
     $updates = $("#judge0-more");
 
-    $(`input[name="editor-mode"][value="${editorMode}"]`).prop("checked", true);
-    $("input[name=\"editor-mode\"]").on("change", function(e) {
-        editorMode = e.target.value;
-        localStorageSetItem("editorMode", editorMode);
-
-        resizeEditor(sourceEditor.getLayoutInfo());
-        changeEditorMode();
-
-        sourceEditor.focus();
-    });
-
     $statusLine = $("#status-line");
 
     $(document).on("keydown", "body", function (e) {
@@ -468,13 +439,11 @@ $(document).ready(function () {
         $(this).closest(".message").transition("fade");
     });
 
-    loadMessages();
-
-    require(["vs/editor/editor.main", "monaco-vim", "monaco-emacs"], function (ignorable, MVim, MEmacs) {
+    require(["vs/editor/editor.main"], function (ignorable, MVim, MEmacs) {
         layout = new GoldenLayout(layoutConfig, $("#site-content"));
 
-        MonacoVim = MVim;
-        MonacoEmacs = MEmacs;
+        // MonacoVim = MVim;
+        // MonacoEmacs = MEmacs;
 
         layout.registerComponent("source", function (container, state) {
             sourceEditor = monaco.editor.create(container.getElement()[0], {
@@ -487,8 +456,6 @@ $(document).ready(function () {
                     enabled: false
                 }
             });
-
-            changeEditorMode();
 
             sourceEditor.getModel().onDidChangeContent(function (e) {
                 currentLanguageId = parseInt($selectLanguage.val());

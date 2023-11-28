@@ -13,7 +13,7 @@
     --judge0-lime: #A9E34B;
     --judge0-yellow: #FFD43B;
     --judge0-orange: #FFA94D;
-    --judge0-theme: var(--judge0-indigo);
+    --judge0-theme: var(--judge0-blue);
 }
 
 html, body {
@@ -24,7 +24,7 @@ html, body {
 }
 
 body {
-    background: url(/images/judge0_background.png) no-repeat center center fixed;
+    background: url(../images/judge0_background.png) no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
