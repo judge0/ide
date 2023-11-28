@@ -135,7 +135,7 @@ function handleRunError(jqXHR, textStatus, errorThrown) {
 }
 
 function handleResult(data) {
-    const tat = performance.now() - timeStart;
+    const tat = Math.round(performance.now() - timeStart);
     console.log(`It took ${tat}ms to get submission result.`);
 
     var status = data.status;
@@ -144,7 +144,7 @@ function handleResult(data) {
     var time = (data.time === null ? "-" : data.time + "s");
     var memory = (data.memory === null ? "-" : data.memory + "KB");
 
-    $statusLine.html(`${status.description}, ${time}, ${memory}, (TAT: ${tat}ms)`);
+    $statusLine.html(`${status.description}, ${time}, ${memory} (TAT: ${tat}ms)`);
 
     if (blinkStatusLine) {
         $statusLine.addClass("blink");
@@ -393,6 +393,10 @@ $(document).ready(function () {
         }
     });
 
+    if (!/(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
+        $("#run-btn-label").html("Run (Ctrl + ↵)");
+    }
+
     $runBtn = $("#run-btn");
     $runBtn.click(function (e) {
         run();
@@ -405,7 +409,7 @@ $(document).ready(function () {
 
     $(document).on("keydown", "body", function (e) {
         var keyCode = e.keyCode || e.which;
-        if (keyCode == 120) { // F9
+        if ((e.metaKey || e.ctrlKey) && keyCode === 13) { // Ctrl + Enter, CMD + Enter
             e.preventDefault();
             run();
         } else if (keyCode == 119) { // F8
@@ -461,6 +465,8 @@ $(document).ready(function () {
                 currentLanguageId = parseInt($selectLanguage.val());
                 isEditorDirty = sourceEditor.getValue() != sources[currentLanguageId];
             });
+
+            sourceEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, run);
         });
 
         layout.registerComponent("stdin", function (container, state) {
