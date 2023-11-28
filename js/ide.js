@@ -442,9 +442,6 @@ $(document).ready(function () {
     require(["vs/editor/editor.main"], function (ignorable, MVim, MEmacs) {
         layout = new GoldenLayout(layoutConfig, $("#site-content"));
 
-        // MonacoVim = MVim;
-        // MonacoEmacs = MEmacs;
-
         layout.registerComponent("source", function (container, state) {
             sourceEditor = monaco.editor.create(container.getElement()[0], {
                 automaticLayout: true,
