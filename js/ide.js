@@ -1,16 +1,26 @@
-var defaultUrl = localStorageGetItem("api-url") || "https://ce.judge0.com";
+const API_KEY = ""; // Get yours for free at https://judge0.com/ce and https://judge0.com/extra-ce
+
+const AUTH_HEADERS = {
+    "X-RapidAPI-Key": API_KEY
+};
+
+var defaultUrl = localStorageGetItem("api-url") || "https://judge0-ce.p.rapidapi.com";
+var extraApiUrl = "https://judge0-extra-ce.p.rapidapi.com";
+
+if (location.hostname == "ide.judge0.com") {
+    defaultUrl = "https://ce.judge0.com";
+    extraApiUrl = "https://extra-ce.judge0.com";
+}
+
 var apiUrl = defaultUrl;
-var wait = localStorageGetItem("wait") || true;
-var check_timeout = 300;
+var wait = localStorageGetItem("wait") || false;
+const INITIAL_WAIT_TIME_MS = 500;
+const WAIT_TIME_FUNCTION = i => 100 * i;
+const MAX_PROBE_REQUESTS = 50;
 
 var blinkStatusLine = ((localStorageGetItem("blink") || "true") === "true");
-var editorMode = localStorageGetItem("editorMode") || "normal";
-var editorModeObject = null;
 
 var fontSize = 14;
-
-var MonacoVim;
-var MonacoEmacs;
 
 var layout;
 
@@ -125,8 +135,8 @@ function handleRunError(jqXHR, textStatus, errorThrown) {
 }
 
 function handleResult(data) {
-    timeEnd = performance.now();
-    console.log("It took " + (timeEnd - timeStart) + " ms to get submission result.");
+    const tat = performance.now() - timeStart;
+    console.log(`It took ${tat}ms to get submission result.`);
 
     var status = data.status;
     var stdout = decode(data.stdout);
@@ -134,7 +144,7 @@ function handleResult(data) {
     var time = (data.time === null ? "-" : data.time + "s");
     var memory = (data.memory === null ? "-" : data.memory + "KB");
 
-    $statusLine.html(`${status.description}, ${time}, ${memory}`);
+    $statusLine.html(`${status.description}, ${time}, ${memory}, (TAT: ${tat}ms)`);
 
     if (blinkStatusLine) {
         $statusLine.addClass("blink");
@@ -237,15 +247,13 @@ function run() {
             async: true,
             contentType: "application/json",
             data: JSON.stringify(data),
-            xhrFields: {
-                withCredentials: apiUrl.indexOf("/secure") != -1 ? true : false
-            },
+            headers: AUTH_HEADERS,
             success: function (data, textStatus, jqXHR) {
                 console.log(`Your submission token is: ${data.token}`);
-                if (wait == true) {
+                if (wait) {
                     handleResult(data);
                 } else {
-                    setTimeout(fetchSubmission.bind(null, data.token), check_timeout);
+                    setTimeout(fetchSubmission.bind(null, data.token, 1), INITIAL_WAIT_TIME_MS);
                 }
             },
             error: handleRunError
@@ -279,14 +287,25 @@ function run() {
     }
 }
 
-function fetchSubmission(submission_token) {
+function fetchSubmission(submission_token, iteration) {
+    if (iteration >= MAX_PROBE_REQUESTS) {
+        handleRunError({
+            statusText: "Maximum number of probe requests reached",
+            status: 504
+        }, null, null);
+        return;
+    }
+
     $.ajax({
         url: apiUrl + "/submissions/" + submission_token + "?base64_encoded=true",
         type: "GET",
         async: true,
+        accept: "application/json",
+        headers: AUTH_HEADERS,
         success: function (data, textStatus, jqXHR) {
             if (data.status.id <= 2) { // In Queue or Processing
-                setTimeout(fetchSubmission.bind(null, submission_token), check_timeout);
+                $statusLine.html(data.status.description);
+                setTimeout(fetchSubmission.bind(null, submission_token, iteration + 1), WAIT_TIME_FUNCTION(iteration));
                 return;
             }
             handleResult(data);
@@ -319,22 +338,6 @@ function loadRandomLanguage() {
     $selectLanguage.dropdown("set selected", values[19]);
     apiUrl = resolveApiUrl($selectLanguage.val())
     insertTemplate();
-}
-
-function resizeEditor(layoutInfo) {
-    if (editorMode != "normal") {
-        var statusLineHeight = $("#editor-status-line").height();
-        layoutInfo.height -= statusLineHeight;
-        layoutInfo.contentHeight -= statusLineHeight;
-    }
-}
-
-function disposeEditorModeObject() {
-    try {
-        editorModeObject.dispose();
-        editorModeObject = null;
-    } catch(ignorable) {
-    }
 }
 
 function resolveLanguageId(id) {
@@ -407,7 +410,7 @@ $(document).ready(function () {
             run();
         } else if (keyCode == 119) { // F8
             e.preventDefault();
-            var url = prompt("Enter URL of Judge0 API:", apiUrl);
+            var url = prompt("Enter base URL:", apiUrl);
             if (url != null) {
                 url = url.trim();
             }
@@ -439,7 +442,7 @@ $(document).ready(function () {
         $(this).closest(".message").transition("fade");
     });
 
-    require(["vs/editor/editor.main"], function (ignorable, MVim, MEmacs) {
+    require(["vs/editor/editor.main"], function (ignorable) {
         layout = new GoldenLayout(layoutConfig, $("#site-content"));
 
         layout.registerComponent("source", function (container, state) {
@@ -458,8 +461,6 @@ $(document).ready(function () {
                 currentLanguageId = parseInt($selectLanguage.val());
                 isEditorDirty = sourceEditor.getValue() != sources[currentLanguageId];
             });
-
-            sourceEditor.onDidLayoutChange(resizeEditor);
         });
 
         layout.registerComponent("stdin", function (container, state) {
@@ -819,7 +820,7 @@ object Main {\n\
 
 var sqliteSource = "\
 -- On Judge0 IDE your SQL script is run on chinook database (https://www.sqlitetutorial.net/sqlite-sample-database).\n\
--- For more information about how to use SQL with Judge0 API please\n\
+-- For more information about how to use SQL with Judge0 please\n\
 -- watch this asciicast: https://asciinema.org/a/326975.\n\
 SELECT\n\
     Name, COUNT(*) AS num_albums\n\
@@ -1225,7 +1226,6 @@ var languageIdTable = {
     1024: 24
 }
 
-var extraApiUrl = "https://extra-ce.judge0.com";
 var languageApiUrlTable = {
     1001: extraApiUrl,
     1002: extraApiUrl,
