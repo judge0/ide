@@ -169,40 +169,9 @@ function handleResult(data) {
     $runBtn.removeClass("loading");
 }
 
-function getIdFromURI() {
-  var uri = location.search.substr(1).trim();
-  return uri.split("&")[0];
-}
-
 function downloadSource() {
     var value = parseInt($selectLanguage.val());
     download(sourceEditor.getValue(), fileNames[value], "text/plain");
-}
-
-function loadSavedSource() {
-    snippet_id = getIdFromURI();
-
-    if (snippet_id.length == 36) {
-        $.ajax({
-            url: apiUrl + "/submissions/" + snippet_id + "?fields=source_code,language_id,stdin,stdout,stderr,compile_output,message,time,memory,status,compiler_options,command_line_arguments&base64_encoded=true",
-            type: "GET",
-            success: function(data, textStatus, jqXHR) {
-                sourceEditor.setValue(decode(data["source_code"]));
-                $selectLanguage.dropdown("set selected", data["language_id"]);
-                $compilerOptions.val(data["compiler_options"]);
-                $commandLineArguments.val(data["command_line_arguments"]);
-                stdinEditor.setValue(decode(data["stdin"]));
-                stdoutEditor.setValue(decode(data["stdout"]));
-                var time = (data.time === null ? "-" : data.time + "s");
-                var memory = (data.memory === null ? "-" : data.memory + "KB");
-                $statusLine.html(`${data.status.description}, ${time}, ${memory}`);
-                changeEditorLanguage();
-            },
-            error: handleRunError
-        });
-    } else {
-        loadRandomLanguage();
-    }
 }
 
 function run() {
@@ -504,11 +473,7 @@ $(document).ready(function () {
 
         layout.on("initialised", function () {
             $(".monaco-editor")[0].appendChild($("#editor-status-line")[0]);
-            if (getIdFromURI()) {
-                loadSavedSource();
-            } else {
-                loadRandomLanguage();
-            }
+            loadRandomLanguage();
             $("#site-navigation").css("border-bottom", "1px solid black");
             sourceEditor.focus();
             editorsUpdateFontSize(fontSize);
