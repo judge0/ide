@@ -138,11 +138,11 @@ function handleResult(data) {
     const tat = Math.round(performance.now() - timeStart);
     console.log(`It took ${tat}ms to get submission result.`);
 
-    var status = data.status;
-    var stdout = decode(data.stdout);
-    var compile_output = decode(data.compile_output);
-    var time = (data.time === null ? "-" : data.time + "s");
-    var memory = (data.memory === null ? "-" : data.memory + "KB");
+    const status = data.status;
+    const stdout = decode(data.stdout);
+    const compile_output = decode(data.compile_output);
+    const time = (data.time === null ? "-" : data.time + "s");
+    const memory = (data.memory === null ? "-" : data.memory + "KB");
 
     $statusLine.html(`${status.description}, ${time}, ${memory} (TAT: ${tat}ms)`);
 
@@ -155,12 +155,12 @@ function handleResult(data) {
         }, 3000);
     }
 
-    var output = [compile_output, stdout].join("\n").trim();
+    const output = [compile_output, stdout].join("\n").trim();
 
     stdoutEditor.setValue(output);
 
     if (output !== "") {
-        var dot = document.getElementById("stdout-dot");
+        let dot = document.getElementById("stdout-dot");
         if (!dot.parentElement.classList.contains("lm_active")) {
             dot.hidden = false;
         }
