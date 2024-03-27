@@ -13,7 +13,7 @@
     --judge0-lime: #A9E34B;
     --judge0-yellow: #FFD43B;
     --judge0-orange: #FFA94D;
-    --judge0-theme: var(--judge0-blue);
+    --judge0-theme: var(--judge0-violet);
 }
 
 html, body {
@@ -136,7 +136,7 @@ body {
 #site-footer {
     color: white;
     left: 0;
-    text-align: center;
+    text-align: left;
     width: 100%;
 }
 
@@ -155,28 +155,6 @@ body {
     right: 0;
     text-align: right;
     width: fit-content;
-}
-
-#editor-status-line {
-    background: transparent;
-    color: #fff;
-    font-family: monospace;
-    height: 19px;
-    padding: 0px 16px;
-    width: inherit;
-}
-
-#editor-status-line input[type=text] {
-    background: transparent;
-    border: none;
-    color: #fff;
-    font-family: monospace;
-    outline: none;
-}
-
-#editor-status-line input[type=text]::selection {
-    background-color: #cce2ff;
-    color: #fff;
 }
 
 .blink {
