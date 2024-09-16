@@ -304,7 +304,7 @@ function loadRandomLanguage() {
         values.push($selectLanguage[0].options[i].value);
     }
     // $selectLanguage.dropdown("set selected", values[Math.floor(Math.random() * $selectLanguage[0].length)]);
-    $selectLanguage.dropdown("set selected", values[19]);
+    $selectLanguage.dropdown("set selected", values[22]);
     apiUrl = resolveApiUrl($selectLanguage.val())
     insertTemplate();
 }
@@ -1092,7 +1092,7 @@ var sources = {
     102: javaScriptSource,
     103: cSource,
     104: cSource,
-    105: cppSource,
+    105: competitiveProgrammingSource,
     1001: cSource,
     1002: cppSource,
     1003: c3Source,
@@ -1251,11 +1251,13 @@ var competitiveProgrammingInput = "\
 ";
 
 var inputs = {
-    54: competitiveProgrammingInput
+    54: competitiveProgrammingInput,
+    105: competitiveProgrammingInput,
 }
 
 var competitiveProgrammingCompilerOptions = "-O3 --std=c++17 -Wall -Wextra -Wold-style-cast -Wuseless-cast -Wnull-dereference -Werror -Wfatal-errors -pedantic -pedantic-errors";
 
 var compilerOptions = {
-    54: competitiveProgrammingCompilerOptions
+    54: competitiveProgrammingCompilerOptions,
+    105: competitiveProgrammingCompilerOptions,
 }
