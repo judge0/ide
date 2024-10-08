@@ -21,13 +21,14 @@
     <script src="./vendor/monaco-editor-0.44.0/min/vs/editor/editor.main.nls.js"></script>
     <script src="./vendor/monaco-editor-0.44.0/min/vs/editor/editor.main.js"></script>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" integrity="sha256-9mbkOfVho3ZPXfM7W8sV2SndrGDuh7wuyLjtsWeTI1Q=" crossorigin="anonymous" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js" integrity="sha256-t8GepnyPmw9t+foMh3mKNvcorqNHamSKtKRxxpUEgFI=" crossorigin="anonymous"></script>
 
-    <link href="https://fonts.googleapis.com/css?family=Exo+2" rel="stylesheet">
-
     <script type="text/javascript" src="js/ide.js"></script>
-
     <link type="text/css" rel="stylesheet" href="css/ide.css">
 
     <title>Judge0 IDE - Free and open-source online code editor.</title>
@@ -154,8 +155,8 @@
                     <input id="command-line-arguments" type="text" placeholder="Command line arguments"></input>
                 </div>
             </div>
-            <div class="item no-left-padding borderless">
-                <button id="run-btn" class="ui primary labeled icon button"><i class="play icon"></i><span id="run-btn-label">Run (⌘ + ↵)</span></button>
+            <div class="item fitted borderless">
+                <button id="run-btn" class="ui primary button">|> Run (<span id="run-btn-label">⌘</span> + ↵)</button>
             </div>
         </div>
     </div>
@@ -169,8 +170,7 @@
         </div>
         <div class="scrolling content"></div>
         <div class="actions">
-            <div class="ui small labeled icon cancel button">
-                <i class="remove icon"></i>
+            <div class="ui small cancel button">
                 Close (ESC)
             </div>
         </div>

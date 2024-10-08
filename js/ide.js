@@ -347,7 +347,7 @@ $(document).ready(function () {
     $commandLineArguments.attr("size", $commandLineArguments.attr("placeholder").length);
 
     if (!/(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
-        $("#run-btn-label").html("Run (Ctrl + ↵)");
+        $("#run-btn-label").html("Ctrl");
     }
 
     $runBtn = $("#run-btn");

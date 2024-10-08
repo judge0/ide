@@ -16,6 +16,10 @@
     --judge0-theme: var(--judge0-blue);
 }
 
+* {
+    font-family: 'JetBrains Mono' !important;
+}
+
 html, body {
     height: 100%;
     min-height: 100%;
@@ -42,7 +46,6 @@ body {
 .lm_header .lm_tab {
     padding-bottom: 3px;
     height: 16px;
-    font-family: "Droid Sans Mono", monospace, monospace, "Droid Sans Fallback";
     font-size: 14px;
 }
 
@@ -107,7 +110,6 @@ body {
 #site-header h2 {
     display: inline;
     vertical-align: middle;
-    font-family: 'Exo 2', sans-serif;
 }
 
 #site-content {
@@ -125,7 +127,6 @@ body {
 #site-footer, #status-line {
     background-color: var(--judge0-theme);
     bottom: 0;
-    font-family: "Droid Sans Mono", monospace, monospace, "Droid Sans Fallback";
     font-size: 13px;
     height: 19px;
     padding-left: 16px;
@@ -175,10 +176,6 @@ body {
     height: 5px;
     right: 7.5px;
     top: 7.5px;
-}
-
-.no-left-padding {
-    padding-left: 0 !important;
 }
 
 input[type="text"] {
