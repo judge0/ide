@@ -1,4 +1,4 @@
-const API_KEY = ""; // Get yours for free at https://judge0.com/ce and https://judge0.com/extra-ce
+const API_KEY = ""; // Get yours for free at https://rapidapi.com/organization/judge0
 
 const AUTH_HEADERS = API_KEY ? {
     "X-RapidAPI-Key": API_KEY
@@ -36,14 +36,10 @@ var $compilerOptions;
 var $commandLineArguments;
 var $insertTemplateBtn;
 var $runBtn;
-var $navigationMessage;
-var $updates;
 var $statusLine;
 
 var timeStart;
 var timeEnd;
-
-var messagesData;
 
 var layoutConfig = {
     settings: {
@@ -167,11 +163,6 @@ function handleResult(data) {
     }
 
     $runBtn.removeClass("loading");
-}
-
-function downloadSource() {
-    var value = parseInt($selectLanguage.val());
-    download(sourceEditor.getValue(), fileNames[value], "text/plain");
 }
 
 function run() {
@@ -355,13 +346,6 @@ $(document).ready(function () {
     $commandLineArguments = $("#command-line-arguments");
     $commandLineArguments.attr("size", $commandLineArguments.attr("placeholder").length);
 
-    $insertTemplateBtn = $("#insert-template-btn");
-    $insertTemplateBtn.click(function (e) {
-        if (isEditorDirty && confirm("Are you sure? Your current changes will be lost.")) {
-            insertTemplate();
-        }
-    });
-
     if (!/(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
         $("#run-btn-label").html("Run (Ctrl + ↵)");
     }
@@ -370,9 +354,6 @@ $(document).ready(function () {
     $runBtn.click(function (e) {
         run();
     });
-
-    $navigationMessage = $("#navigation-message span");
-    $updates = $("#judge0-more");
 
     $statusLine = $("#status-line");
 

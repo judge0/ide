@@ -2,19 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-
-    <meta name="description" content="Free and open-source online code editor that allows you to write and execute code from a rich set of languages.">
-    <meta name="keywords" content="online editor, online code editor, online ide, online compiler, online interpreter, run code online, learn programming online,
-            online debugger, programming in browser, online code runner, online code execution, debug online, debug C code online, debug C++ code online,
-            programming online, snippet, snippets, code snippet, code snippets, pastebin, execute code, programming in browser, run c online, run C++ online,
-            run java online, run python online, run ruby online, run c# online, run rust online, run pascal online, run basic online">
-    <meta name="author" content="Herman Zvonimir Došilović">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <meta property="og:title" content="Judge0 IDE - Free and open-source online code editor">
-    <meta property="og:description" content="Free and open-source online code editor that allows you to write and execute code from a rich set of languages.">
-    <meta property="og:image" content="https://raw.githubusercontent.com/judge0/ide/master/.github/wallpaper.png">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 
@@ -38,15 +26,36 @@
 
     <link href="https://fonts.googleapis.com/css?family=Exo+2" rel="stylesheet">
 
-    <script type="text/javascript" src="third_party/download.js"></script>
-
     <script type="text/javascript" src="js/ide.js"></script>
 
     <link type="text/css" rel="stylesheet" href="css/ide.css">
 
-    <title>Judge0 IDE - Free and open-source online code editor</title>
-    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
-    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    <title>Judge0 IDE - Free and open-source online code editor.</title>
+    <meta name="title" content="Judge0 IDE - Free and open-source online code editor.">
+    <meta name="description" content="Free and open-source online code editor that allows you to write and execute code from a rich set of languages.">
+    <meta name="keywords" content="online editor, online code editor, online ide, online compiler, online interpreter, run code online, learn programming online,
+    online debugger, programming in browser, online code runner, online code execution, debug online, debug C code online, debug C++ code online,
+    programming online, snippet, snippets, code snippet, code snippets, pastebin, execute code, programming in browser, run c online, run C++ online,
+    run java online, run python online, run ruby online, run c# online, run rust online, run pascal online, run basic online">
+
+    <meta property="og:url" content="https://ide.judge0.com">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Judge0 IDE - Free and open-source online code editor.">
+    <meta property="og:image" content="./.github/wallpaper.png">
+    <meta property="og:image:alt" content="Judge0 IDE Wallpaper">
+    <meta property="og:description" content="Free and open-source online code editor that allows you to write and execute code from a rich set of languages.">
+    <meta property="og:site_name" content="Judge0 IDE">
+    <meta property="og:locale" content="en_US">
+
+    <meta property="twitter:url" content="https://ide.judge0.com">
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Judge0 IDE - Free and open-source online code editor.">
+    <meta property="twitter:image" content="./.github/wallpaper.png">
+    <meta property="twitter:description" content="Free and open-source online code editor that allows you to write and execute code from a rich set of languages.">
+
+    <link rel="icon" sizes="192x192" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="mask-icon" href="/favicon.ico" color="black" type="image/x-icon">
 </head>
 
 <body>
@@ -58,15 +67,6 @@
             </a>
         </div>
         <div class="left menu">
-            <div class="ui dropdown item site-links on-hover">
-                File <i class="dropdown icon"></i>
-                <div class="menu">
-                    <a class="item" target="_blank" href="/"><i class="file code icon"></i> New File</a>
-                    <div class="item" onclick="downloadSource()"><i class="download icon"></i> Download</div>
-                    <div id="insert-template-btn" class="item"><i class="file code outline icon"></i> Insert template
-                        for current language</div>
-                </div>
-            </div>
             <div class="item borderless">
                 <select id="select-language" class="ui dropdown">
                     <option value="45" mode="UNKNOWN">Assembly (NASM 2.14.02)</option> <!-- Unknown mode. Help needed. -->
@@ -157,53 +157,6 @@
             <div class="item no-left-padding borderless">
                 <button id="run-btn" class="ui primary labeled icon button"><i class="play icon"></i><span id="run-btn-label">Run (⌘ + ↵)</span></button>
             </div>
-            <div id="navigation-message" class="item borderless">
-                <span class="navigation-message-text"></span>
-            </div>
-        </div>
-        <div class="right menu">
-            <div id="judge0-more" class="ui dropdown item site-links">
-                More
-                <i class="dropdown icon"></i>
-                <div class="menu">
-                    <a id="about" class="link item" target="_blank" href="https://judge0.com/ce"><i class="server icon"></i> Online Code Execution API</a>
-                    <div class="divider"></div>
-                    <a class="item" target="_blank" href="https://github.com/judge0/ide"><i class="github icon"></i>
-                        View source
-                        code on Github</a>
-                    <a class="item" target="_blank" href="https://github.com/judge0/ide/issues/new"><i
-                            class="exclamation circle icon"></i> Report an issue</a>
-                    <div class="divider"></div>
-                    <a class="item" target="_blank" href="https://subscribe.judge0.com"><i class="envelope icon"></i>
-                        Subscribe
-                        to Judge0 newsletter</a>
-                    <a class="item" target="_blank" href="https://discord.gg/GRc3v6n"><i
-                            class="discord icon"></i> Join a Discord server</a>
-                    <div class="divider"></div>
-                    <a class="item" target="_blank" href="mailto:contact@judge0.com"><i
-                            class="paper plane icon"></i>
-                        Contact the author</a>
-                    <a class="item" target="_blank" href="https://hermanz.dosilovic.com"><i class="user icon"></i> About
-                        the
-                        author</a>
-                    <div class="divider"></div>
-                    <a class="item" target="_blank"
-                        href="https://www.reddit.com/submit?url=https%3A%2F%2Fide.judge0.com&title=Judge0%20IDE"
-                        style="background-color: #ff4500 !important; color: white !important;"><i
-                            class="reddit icon"></i> Share
-                        on Reddit</a>
-                    <a class="item" target="_blank"
-                        href="https://twitter.com/intent/tweet?text=Judge0%20IDE&url=https%3A%2F%2Fide.judge0.com&via=hermanzvonimir"
-                        style="background-color: #1da1f2 !important; color: white !important;"><i
-                            class="twitter icon"></i>
-                        Share on Twitter</a>
-                    <a class="item" target="_blank"
-                        href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fide.judge0.com"
-                        style="background-color: #1877f2 !important; color: white !important;"><i
-                            class="facebook icon"></i>
-                        Share on Facebook</a>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -228,7 +181,7 @@
         <span>•</span>
         <span><a href="TERMS.md">Terms of Service</a></span>
         <span>•</span>
-        <span>© 2024 Judge0 – All Rights Reserved.</a>
+        <span>© 2016-2024 Judge0 – All Rights Reserved.</a>
         <span id="status-line"></span>
     </div>
 </body>

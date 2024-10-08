@@ -13,7 +13,7 @@
     --judge0-lime: #A9E34B;
     --judge0-yellow: #FFD43B;
     --judge0-orange: #FFA94D;
-    --judge0-theme: var(--judge0-violet);
+    --judge0-theme: var(--judge0-blue);
 }
 
 html, body {
