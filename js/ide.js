@@ -1,8 +1,8 @@
-const API_KEY = '5043777f62msh56f5b8ee2e2c5c3p1f5578jsn3e73bfdbf93b';  // Insert your new API key here
-const AUTH_HEADERS = {
-    "X-RapidAPI-Key": API_KEY,
-    "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com"
-};
+const API_KEY = "5043777f62msh56f5b8ee2e2c5c3p1f5578jsn3e73bfdbf93b"; // Get yours for free at https://rapidapi.com/organization/judge0
+
+const AUTH_HEADERS = API_KEY ? {
+    "X-RapidAPI-Key": API_KEY
+} : {};
 
 var defaultUrl = localStorageGetItem("api-url") || "https://judge0-ce.p.rapidapi.com";
 var extraApiUrl = "https://judge0-extra-ce.p.rapidapi.com";
