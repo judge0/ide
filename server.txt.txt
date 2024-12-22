@@ -1,0 +1,35 @@
+// Import required modules
+const express = require('express');
+const cors = require('cors');
+
+// Initialize Express app
+const app = express();
+
+// Use CORS middleware to allow public access
+app.use(cors());
+
+// Simulate an API key for public access
+const API_KEY = '5043777f62msh56f5b8ee2e2c5c3p1f5578jsn3e73bfdbf93b'; // Example API key
+
+// Simulate a route where API key validation occurs
+app.use((req, res, next) => {
+    const userApiKey = req.headers['x-api-key']; // Extract API key from header
+    if (!userApiKey || userApiKey !== API_KEY) {
+        return res.status(403).json({ error: "Forbidden: Invalid API key" });
+    }
+    next();
+});
+
+// Sample public API endpoint
+app.get('/api/public', (req, res) => {
+    res.json({
+        message: "This is a public API response. Your API key is valid.",
+        data: { key: "value", status: "success" }
+    });
+});
+
+// Start the server on a specified port
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});

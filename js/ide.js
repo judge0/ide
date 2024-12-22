@@ -1,7 +1,10 @@
-const API_KEY = "5043777f62msh56f5b8ee2e2c5c3p1f5578jsn3e73bfdbf93b"; // Get yours for free at https://rapidapi.com/organization/judge0
+const API_KEY = "5043777f62msh56f5b8ee2e2c5c3p1f5578jsn3e73bfdbf93b"; // Replace with your actual API key
+const API_URL = "https://judge0-ce.p.rapidapi.com/about" ; // Replace with your API URL
 
+// Set up headers
 const AUTH_HEADERS = API_KEY ? {
-    "X-RapidAPI-Key": API_KEY
+    "X-RapidAPI-Key": API_KEY,
+    "Content-Type": "application/json"  // Make sure to set the content type
 } : {};
 
 var defaultUrl = localStorageGetItem("api-url") || "https://judge0-ce.p.rapidapi.com";
