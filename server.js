@@ -1,14 +1,12 @@
-const cors = require('cors');
-const express = require('express');
+const express = require("express");
 const app = express();
 
-app.use(cors());  // This will allow all domains (including GitHub Pages)
+app.use(express.json());
 
-app.get('/endpoint', (req, res) => {
-    res.json({ message: 'This is a public API response' });
+app.post("/compile", (req, res) => {
+    res.json({ success: true, message: "Server is running", data: req.body });
 });
 
-const port = 3000;
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+app.listen(3000, () => {
+    console.log("Server running on http://localhost:3000");
 });

@@ -1,6 +1,26 @@
 {
+  "name": "judge0-api",
+  "version": "1.0.0",
+  "description": "API for compiling code",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
   "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.21.2"
-  }
+    "express": "^4.17.1",
+    "axios": "^0.21.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/naveen-kumar-30/web-based-online-compiler-.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/naveen-kumar-30/web-based-online-compiler-/issues"
+  },
+  "homepage": "https://github.com/naveen-kumar-30/web-based-online-compiler-#readme"
 }
