@@ -1,0 +1,18 @@
+// api/compile.js
+
+module.exports = async (req, res) => {
+  if (req.method === "POST") {
+      const { code, language } = req.body;  // Receive the code and language from the request body
+
+      // Simulate a code compilation result
+      res.status(200).json({
+          status: "success",
+          message: `Code compiled successfully in ${language}`,
+          result: `Output for code: ${code}`,
+      });
+  } else {
+      res.status(405).json({
+          message: "Method Not Allowed",
+      });
+  }
+};

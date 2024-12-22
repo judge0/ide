@@ -7,10 +7,9 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.17.1",
-    "axios": "^0.21.1"
+    "axios": "^0.21.1",
+    "express": "^4.21.2"
   },
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/naveen-kumar-30/web-based-online-compiler-.git"
