@@ -1,24 +1,16 @@
-const API_KEY = ""; // Get yours for free at https://rapidapi.com/organization/judge0
+const API_KEY = ""; // Get yours for free at https://platform.sulu.sh/apis/judge0
 
 const AUTH_HEADERS = API_KEY ? {
-    "X-RapidAPI-Key": API_KEY
+    "Authorization": `Bearer ${API_KEY}`
 } : {};
 
-var defaultUrl = localStorageGetItem("api-url") || "https://judge0-ce.p.rapidapi.com";
-var extraApiUrl = "https://judge0-extra-ce.p.rapidapi.com";
+var CE_BASE_URL = "https://judge0-ce.p.sulu.sh";
+var EXTRA_CE_BASE_URL = "https://judge0-extra-ce.p.sulu.sh";
 
-if (location.hostname == "ide.judge0.com") {
-    defaultUrl = "https://ce.judge0.com";
-    extraApiUrl = "https://extra-ce.judge0.com";
-}
-
-var apiUrl = defaultUrl;
-var wait = ((localStorageGetItem("wait") || "false") === "true");
-const INITIAL_WAIT_TIME_MS = 500;
-const WAIT_TIME_FUNCTION = i => 100 * i;
+var apiUrl = CE_BASE_URL;
+const INITIAL_WAIT_TIME_MS = 0;
+const WAIT_TIME_FUNCTION = i => 100;
 const MAX_PROBE_REQUESTS = 50;
-
-var blinkStatusLine = ((localStorageGetItem("blink") || "true") === "true");
 
 var fontSize = 14;
 
@@ -142,15 +134,6 @@ function handleResult(data) {
 
     $statusLine.html(`${status.description}, ${time}, ${memory} (TAT: ${tat}ms)`);
 
-    if (blinkStatusLine) {
-        $statusLine.addClass("blink");
-        setTimeout(function() {
-            blinkStatusLine = false;
-            localStorageSetItem("blink", "false");
-            $statusLine.removeClass("blink");
-        }, 3000);
-    }
-
     const output = [compile_output, stdout].join("\n").trim();
 
     stdoutEditor.setValue(output);
@@ -202,7 +185,7 @@ function run() {
     var sendRequest = function(data) {
         timeStart = performance.now();
         $.ajax({
-            url: apiUrl + `/submissions?base64_encoded=true&wait=${wait}`,
+            url: apiUrl + `/submissions?base64_encoded=true&wait=false`,
             type: "POST",
             async: true,
             contentType: "application/json",
@@ -210,11 +193,7 @@ function run() {
             headers: AUTH_HEADERS,
             success: function (data, textStatus, jqXHR) {
                 console.log(`Your submission token is: ${data.token}`);
-                if (wait) {
-                    handleResult(data);
-                } else {
-                    setTimeout(fetchSubmission.bind(null, data.token, 1), INITIAL_WAIT_TIME_MS);
-                }
+                setTimeout(fetchSubmission.bind(null, data.token, 1), INITIAL_WAIT_TIME_MS);
             },
             error: handleRunError
         });
@@ -307,7 +286,7 @@ function resolveLanguageId(id) {
 
 function resolveApiUrl(id) {
     id = parseInt(id);
-    return languageApiUrlTable[id] || defaultUrl;
+    return languageApiUrlTable[id] || CE_BASE_URL;
 }
 
 function editorsUpdateFontSize(fontSize) {
@@ -362,21 +341,6 @@ $(document).ready(function () {
         if ((e.metaKey || e.ctrlKey) && keyCode === 13) { // Ctrl + Enter, CMD + Enter
             e.preventDefault();
             run();
-        } else if (keyCode == 119) { // F8
-            e.preventDefault();
-            var url = prompt("Enter base URL:", apiUrl);
-            if (url != null) {
-                url = url.trim();
-            }
-            if (url != null && url != "") {
-                apiUrl = url;
-                localStorageSetItem("api-url", apiUrl);
-            }
-        } else if (keyCode == 118) { // F7
-            e.preventDefault();
-            wait = !wait;
-            localStorageSetItem("wait", wait);
-            alert(`Submission wait is ${wait ? "ON. Enjoy" : "OFF"}.`);
         } else if (event.ctrlKey && keyCode == 107) { // Ctrl++
             e.preventDefault();
             fontSize += 1;
@@ -1194,25 +1158,25 @@ var languageIdTable = {
 }
 
 var languageApiUrlTable = {
-    1001: extraApiUrl,
-    1002: extraApiUrl,
-    1003: extraApiUrl,
-    1004: extraApiUrl,
-    1005: extraApiUrl,
-    1006: extraApiUrl,
-    1007: extraApiUrl,
-    1008: extraApiUrl,
-    1009: extraApiUrl,
-    1010: extraApiUrl,
-    1011: extraApiUrl,
-    1012: extraApiUrl,
-    1013: extraApiUrl,
-    1014: extraApiUrl,
-    1015: extraApiUrl,
-    1021: extraApiUrl,
-    1022: extraApiUrl,
-    1023: extraApiUrl,
-    1024: extraApiUrl
+    1001: EXTRA_CE_BASE_URL,
+    1002: EXTRA_CE_BASE_URL,
+    1003: EXTRA_CE_BASE_URL,
+    1004: EXTRA_CE_BASE_URL,
+    1005: EXTRA_CE_BASE_URL,
+    1006: EXTRA_CE_BASE_URL,
+    1007: EXTRA_CE_BASE_URL,
+    1008: EXTRA_CE_BASE_URL,
+    1009: EXTRA_CE_BASE_URL,
+    1010: EXTRA_CE_BASE_URL,
+    1011: EXTRA_CE_BASE_URL,
+    1012: EXTRA_CE_BASE_URL,
+    1013: EXTRA_CE_BASE_URL,
+    1014: EXTRA_CE_BASE_URL,
+    1015: EXTRA_CE_BASE_URL,
+    1021: EXTRA_CE_BASE_URL,
+    1022: EXTRA_CE_BASE_URL,
+    1023: EXTRA_CE_BASE_URL,
+    1024: EXTRA_CE_BASE_URL
 }
 
 var competitiveProgrammingInput = "\
