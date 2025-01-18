@@ -371,7 +371,7 @@ async function getLanguage(flavor, languageId) {
     });
 }
 
-async function setDefaults() {
+function setDefaults() {
     setFontSizeForAllEditors(fontSize);
     sourceEditor.setValue(DEFAULT_SOURCE);
     stdinEditor.setValue(DEFAULT_STDIN);
@@ -383,6 +383,15 @@ async function setDefaults() {
     loadSelectedLanguage();
 
     sourceEditor.focus();
+}
+
+function clear() {
+    sourceEditor.setValue("");
+    stdinEditor.setValue("");
+    $compilerOptions.val("");
+    $commandLineArguments.val("");
+
+    $statusLine.html("");
 }
 
 $(window).resize(function() {
@@ -414,6 +423,7 @@ $(document).ready(async function () {
         if (selectedFile) {
             const reader = new FileReader();
             reader.onload = function (e) {
+                clear();
                 sourceEditor.setValue(e.target.result);
                 setSourceCodeName(selectedFile.name);
             };
