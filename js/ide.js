@@ -261,8 +261,6 @@ function fetchSubmission(flavor, submission_token, iteration) {
     });
 }
 
-
-
 function saveFile(content, filename) {
     const blob = new Blob([content], { type: "text/plain" });
     const link = document.createElement("a");
@@ -347,6 +345,15 @@ async function loadLangauges() {
 async function loadSelectedLanguage() {
     monaco.editor.setModelLanguage(sourceEditor.getModel(), $selectLanguage.find(":selected").attr("langauge_mode"));
     setSourceCodeName((await getSelectedLanguage()).source_file);
+}
+
+function selectLanguageForExtension(extension) {
+    let language = getLanguageForExtension(extension);
+    let option = $selectLanguage.find(`[flavor=${language.flavor}][value=${language.language_id}]`);
+    if (option.length) {
+        option.prop("selected", true);
+        $selectLanguage.change();
+    }
 }
 
 async function getLanguage(flavor, languageId) {
@@ -435,8 +442,11 @@ $(document).ready(async function () {
             const reader = new FileReader();
             reader.onload = function (e) {
                 clear();
+
                 sourceEditor.setValue(e.target.result);
                 setSourceCodeName(selectedFile.name);
+
+                selectLanguageForExtension(selectedFile.name.split(".").pop());
             };
 
             reader.onerror = function (e) {
@@ -662,7 +672,7 @@ const DEFAULT_STDIN = "\
 
 const DEFAULT_COMPILER_OPTIONS = "-O3 --std=c++17 -Wall -Wextra -Wold-style-cast -Wuseless-cast -Wnull-dereference -Werror -Wfatal-errors -pedantic -pedantic-errors";
 const DEFAULT_CMD_ARGUMENTS = "";
-const DEFAULT_LANGUAGE_ID = 105;
+const DEFAULT_LANGUAGE_ID = 105; // C++ (GCC 14.1.0) (https://ce.judge0.com/languages/105)
 
 function getEditorLanguageMode(languageName) {
     const DEFAULT_EDITOR_LANGUAGE_MODE = "plaintext";
@@ -697,4 +707,12 @@ function getEditorLanguageMode(languageName) {
         }
     }
     return DEFAULT_EDITOR_LANGUAGE_MODE;
+}
+
+const EXTENSIONS_TABLE = {
+    "py": {"flavor": EXTRA_CE, "language_id": 25}, // Python for ML (3.11.2)
+};
+
+function getLanguageForExtension(extension) {
+    return EXTENSIONS_TABLE[extension] || {"flavor": CE, "language_id": 54}; // Plain Text (https://ce.judge0.com/languages/54)
 }
