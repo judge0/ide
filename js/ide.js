@@ -103,6 +103,7 @@ function getQueryVariable(variable) {
 }
 
 const PUTER = !!getQueryVariable("puter.app_instance_id");
+var gPuterFile;
 
 function encode(str) {
     return btoa(unescape(encodeURIComponent(str || "")));
@@ -274,6 +275,21 @@ function fetchSubmission(flavor, submission_token, iteration) {
     });
 }
 
+function setSourceCodeName(name) {
+    $(".lm_title")[0].innerText = name;
+}
+
+function getSourceCodeName() {
+    return $(".lm_title")[0].innerText;
+}
+
+function openFile(content, filename) {
+    clear();
+    sourceEditor.setValue(content);
+    setSourceCodeName(filename);
+    selectLanguageForExtension(filename.split(".").pop());
+}
+
 function saveFile(content, filename) {
     const blob = new Blob([content], { type: "text/plain" });
     const link = document.createElement("a");
@@ -286,25 +302,31 @@ function saveFile(content, filename) {
 }
 
 async function open() {
-    $("#open-file-input").click();
+    if (PUTER) {
+        gPuterFile = await puter.ui.showOpenFilePicker();
+        openFile(await (await gPuterFile.read()).text(), gPuterFile.name);
+    } else {
+        $("#open-file-input").click();
+    }
 }
 
-function save() {
-    saveFile(sourceEditor.getValue(), getSourceCodeName());
+async function save() {
+    if (PUTER) {
+        if (gPuterFile) {
+            gPuterFile.write(sourceEditor.getValue());
+        } else {
+            gPuterFile = await puter.ui.showSaveFilePicker(sourceEditor.getValue(), getSourceCodeName());
+            setSourceCodeName(gPuterFile.name);
+        }
+    } else {
+        saveFile(sourceEditor.getValue(), getSourceCodeName());
+    }
 }
 
 function setFontSizeForAllEditors(fontSize) {
     sourceEditor.updateOptions({fontSize: fontSize});
     stdinEditor.updateOptions({fontSize: fontSize});
     stdoutEditor.updateOptions({fontSize: fontSize});
-}
-
-function setSourceCodeName(name) {
-    $(".lm_title")[0].innerText = name;
-}
-
-function getSourceCodeName() {
-    return $(".lm_title")[0].innerText;
 }
 
 async function loadLangauges() {
@@ -454,12 +476,7 @@ $(document).ready(async function () {
         if (selectedFile) {
             const reader = new FileReader();
             reader.onload = function (e) {
-                clear();
-
-                sourceEditor.setValue(e.target.result);
-                setSourceCodeName(selectedFile.name);
-
-                selectLanguageForExtension(selectedFile.name.split(".").pop());
+                openFile(e.target.result, selectedFile.name);
             };
 
             reader.onerror = function (e) {
@@ -557,7 +574,14 @@ $(document).ready(async function () {
 
     [$runBtn, $saveBtn, $openBtn].forEach(btn => {
         btn.attr("data-tooltip", `${superKey}${btn.attr("data-tooltip")}`);
-    })
+    });
+
+    if (PUTER) {
+        puter.ui.onLaunchedWithItems(async function(items){
+            gPuterFile = items[0];
+            openFile(await (await gPuterFile.read()).text(), gPuterFile.name);
+        });
+    }
 });
 
 const DEFAULT_SOURCE = "\
