@@ -1,183 +1,58 @@
 :root {
-    --judge0-black: #333;
-    --judge0-gray: #CED4DA;
-    --judge0-red: #FF8787;
-    --judge0-pink: #F783AC;
-    --judge0-grape: #DA77F2;
-    --judge0-violet: #9775FA;
-    --judge0-indigo: #748FFC;
-    --judge0-blue: #4DABF7;
-    --judge0-cyan: #3BC9DB;
-    --judge0-teal: #38D9A9;
-    --judge0-green: #69DB7C;
-    --judge0-lime: #A9E34B;
-    --judge0-yellow: #FFD43B;
-    --judge0-orange: #FFA94D;
-    --judge0-theme: var(--judge0-blue);
+    --judge0-blue: #2B3A8F;
+    --judge0-cyan: #00BDD2;
+    --judge0-pink: #ED2079;
+    --judge0-violet: #5F3282;
 }
 
 * {
-    font-family: 'JetBrains Mono' !important;
+    font-family: "JetBrains Mono" !important;
 }
 
 html, body {
     height: 100%;
-    min-height: 100%;
     margin: 0;
+    min-height: 100%;
     padding: 0;
-}
-
-body {
-    background: url(../images/judge0_background.png) no-repeat center center fixed;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-}
-
-.ui[class*="left action"].input>.dropdown {
-    border-radius: 0 .28571429rem .28571429rem 0;
-}
-
-.ui.selection.dropdown {
-    width: 205px;
-}
-
-.lm_header .lm_tab {
-    padding-bottom: 3px;
-    height: 16px;
-    font-size: 14px;
-}
-
-.lm_header .lm_tab.lm_active {
-    box-shadow: none;
-    padding-bottom: 3px;
 }
 
 #site-navigation {
     border-radius: 0;
     margin: 0;
-    background: #1e1e1e;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    height: 45px;
-}
-
-#navigation-message {
-    font-size: 1.2em;
-    white-space: nowrap;
-    overflow: hidden;
-}
-
-@keyframes slide {
-    0% { transform: translateX(570px); }
-    100% { transform: translateX(-100%); }
-}
-@-webkit-keyframes slide {
-    0% { transform: translateX(570px); }
-    100% { transform: translateX(-100%); }
-}
-
-.navigation-message-text {
-    white-space: nowrap;
-    -moz-animation: slide 60s linear infinite;
-    -webkit-animation: slide 60s linear infinite;
-    animation: slide 60s linear infinite;
-}
-
-.navigation-message-text:hover {
-    -moz-animation-play-state: paused;
-    -webkit-animation-play-state: paused;
-    animation-play-state: paused;
-}
-
-#navigation-message a {
-    color: var(--judge0-theme);
-    font-weight: bold;
-}
-
-#site-icon {
-    width: 30px;
-    height: 30px;
-    vertical-align: middle;
+    padding: 0;
 }
 
 #site-header {
-    padding-left: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-}
-
-#site-header h2 {
-    display: inline;
-    vertical-align: middle;
+    border-radius: 0;
 }
 
 #site-content {
-    height: calc(100% - 45px - 19px);
-}
-
-#site-modal .header {
-    color: #db2828;
-}
-
-#run-btn {
-    background-color: var(--judge0-theme);
-}
-
-#site-footer, #status-line {
-    background-color: var(--judge0-theme);
-    bottom: 0;
-    font-size: 13px;
-    height: 19px;
-    padding-left: 16px;
-    padding-right: 16px;
-    position: fixed;
+    height: calc(100% - 50px - 20px);
 }
 
 #site-footer {
+    background: var(--judge0-cyan);
+    background: linear-gradient(45deg, var(--judge0-cyan) 0%, var(--judge0-blue) 33%, var(--judge0-violet) 66%, var(--judge0-pink) 100%);
+    bottom: 0;
     color: white;
-    left: 0;
-    text-align: left;
-    width: 100%;
+    padding-left: 1rem;
+    position: absolute;
 }
 
 #site-footer a {
     color: white;
-    font-weight: bold;
 }
 
 #site-footer a:hover {
-    color: #333;
+    font-weight: bold;
 }
 
 #status-line {
-    color: #fff;
     float: right;
-    right: 0;
-    text-align: right;
-    width: fit-content;
+    padding-right: 1rem;
 }
 
-.blink {
-    animation: blinker 1s linear infinite;
-}
-
-@keyframes blinker {
-    50% {
-        background: #FFD700;
-    }
-}
-
-.dot {
-    background: #0E6EB8;
-    position: absolute;
-    border-radius: 50px;
-    width: 5px;
-    height: 5px;
-    right: 7.5px;
-    top: 7.5px;
-}
-
-input[type="text"] {
-    width: 205px !important;
+#run-btn {
+    background: var(--judge0-cyan);
+    background: linear-gradient(45deg, var(--judge0-cyan) 0%, var(--judge0-blue) 33%, var(--judge0-violet) 66%, var(--judge0-pink) 100%);
 }

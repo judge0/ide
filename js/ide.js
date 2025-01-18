@@ -4,8 +4,15 @@ const AUTH_HEADERS = API_KEY ? {
     "Authorization": `Bearer ${API_KEY}`
 } : {};
 
-var CE_BASE_URL = "https://judge0-ce.p.sulu.sh";
-var EXTRA_CE_BASE_URL = "https://judge0-extra-ce.p.sulu.sh";
+const CE = "CE";
+const EXTRA_CE = "EXTRA_CE";
+
+const CE_BASE_URL = "https://judge0-ce.p.sulu.sh";
+const EXTRA_CE_BASE_URL = "https://judge0-extra-ce.p.sulu.sh";
+
+var BASE_URL = {};
+BASE_URL[CE] = CE_BASE_URL;
+BASE_URL[EXTRA_CE] = EXTRA_CE_BASE_URL;
 
 var apiUrl = CE_BASE_URL;
 const INITIAL_WAIT_TIME_MS = 0;
@@ -20,18 +27,16 @@ var sourceEditor;
 var stdinEditor;
 var stdoutEditor;
 
-var isEditorDirty = false;
-var currentLanguageId;
-
 var $selectLanguage;
 var $compilerOptions;
 var $commandLineArguments;
-var $insertTemplateBtn;
 var $runBtn;
 var $statusLine;
 
 var timeStart;
 var timeEnd;
+
+var sqliteAdditionalFiles;
 
 var layoutConfig = {
     settings: {
@@ -49,7 +54,7 @@ var layoutConfig = {
             height: 70,
             componentName: "source",
             id: "source",
-            title: "SOURCE",
+            title: "Source Code",
             isClosable: false,
             componentState: {
                 readOnly: false
@@ -60,7 +65,7 @@ var layoutConfig = {
                 type: "component",
                 componentName: "stdin",
                 id: "stdin",
-                title: "Input",
+                title: "< Input",
                 isClosable: false,
                 componentState: {
                     readOnly: false
@@ -69,7 +74,7 @@ var layoutConfig = {
                 type: "component",
                 componentName: "stdout",
                 id: "stdout",
-                title: "Output",
+                title: "> Output",
                 isClosable: false,
                 componentState: {
                     readOnly: true
@@ -113,12 +118,12 @@ function showError(title, content) {
     $("#site-modal").modal("show");
 }
 
-function handleError(jqXHR, textStatus, errorThrown) {
+function showHttpError(jqXHR) {
     showError(`${jqXHR.statusText} (${jqXHR.status})`, `<pre>${JSON.stringify(jqXHR, null, 4)}</pre>`);
 }
 
-function handleRunError(jqXHR, textStatus, errorThrown) {
-    handleError(jqXHR, textStatus, errorThrown);
+function handleRunError(jqXHR) {
+    showHttpError(jqXHR);
     $runBtn.removeClass("loading");
 }
 
@@ -128,22 +133,15 @@ function handleResult(data) {
 
     const status = data.status;
     const stdout = decode(data.stdout);
-    const compile_output = decode(data.compile_output);
+    const compileOutput = decode(data.compile_output);
     const time = (data.time === null ? "-" : data.time + "s");
     const memory = (data.memory === null ? "-" : data.memory + "KB");
 
     $statusLine.html(`${status.description}, ${time}, ${memory} (TAT: ${tat}ms)`);
 
-    const output = [compile_output, stdout].join("\n").trim();
+    const output = [compileOutput, stdout].join("\n").trim();
 
     stdoutEditor.setValue(output);
-
-    if (output !== "") {
-        let dot = document.getElementById("stdout-dot");
-        if (!dot.parentElement.classList.contains("lm_active")) {
-            dot.hidden = false;
-        }
-    }
 
     $runBtn.removeClass("loading");
 }
@@ -156,24 +154,24 @@ function run() {
         $runBtn.addClass("loading");
     }
 
-    document.getElementById("stdout-dot").hidden = true;
-
     stdoutEditor.setValue("");
 
-    var x = layout.root.getItemsById("stdout")[0];
+    let x = layout.root.getItemsById("stdout")[0];
     x.parent.header.parent.setActiveContentItem(x);
 
-    var sourceValue = encode(sourceEditor.getValue());
-    var stdinValue = encode(stdinEditor.getValue());
-    var languageId = resolveLanguageId($selectLanguage.val());
-    var compilerOptions = $compilerOptions.val();
-    var commandLineArguments = $commandLineArguments.val();
+    let sourceValue = encode(sourceEditor.getValue());
+    let stdinValue = encode(stdinEditor.getValue());
+    let languageId = parseInt($selectLanguage.val());
+    let compilerOptions = $compilerOptions.val();
+    let commandLineArguments = $commandLineArguments.val();
 
-    if (parseInt(languageId) === 44) {
+    let apiBaseUrl = BASE_URL[$selectLanguage.find(":selected").attr("flavor")];
+
+    if (languageId === 44) {
         sourceValue = sourceEditor.getValue();
     }
 
-    var data = {
+    let data = {
         source_code: sourceValue,
         language_id: languageId,
         stdin: stdinValue,
@@ -182,33 +180,28 @@ function run() {
         redirect_stderr_to_stdout: true
     };
 
-    var sendRequest = function(data) {
+    let sendRequest = function(data) {
         timeStart = performance.now();
         $.ajax({
-            url: apiUrl + `/submissions?base64_encoded=true&wait=false`,
+            url: `${apiBaseUrl}/submissions?base64_encoded=true&wait=false`,
             type: "POST",
-            async: true,
             contentType: "application/json",
             data: JSON.stringify(data),
             headers: AUTH_HEADERS,
-            success: function (data, textStatus, jqXHR) {
+            success: function (data) {
                 console.log(`Your submission token is: ${data.token}`);
-                setTimeout(fetchSubmission.bind(null, data.token, 1), INITIAL_WAIT_TIME_MS);
+                setTimeout(fetchSubmission.bind(null, apiBaseUrl, data.token, 1), INITIAL_WAIT_TIME_MS);
             },
             error: handleRunError
         });
     }
 
-    var fetchAdditionalFiles = false;
-    if (parseInt(languageId) === 82) {
-        if (sqliteAdditionalFiles === "") {
-            fetchAdditionalFiles = true;
+    if (languageId === 82) {
+        if (!sqliteAdditionalFiles) {
             $.ajax({
                 url: `./data/additional_files_zip_base64.txt`,
-                type: "GET",
-                async: true,
                 contentType: "text/plain",
-                success: function (responseData, textStatus, jqXHR) {
+                success: function (responseData) {
                     sqliteAdditionalFiles = responseData;
                     data["additional_files"] = sqliteAdditionalFiles;
                     sendRequest(data);
@@ -218,121 +211,122 @@ function run() {
         }
         else {
             data["additional_files"] = sqliteAdditionalFiles;
+            sendRequest(data);
         }
-    }
-
-    if (!fetchAdditionalFiles) {
+    } else {
         sendRequest(data);
     }
 }
 
-function fetchSubmission(submission_token, iteration) {
+function fetchSubmission(apiBaseUrl, submission_token, iteration) {
     if (iteration >= MAX_PROBE_REQUESTS) {
         handleRunError({
-            statusText: "Maximum number of probe requests reached",
+            statusText: "Maximum number of probe requests reached.",
             status: 504
         }, null, null);
         return;
     }
 
     $.ajax({
-        url: apiUrl + "/submissions/" + submission_token + "?base64_encoded=true",
-        type: "GET",
-        async: true,
-        accept: "application/json",
+        url: `${apiBaseUrl}/submissions/${submission_token}?base64_encoded=true`,
         headers: AUTH_HEADERS,
-        success: function (data, textStatus, jqXHR) {
+        success: function (data) {
             if (data.status.id <= 2) { // In Queue or Processing
                 $statusLine.html(data.status.description);
-                setTimeout(fetchSubmission.bind(null, submission_token, iteration + 1), WAIT_TIME_FUNCTION(iteration));
-                return;
+                setTimeout(fetchSubmission.bind(null, apiBaseUrl, submission_token, iteration + 1), WAIT_TIME_FUNCTION(iteration));
+            } else {
+                handleResult(data);
             }
-            handleResult(data);
         },
         error: handleRunError
     });
 }
 
-function changeEditorLanguage() {
-    monaco.editor.setModelLanguage(sourceEditor.getModel(), $selectLanguage.find(":selected").attr("mode"));
-    currentLanguageId = parseInt($selectLanguage.val());
-    $(".lm_title")[0].innerText = fileNames[currentLanguageId];
-    apiUrl = resolveApiUrl($selectLanguage.val());
+function load() {
 }
 
-function insertTemplate() {
-    currentLanguageId = parseInt($selectLanguage.val());
-    sourceEditor.setValue(sources[currentLanguageId]);
-    stdinEditor.setValue(inputs[currentLanguageId] || "");
-    $compilerOptions.val(compilerOptions[currentLanguageId] || "");
-    changeEditorLanguage();
+function save() {
 }
 
-function loadRandomLanguage() {
-    var values = [];
-    for (var i = 0; i < $selectLanguage[0].options.length; ++i) {
-        values.push($selectLanguage[0].options[i].value);
-    }
-    // $selectLanguage.dropdown("set selected", values[Math.floor(Math.random() * $selectLanguage[0].length)]);
-    $selectLanguage.dropdown("set selected", values[22]);
-    apiUrl = resolveApiUrl($selectLanguage.val())
-    insertTemplate();
-}
-
-function resolveLanguageId(id) {
-    id = parseInt(id);
-    return languageIdTable[id] || id;
-}
-
-function resolveApiUrl(id) {
-    id = parseInt(id);
-    return languageApiUrlTable[id] || CE_BASE_URL;
-}
-
-function editorsUpdateFontSize(fontSize) {
+function setFontSizeForAllEditors(fontSize) {
     sourceEditor.updateOptions({fontSize: fontSize});
     stdinEditor.updateOptions({fontSize: fontSize});
     stdoutEditor.updateOptions({fontSize: fontSize});
 }
 
-function updateScreenElements() {
-    var display = window.innerWidth <= 1200 ? "none" : "";
-    $(".wide.screen.only").each(function(index) {
-        $(this).css("display", display);
-    });
+function setSourceCodeName(name) {
+    $(".lm_title")[0].innerText = name;
 }
+
+function getSourceCodeName() {
+    return $(".lm_title")[0].innerText;
+}
+
+function loadLangauges() {
+    let options = [];
+
+    $.ajax({
+        url: CE_BASE_URL + "/languages",
+        headers: AUTH_HEADERS,
+        success: function (data) {
+            for (let i = 0; i < data.length; i++) {
+                let language = data[i];
+                let option = new Option(language.name, language.id);
+                option.setAttribute("flavor", CE);
+                option.setAttribute("langauge_mode", getEditorLanguageMode(language.name));
+
+                if (language.id !== 89) {
+                    options.push(option);
+                }
+
+                if (language.id === DEFAULT_LANGUAGE_ID) {
+                    option.selected = true;
+                }
+            }
+    }}).always(function() {
+        $.ajax({
+            url: EXTRA_CE_BASE_URL + "/languages",
+            headers: AUTH_HEADERS,
+            success: function (data) {
+                for (let i = 0; i < data.length; i++) {
+                    let language = data[i];
+                    let option = new Option(language.name, language.id);
+                    option.setAttribute("flavor", EXTRA_CE);
+                    option.setAttribute("langauge_mode", getEditorLanguageMode(language.name));
+
+                    if (options.findIndex((t) => (t.text === option.text)) === -1 && language.id !== 89) {
+                        options.push(option);
+                    }
+                }
+            }}).always(function() {
+                options.sort((a, b) => a.text.localeCompare(b.text));
+                $selectLanguage.append(options);
+            });
+    });
+};
 
 $(window).resize(function() {
     layout.updateSize();
-    updateScreenElements();
 });
 
 $(document).ready(function () {
-    updateScreenElements();
-
     console.log("Hey, Judge0 IDE is open-sourced: https://github.com/judge0/ide. Have fun!");
 
     $selectLanguage = $("#select-language");
-    $selectLanguage.change(function (e) {
-        if (!isEditorDirty) {
-            insertTemplate();
-        } else {
-            changeEditorLanguage();
-        }
+    $selectLanguage.change(function () {
+        monaco.editor.setModelLanguage(sourceEditor.getModel(), $selectLanguage.find(":selected").attr("langauge_mode"));
     });
+
+    loadLangauges();
 
     $compilerOptions = $("#compiler-options");
     $commandLineArguments = $("#command-line-arguments");
-    $commandLineArguments.attr("size", $commandLineArguments.attr("placeholder").length);
-
-    if (!/(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
-        $("#run-btn-label").html("Ctrl");
-    }
 
     $runBtn = $("#run-btn");
-    $runBtn.click(function (e) {
-        run();
-    });
+    $runBtn.click(run);
+
+    $saveBtn = $("#save-btn");
+    $saveBtn.click(save);
 
     $statusLine = $("#status-line");
 
@@ -341,24 +335,21 @@ $(document).ready(function () {
         if ((e.metaKey || e.ctrlKey) && keyCode === 13) { // Ctrl + Enter, CMD + Enter
             e.preventDefault();
             run();
-        } else if (event.ctrlKey && keyCode == 107) { // Ctrl++
+        } else if ((e.metaKey || e.ctrlKey) && keyCode === 17) { // Ctrl + S, CMD + S
+            e.preventDefault();
+            save();
+        } else if (e.ctrlKey && keyCode == 107) { // Ctrl++
             e.preventDefault();
             fontSize += 1;
-            editorsUpdateFontSize(fontSize);
-        } else if (event.ctrlKey && keyCode == 109) { // Ctrl+-
+            setFontSizeForAllEditors(fontSize);
+        } else if (e.ctrlKey && keyCode == 109) { // Ctrl+-
             e.preventDefault();
             fontSize -= 1;
-            editorsUpdateFontSize(fontSize);
+            setFontSizeForAllEditors(fontSize);
         }
     });
 
-    $("select.dropdown").dropdown();
     $(".ui.dropdown").dropdown();
-    $(".ui.dropdown.site-links").dropdown({action: "hide", on: "hover"});
-    $(".ui.checkbox").checkbox();
-    $(".message .close").on("click", function () {
-        $(this).closest(".message").transition("fade");
-    });
 
     require(["vs/editor/editor.main"], function (ignorable) {
         layout = new GoldenLayout(layoutConfig, $("#site-content"));
@@ -375,12 +366,8 @@ $(document).ready(function () {
                 }
             });
 
-            sourceEditor.getModel().onDidChangeContent(function (e) {
-                currentLanguageId = parseInt($selectLanguage.val());
-                isEditorDirty = sourceEditor.getValue() != sources[currentLanguageId];
-            });
-
             sourceEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, run);
+            sourceEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, save);
         });
 
         layout.registerComponent("stdin", function (container, state) {
@@ -407,82 +394,25 @@ $(document).ready(function () {
                     enabled: false
                 }
             });
-
-            container.on("tab", function(tab) {
-                tab.element.append("<span id=\"stdout-dot\" class=\"dot\" hidden></span>");
-                tab.element.on("mousedown", function(e) {
-                    e.target.closest(".lm_tab").children[3].hidden = true;
-                });
-            });
         });
 
         layout.on("initialised", function () {
-            loadRandomLanguage();
-            $("#site-navigation").css("border-bottom", "1px solid black");
+            setFontSizeForAllEditors(fontSize);
+            sourceEditor.setValue(DEFAULT_SOURCE);
+            stdinEditor.setValue(DEFAULT_STDIN);
+            $compilerOptions.val(DEFAULT_COMPILER_OPTIONS);
             sourceEditor.focus();
-            editorsUpdateFontSize(fontSize);
         });
 
         layout.init();
     });
+
+    if (!/(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
+        $(".super-key-label").html("Ctrl");
+    }
 });
 
-// Template Sources
-var assemblySource = "\
-section	.text\n\
-    global _start\n\
-\n\
-_start:\n\
-\n\
-    xor	eax, eax\n\
-    lea	edx, [rax+len]\n\
-    mov	al, 1\n\
-    mov	esi, msg\n\
-    mov	edi, eax\n\
-    syscall\n\
-\n\
-    xor	edi, edi\n\
-    lea	eax, [rdi+60]\n\
-    syscall\n\
-\n\
-section	.rodata\n\
-\n\
-msg	db 'hello, world', 0xa\n\
-len	equ	$ - msg\n\
-";
-
-var bashSource = "echo \"hello, world\"";
-
-var basicSource = "PRINT \"hello, world\"";
-
-var cSource = "\
-// Powered by Judge0\n\
-#include <stdio.h>\n\
-\n\
-int main(void) {\n\
-    printf(\"Hello Judge0!\\n\");\n\
-    return 0;\n\
-}\n\
-";
-
-var csharpSource = "\
-public class Hello {\n\
-    public static void Main() {\n\
-        System.Console.WriteLine(\"hello, world\");\n\
-    }\n\
-}\n\
-";
-
-var cppSource = "\
-#include <iostream>\n\
-\n\
-int main() {\n\
-    std::cout << \"hello, world\" << std::endl;\n\
-    return 0;\n\
-}\n\
-";
-
-var competitiveProgrammingSource = "\
+const DEFAULT_SOURCE = "\
 #include <algorithm>\n\
 #include <cstdint>\n\
 #include <iostream>\n\
@@ -589,597 +519,7 @@ int main()\n\
 }\n\
 ";
 
-var clojureSource = "(println \"hello, world\")\n";
-
-var cobolSource = "\
-IDENTIFICATION DIVISION.\n\
-PROGRAM-ID. MAIN.\n\
-PROCEDURE DIVISION.\n\
-DISPLAY \"hello, world\".\n\
-STOP RUN.\n\
-";
-
-var lispSource = "(write-line \"hello, world\")";
-
-var dSource = "\
-import std.stdio;\n\
-\n\
-void main()\n\
-{\n\
-    writeln(\"hello, world\");\n\
-}\n\
-";
-
-var elixirSource = "IO.puts \"hello, world\"";
-
-var erlangSource = "\
-main(_) ->\n\
-    io:fwrite(\"hello, world\\n\").\n\
-";
-
-var executableSource = "\
-Judge0 IDE assumes that content of executable is Base64 encoded.\n\
-\n\
-This means that you should Base64 encode content of your binary,\n\
-paste it here and click \"Run\".\n\
-\n\
-Here is an example of compiled \"hello, world\" NASM program.\n\
-Content of compiled binary is Base64 encoded and used as source code.\n\
-\n\
-https://ide.judge0.com/?kS_f\n\
-";
-
-var fsharpSource = "printfn \"hello, world\"\n";
-
-var fortranSource = "\
-program main\n\
-    print *, \"hello, world\"\n\
-end\n\
-";
-
-var goSource = "\
-package main\n\
-\n\
-import \"fmt\"\n\
-\n\
-func main() {\n\
-    fmt.Println(\"hello, world\")\n\
-}\n\
-";
-
-var groovySource = "println \"hello, world\"\n";
-
-var haskellSource = "main = putStrLn \"hello, world\"";
-
-var javaSource = "\
-public class Main {\n\
-    public static void main(String[] args) {\n\
-        System.out.println(\"hello, world\");\n\
-    }\n\
-}\n\
-";
-
-var javaScriptSource = "console.log(\"hello, world\");";
-
-var kotlinSource = "\
-fun main() {\n\
-    println(\"hello, world\")\n\
-}\n\
-";
-
-var luaSource = "print(\"hello, world\")";
-
-var objectiveCSource = "\
-#import <Foundation/Foundation.h>\n\
-\n\
-int main() {\n\
-    @autoreleasepool {\n\
-        char name[10];\n\
-        scanf(\"%s\", name);\n\
-        NSString *message = [NSString stringWithFormat:@\"hello, %s\\n\", name];\n\
-        printf(\"%s\", message.UTF8String);\n\
-    }\n\
-    return 0;\n\
-}\n\
-";
-
-var ocamlSource = "print_endline \"hello, world\"";
-
-var octaveSource = "printf(\"hello, world\\n\");";
-
-var pascalSource = "\
-program Hello;\n\
-begin\n\
-    writeln ('hello, world')\n\
-end.\n\
-";
-
-var perlSource = "\
-my $name = <STDIN>;\n\
-print \"hello, $name\";\n\
-";
-
-var phpSource = "\
-<?php\n\
-print(\"hello, world\\n\");\n\
-?>\n\
-";
-
-var plainTextSource = "hello, world\n";
-
-var prologSource = "\
-:- initialization(main).\n\
-main :- write('hello, world\\n').\n\
-";
-
-var pythonSource = "print(\"hello, world\")";
-
-var rSource = "cat(\"hello, world\\n\")";
-
-var rubySource = "puts \"hello, world\"";
-
-var rustSource = "\
-fn main() {\n\
-    println!(\"hello, world\");\n\
-}\n\
-";
-
-var scalaSource = "\
-object Main {\n\
-    def main(args: Array[String]) = {\n\
-        val name = scala.io.StdIn.readLine()\n\
-        println(\"hello, \"+ name)\n\
-    }\n\
-}\n\
-";
-
-var sqliteSource = "\
--- On Judge0 IDE your SQL script is run on chinook database (https://www.sqlitetutorial.net/sqlite-sample-database).\n\
--- For more information about how to use SQL with Judge0 please\n\
--- watch this asciicast: https://asciinema.org/a/326975.\n\
-SELECT\n\
-    Name, COUNT(*) AS num_albums\n\
-FROM artists JOIN albums\n\
-ON albums.ArtistID = artists.ArtistID\n\
-GROUP BY Name\n\
-ORDER BY num_albums DESC\n\
-LIMIT 4;\n\
-";
-var sqliteAdditionalFiles = "";
-
-var swiftSource = "\
-import Foundation\n\
-let name = readLine()\n\
-print(\"hello, \\(name!)\")\n\
-";
-
-var typescriptSource = "console.log(\"hello, world\");";
-
-var vbSource = "\
-Public Module Program\n\
-   Public Sub Main()\n\
-      Console.WriteLine(\"hello, world\")\n\
-   End Sub\n\
-End Module\n\
-";
-
-var c3Source = "\
-// On the Judge0 IDE, C3 is automatically\n\
-// updated every hour to the latest commit on master branch.\n\
-module main;\n\
-\n\
-extern func void printf(char *str, ...);\n\
-\n\
-func int main()\n\
-{\n\
-    printf(\"hello, world\\n\");\n\
-    return 0;\n\
-}\n\
-";
-
-var javaTestSource = "\
-import static org.junit.jupiter.api.Assertions.assertEquals;\n\
-\n\
-import org.junit.jupiter.api.Test;\n\
-\n\
-class MainTest {\n\
-    static class Calculator {\n\
-        public int add(int x, int y) {\n\
-            return x + y;\n\
-        }\n\
-    }\n\
-\n\
-    private final Calculator calculator = new Calculator();\n\
-\n\
-    @Test\n\
-    void addition() {\n\
-        assertEquals(2, calculator.add(1, 1));\n\
-    }\n\
-}\n\
-";
-
-var mpiccSource = "\
-// Try adding \"-n 5\" (without quotes) into command line arguments. \n\
-#include <mpi.h>\n\
-\n\
-#include <stdio.h>\n\
-\n\
-int main()\n\
-{\n\
-    MPI_Init(NULL, NULL);\n\
-\n\
-    int world_size;\n\
-    MPI_Comm_size(MPI_COMM_WORLD, &world_size);\n\
-\n\
-    int world_rank;\n\
-    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);\n\
-\n\
-    printf(\"Hello from processor with rank %d out of %d processors.\\n\", world_rank, world_size);\n\
-\n\
-    MPI_Finalize();\n\
-\n\
-    return 0;\n\
-}\n\
-";
-
-var mpicxxSource = "\
-// Try adding \"-n 5\" (without quotes) into command line arguments. \n\
-#include <mpi.h>\n\
-\n\
-#include <iostream>\n\
-\n\
-int main()\n\
-{\n\
-    MPI_Init(NULL, NULL);\n\
-\n\
-    int world_size;\n\
-    MPI_Comm_size(MPI_COMM_WORLD, &world_size);\n\
-\n\
-    int world_rank;\n\
-    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);\n\
-\n\
-    std::cout << \"Hello from processor with rank \"\n\
-              << world_rank << \" out of \" << world_size << \" processors.\\n\";\n\
-\n\
-    MPI_Finalize();\n\
-\n\
-    return 0;\n\
-}\n\
-";
-
-var mpipySource = "\
-# Try adding \"-n 5\" (without quotes) into command line arguments. \n\
-from mpi4py import MPI\n\
-\n\
-comm = MPI.COMM_WORLD\n\
-world_size = comm.Get_size()\n\
-world_rank = comm.Get_rank()\n\
-\n\
-print(f\"Hello from processor with rank {world_rank} out of {world_size} processors\")\n\
-";
-
-var nimSource = "\
-# On the Judge0 IDE, Nim is automatically\n\
-# updated every day to the latest stable version.\n\
-echo \"hello, world\"\n\
-";
-
-var pythonForMlSource = "\
-import mlxtend\n\
-import numpy\n\
-import pandas\n\
-import scipy\n\
-import sklearn\n\
-\n\
-print(\"hello, world\")\n\
-";
-
-var bosqueSource = "\
-// On the Judge0 IDE, Bosque (https://github.com/microsoft/BosqueLanguage)\n\
-// is automatically updated every hour to the latest commit on master branch.\n\
-\n\
-namespace NSMain;\n\
-\n\
-concept WithName {\n\
-    invariant $name != \"\";\n\
-\n\
-    field name: String;\n\
-}\n\
-\n\
-concept Greeting {\n\
-    abstract method sayHello(): String;\n\
-    \n\
-    virtual method sayGoodbye(): String {\n\
-        return \"goodbye\";\n\
-    }\n\
-}\n\
-\n\
-entity GenericGreeting provides Greeting {\n\
-    const instance: GenericGreeting = GenericGreeting@{};\n\
-\n\
-    override method sayHello(): String {\n\
-        return \"hello world\";\n\
-    }\n\
-}\n\
-\n\
-entity NamedGreeting provides WithName, Greeting {\n\
-    override method sayHello(): String {\n\
-        return String::concat(\"hello\", \" \", this.name);\n\
-    }\n\
-}\n\
-\n\
-entrypoint function main(arg?: String): String {\n\
-    var val = arg ?| \"\";\n\
-    if (val == \"1\") {\n\
-        return GenericGreeting@{}.sayHello();\n\
-    }\n\
-    elif (val == \"2\") {\n\
-        return GenericGreeting::instance.sayHello();\n\
-    }\n\
-    else {\n\
-        return NamedGreeting@{name=\"bob\"}.sayHello();\n\
-    }\n\
-}\n\
-";
-
-var cppTestSource = "\
-#include <gtest/gtest.h>\n\
-\n\
-int add(int x, int y) {\n\
-    return x + y;\n\
-}\n\
-\n\
-TEST(AdditionTest, NeutralElement) {\n\
-    EXPECT_EQ(1, add(1, 0));\n\
-    EXPECT_EQ(1, add(0, 1));\n\
-    EXPECT_EQ(0, add(0, 0));\n\
-}\n\
-\n\
-TEST(AdditionTest, CommutativeProperty) {\n\
-    EXPECT_EQ(add(2, 3), add(3, 2));\n\
-}\n\
-\n\
-int main(int argc, char **argv) {\n\
-    ::testing::InitGoogleTest(&argc, argv);\n\
-    return RUN_ALL_TESTS();\n\
-}\n\
-";
-
-var csharpTestSource ="\
-using NUnit.Framework;\n\
-\n\
-public class Calculator\n\
-{\n\
-    public int add(int a, int b)\n\
-    {\n\
-        return a + b;\n\
-    }\n\
-}\n\
-\n\
-[TestFixture]\n\
-public class Tests\n\
-{\n\
-    private Calculator calculator;\n\
-\n\
-    [SetUp]\n\
-    protected void SetUp()\n\
-    {\n\
-        calculator = new Calculator();\n\
-    }\n\
-\n\
-    [Test]\n\
-    public void NeutralElement()\n\
-    {\n\
-        Assert.AreEqual(1, calculator.add(1, 0));\n\
-        Assert.AreEqual(1, calculator.add(0, 1));\n\
-        Assert.AreEqual(0, calculator.add(0, 0));\n\
-    }\n\
-\n\
-    [Test]\n\
-    public void CommutativeProperty()\n\
-    {\n\
-        Assert.AreEqual(calculator.add(2, 3), calculator.add(3, 2));\n\
-    }\n\
-}\n\
-";
-
-var sources = {
-    43: plainTextSource,
-    44: executableSource,
-    45: assemblySource,
-    46: bashSource,
-    47: basicSource,
-    48: cSource,
-    49: cSource,
-    50: cSource,
-    51: csharpSource,
-    52: cppSource,
-    53: cppSource,
-    54: competitiveProgrammingSource,
-    55: lispSource,
-    56: dSource,
-    57: elixirSource,
-    58: erlangSource,
-    59: fortranSource,
-    60: goSource,
-    61: haskellSource,
-    62: javaSource,
-    63: javaScriptSource,
-    64: luaSource,
-    65: ocamlSource,
-    66: octaveSource,
-    67: pascalSource,
-    68: phpSource,
-    69: prologSource,
-    70: pythonSource,
-    71: pythonSource,
-    72: rubySource,
-    73: rustSource,
-    74: typescriptSource,
-    75: cSource,
-    76: cppSource,
-    77: cobolSource,
-    78: kotlinSource,
-    79: objectiveCSource,
-    80: rSource,
-    81: scalaSource,
-    82: sqliteSource,
-    83: swiftSource,
-    84: vbSource,
-    85: perlSource,
-    86: clojureSource,
-    87: fsharpSource,
-    88: groovySource,
-    98: phpSource,
-    99: rSource,
-    100: pythonSource,
-    101: typescriptSource,
-    102: javaScriptSource,
-    103: cSource,
-    104: cSource,
-    105: competitiveProgrammingSource,
-    1001: cSource,
-    1002: cppSource,
-    1003: c3Source,
-    1004: javaSource,
-    1005: javaTestSource,
-    1006: mpiccSource,
-    1007: mpicxxSource,
-    1008: mpipySource,
-    1009: nimSource,
-    1010: pythonForMlSource,
-    1011: bosqueSource,
-    1012: cppTestSource,
-    1013: cSource,
-    1014: cppSource,
-    1015: cppTestSource,
-    1021: csharpSource,
-    1022: csharpSource,
-    1023: csharpTestSource,
-    1024: fsharpSource
-};
-
-var fileNames = {
-    43: "text.txt",
-    44: "a.out",
-    45: "main.asm",
-    46: "script.sh",
-    47: "main.bas",
-    48: "main.c",
-    49: "main.c",
-    50: "main.c",
-    51: "Main.cs",
-    52: "main.cpp",
-    53: "main.cpp",
-    54: "main.cpp",
-    55: "script.lisp",
-    56: "main.d",
-    57: "script.exs",
-    58: "main.erl",
-    59: "main.f90",
-    60: "main.go",
-    61: "main.hs",
-    62: "Main.java",
-    63: "script.js",
-    64: "script.lua",
-    65: "main.ml",
-    66: "script.m",
-    67: "main.pas",
-    68: "script.php",
-    69: "main.pro",
-    70: "script.py",
-    71: "script.py",
-    72: "script.rb",
-    73: "main.rs",
-    74: "script.ts",
-    75: "main.c",
-    76: "main.cpp",
-    77: "main.cob",
-    78: "Main.kt",
-    79: "main.m",
-    80: "script.r",
-    81: "Main.scala",
-    82: "script.sql",
-    83: "Main.swift",
-    84: "Main.vb",
-    85: "script.pl",
-    86: "main.clj",
-    87: "script.fsx",
-    88: "script.groovy",
-    98: "script.php",
-    99: "script.r",
-    100: "script.py",
-    101: "script.ts",
-    102: "script.js",
-    103: "main.c",
-    104: "main.c",
-    105: "main.cpp",
-    1001: "main.c",
-    1002: "main.cpp",
-    1003: "main.c3",
-    1004: "Main.java",
-    1005: "MainTest.java",
-    1006: "main.c",
-    1007: "main.cpp",
-    1008: "script.py",
-    1009: "main.nim",
-    1010: "script.py",
-    1011: "main.bsq",
-    1012: "main.cpp",
-    1013: "main.c",
-    1014: "main.cpp",
-    1015: "main.cpp",
-    1021: "Main.cs",
-    1022: "Main.cs",
-    1023: "Test.cs",
-    1024: "script.fsx"
-};
-
-var languageIdTable = {
-    1001: 1,
-    1002: 2,
-    1003: 3,
-    1004: 4,
-    1005: 5,
-    1006: 6,
-    1007: 7,
-    1008: 8,
-    1009: 9,
-    1010: 10,
-    1011: 11,
-    1012: 12,
-    1013: 13,
-    1014: 14,
-    1015: 15,
-    1021: 21,
-    1022: 22,
-    1023: 23,
-    1024: 24
-}
-
-var languageApiUrlTable = {
-    1001: EXTRA_CE_BASE_URL,
-    1002: EXTRA_CE_BASE_URL,
-    1003: EXTRA_CE_BASE_URL,
-    1004: EXTRA_CE_BASE_URL,
-    1005: EXTRA_CE_BASE_URL,
-    1006: EXTRA_CE_BASE_URL,
-    1007: EXTRA_CE_BASE_URL,
-    1008: EXTRA_CE_BASE_URL,
-    1009: EXTRA_CE_BASE_URL,
-    1010: EXTRA_CE_BASE_URL,
-    1011: EXTRA_CE_BASE_URL,
-    1012: EXTRA_CE_BASE_URL,
-    1013: EXTRA_CE_BASE_URL,
-    1014: EXTRA_CE_BASE_URL,
-    1015: EXTRA_CE_BASE_URL,
-    1021: EXTRA_CE_BASE_URL,
-    1022: EXTRA_CE_BASE_URL,
-    1023: EXTRA_CE_BASE_URL,
-    1024: EXTRA_CE_BASE_URL
-}
-
-var competitiveProgrammingInput = "\
+const DEFAULT_STDIN = "\
 3\n\
 3 2\n\
 1 2 5\n\
@@ -1195,14 +535,40 @@ var competitiveProgrammingInput = "\
 1 3\n\
 ";
 
-var inputs = {
-    54: competitiveProgrammingInput,
-    105: competitiveProgrammingInput,
-}
+const DEFAULT_COMPILER_OPTIONS = "-O3 --std=c++17 -Wall -Wextra -Wold-style-cast -Wuseless-cast -Wnull-dereference -Werror -Wfatal-errors -pedantic -pedantic-errors";
+const DEFAULT_LANGUAGE_ID = 105;
 
-var competitiveProgrammingCompilerOptions = "-O3 --std=c++17 -Wall -Wextra -Wold-style-cast -Wuseless-cast -Wnull-dereference -Werror -Wfatal-errors -pedantic -pedantic-errors";
+function getEditorLanguageMode(languageName) {
+    const DEFAULT_EDITOR_LANGUAGE_MODE = "plaintext";
+    const LANGUAGE_NAME_TO_LANGUAGE_EDITOR_MODE = {
+        "Bash": "shell",
+        "C": "c",
+        "C3": "c",
+        "C#": "csharp",
+        "C++": "cpp",
+        "Clojure": "clojure",
+        "F#": "fsharp",
+        "Go": "go",
+        "Java": "java",
+        "JavaScript": "javascript",
+        "Kotlin": "kotlin",
+        "Objective-C": "objective-c",
+        "Pascal": "pascal",
+        "Perl": "perl",
+        "PHP": "php",
+        "Python": "python",
+        "R": "r",
+        "Ruby": "ruby",
+        "SQL": "sql",
+        "Swift": "swift",
+        "TypeScript": "typescript",
+        "Visual Basic": "vb"
+    }
 
-var compilerOptions = {
-    54: competitiveProgrammingCompilerOptions,
-    105: competitiveProgrammingCompilerOptions,
+    for (let key in LANGUAGE_NAME_TO_LANGUAGE_EDITOR_MODE) {
+        if (languageName.toLowerCase().startsWith(key.toLowerCase())) {
+            return LANGUAGE_NAME_TO_LANGUAGE_EDITOR_MODE[key];
+        }
+    }
+    return DEFAULT_EDITOR_LANGUAGE_MODE;
 }
