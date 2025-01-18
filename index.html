@@ -79,17 +79,22 @@
             </div>
         </div>
         <div class="item fitted">
-            <button id="run-btn" class="ui primary labeled icon button judge0-gradient" data-tooltip=" + ↵" data-position="bottom center"><i class="play icon"></i>Run Code</button>
+            <button id="run-btn" class="ui primary labeled icon button judge0-gradient" data-inverted="" data-tooltip=" + ↵" data-position="bottom center"><i class="play icon"></i>Run Code</button>
         </div>
         <div class="item">
-            <button id="open-btn" class="ui labeled icon button" data-tooltip=" + O" data-position="bottom center"><i class="file icon"></i>Open File</button>
+            <button id="open-btn" class="ui labeled icon button" data-inverted="" data-tooltip=" + O" data-position="bottom center"><i class="file icon"></i>Open File</button>
             <input type="file" id="open-file-input" style="display: none;">
         </div>
         <div class="item fitted">
-            <button id="save-btn" class="ui labeled icon button" data-tooltip=" + S" data-position="bottom center"><i class="save icon"></i>Save File</button>
+            <button id="save-btn" class="ui labeled icon button" data-inverted="" data-tooltip=" + S" data-position="bottom center"><i class="save icon"></i>Save File</button>
         </div>
         <div class="right menu">
-            <a href="https://github.com/judge0/ide" class="link item" target="_blank"><i class="github icon"></i></a>
+            <a class="ui icon link item" href="https://platform.sulu.sh/apis/judge0" target="_blank" data-inverted="" data-tooltip="API Docs" data-position="left center">
+                <i class="book icon"></i>
+            </a>
+            <a class="ui icon link item" href="https://github.com/judge0/ide" target="_blank" data-inverted="" data-tooltip="GitHub Repo" data-position="left center">
+                <i class="github icon"></i>
+            </a>
         </div>
     </div>
 
@@ -109,11 +114,11 @@
     </div>
 
     <div id="site-footer" class="ui bottom attached inverted borderless mini menu">
-        <a href="PRIVACY.md" class="link item" target="_blank"><i class="external alternate icon"></i>Privacy Policy</a>
-        <a href="TERMS.md" class="link item" target="_blank"><i class="external alternate icon"></i>Terms of Service</a>
+        <a href="PRIVACY.md" class="link item" target="_blank"><i class="external square alternate icon"></i>Privacy Policy</a>
+        <a href="TERMS.md" class="link item" target="_blank"><i class="external square alternate icon"></i>Terms of Service</a>
         <a href="https://judge0.com" class="link item" target="_blank"><i class="copyright outline icon"></i>2016-2025 Judge0 d.o.o. – All Rights Reserved.</a>
         <div class="right menu">
-            <div id="status-line" class="link item"></div>
+            <div id="status-line" class="item"></div>
         </div>
     </div>
 </body>
