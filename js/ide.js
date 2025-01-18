@@ -377,9 +377,12 @@ async function loadLangauges() {
     });
 };
 
-async function loadSelectedLanguage() {
+async function loadSelectedLanguage(skipSetDefaultSourceCodeName = false) {
     monaco.editor.setModelLanguage(sourceEditor.getModel(), $selectLanguage.find(":selected").attr("langauge_mode"));
-    setSourceCodeName((await getSelectedLanguage()).source_file);
+
+    if (!skipSetDefaultSourceCodeName) {
+        setSourceCodeName((await getSelectedLanguage()).source_file);
+    }
 }
 
 function selectLanguageForExtension(extension) {
@@ -387,7 +390,7 @@ function selectLanguageForExtension(extension) {
     let option = $selectLanguage.find(`[flavor=${language.flavor}][value=${language.language_id}]`);
     if (option.length) {
         option.prop("selected", true);
-        $selectLanguage.change();
+        $selectLanguage.trigger("change", {skipSetDefaultSourceCodeName: true});
     }
 }
 
@@ -455,7 +458,9 @@ $(document).ready(async function () {
     console.log("Hey, Judge0 IDE is open-sourced: https://github.com/judge0/ide. Have fun!");
 
     $selectLanguage = $("#select-language");
-    $selectLanguage.change(loadSelectedLanguage);
+    $selectLanguage.change(function (event, data) {
+        loadSelectedLanguage(data && data.skipSetDefaultSourceCodeName);
+    });
 
     await loadLangauges();
 
