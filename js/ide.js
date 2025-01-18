@@ -459,7 +459,8 @@ $(document).ready(async function () {
 
     $selectLanguage = $("#select-language");
     $selectLanguage.change(function (event, data) {
-        loadSelectedLanguage(data && data.skipSetDefaultSourceCodeName);
+        let skipSetDefaultSourceCodeName = (data && data.skipSetDefaultSourceCodeName) || !!gPuterFile;
+        loadSelectedLanguage(skipSetDefaultSourceCodeName);
     });
 
     await loadLangauges();
