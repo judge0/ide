@@ -12,37 +12,24 @@ html, body {
     padding: 0;
 }
 
-#site-header, #site-footer {
+.judge0-gradient {
+    background: var(--judge0-cyan) !important;
+    background: linear-gradient(45deg, var(--judge0-cyan) 0%, var(--judge0-blue) 40%, var(--judge0-violet) 70%, var(--judge0-pink) 100%) !important;
+}
+
+#site-header {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+}
+
+#site-logo {
+    width: 5rem;
+}
+
+#site-footer, .lm_tab {
     font-family: "JetBrains Mono" !important;
 }
 
-#site-content {
-    height: calc(100% - 50px - 20px);
-}
-
-#site-footer {
-    background: var(--judge0-cyan);
-    background: linear-gradient(45deg, var(--judge0-cyan) 0%, var(--judge0-blue) 33%, var(--judge0-violet) 66%, var(--judge0-pink) 100%);
-    bottom: 0;
-    color: white;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    position: absolute;
-}
-
-#site-footer a {
-    color: white;
-}
-
-#site-footer a:hover {
-    font-weight: bold;
-}
-
-#status-line {
-    float: right;
-}
-
-#run-btn {
-    background: var(--judge0-cyan);
-    background: linear-gradient(45deg, var(--judge0-cyan) 0%, var(--judge0-blue) 33%, var(--judge0-violet) 66%, var(--judge0-pink) 100%);
+.lm_tab {
+    box-shadow: none !important;
 }

@@ -61,14 +61,14 @@
 </head>
 
 <body>
-    <div id="site-navigation" class="ui top attached inverted menu">
-        <div id="site-header" class="header item">JUDGE0 IDE</div>
+    <div id="site-navigation" class="ui top attached inverted borderless tiny menu">
+        <div id="site-header" class="header item judge0-gradient"><img id="site-logo" src="./images/logo.svg"/></div>
         <div class="item">
             <div class="ui input">
                 <select id="select-language" class="ui dropdown"></select>
             </div>
         </div>
-        <div class="item">
+        <div class="item fitted">
             <div class="ui input">
                 <input id="compiler-options" type="text" placeholder="Compiler options"></input>
             </div>
@@ -78,21 +78,18 @@
                 <input id="command-line-arguments" type="text" placeholder="Command line arguments"></input>
             </div>
         </div>
-        <div class="item">
-            <button id="run-btn" class="ui primary labeled icon button" data-tooltip=" + ↵" data-position="bottom center"><i class="play icon"></i>Run Code</button>
+        <div class="item fitted">
+            <button id="run-btn" class="ui primary labeled icon button judge0-gradient" data-tooltip=" + ↵" data-position="bottom center"><i class="play icon"></i>Run Code</button>
         </div>
         <div class="item">
             <button id="open-btn" class="ui labeled icon button" data-tooltip=" + O" data-position="bottom center"><i class="file icon"></i>Open File</button>
             <input type="file" id="open-file-input" style="display: none;">
         </div>
-        <div class="item">
+        <div class="item fitted">
             <button id="save-btn" class="ui labeled icon button" data-tooltip=" + S" data-position="bottom center"><i class="save icon"></i>Save File</button>
         </div>
         <div class="right menu">
-            <div class="link item">
-                <i class="github icon"></i>
-                <a href="https://github.com/judge0/ide" target="_blank">GitHub</a>
-            </div>
+            <a href="https://github.com/judge0/ide" class="link item" target="_blank"><i class="github icon"></i></a>
         </div>
     </div>
 
@@ -111,13 +108,13 @@
         </div>
     </div>
 
-    <div id="site-footer" class="ui fluid container">
-        <span><a href="PRIVACY.md">Privacy Policy</a></span>
-        <span>•</span>
-        <span><a href="TERMS.md">Terms of Service</a></span>
-        <span>•</span>
-        <span><i class="copyright outline icon"></i>2016-2025 <a href="https://judge0.com">Judge0 d.o.o.</a> – All Rights Reserved.</a>
-        <span id="status-line"></span>
+    <div id="site-footer" class="ui bottom attached inverted borderless mini menu">
+        <a href="PRIVACY.md" class="link item" target="_blank"><i class="external alternate icon"></i>Privacy Policy</a>
+        <a href="TERMS.md" class="link item" target="_blank"><i class="external alternate icon"></i>Terms of Service</a>
+        <a href="https://judge0.com" class="link item" target="_blank"><i class="copyright outline icon"></i>2016-2025 Judge0 d.o.o. – All Rights Reserved.</a>
+        <div class="right menu">
+            <div id="status-line" class="link item"></div>
+        </div>
     </div>
 </body>
 </html>

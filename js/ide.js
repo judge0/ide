@@ -394,11 +394,22 @@ function clear() {
     $statusLine.html("");
 }
 
-$(window).resize(function() {
+function refreshSiteContentHeight() {
+    $("#site-content").height(
+        $(window).height() - $("#site-navigation").outerHeight() - $("#site-footer").outerHeight()
+    );
+}
+
+function refreshLayoutSize() {
+    refreshSiteContentHeight();
     layout.updateSize();
-});
+}
+
+$(window).resize(refreshLayoutSize);
 
 $(document).ready(async function () {
+    refreshSiteContentHeight();
+
     console.log("Hey, Judge0 IDE is open-sourced: https://github.com/judge0/ide. Have fun!");
 
     $selectLanguage = $("#select-language");
@@ -508,7 +519,10 @@ $(document).ready(async function () {
             });
         });
 
-        layout.on("initialised", setDefaults);
+        layout.on("initialised", function () {
+            setDefaults();
+            refreshLayoutSize();
+        });
 
         layout.init();
     });
