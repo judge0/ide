@@ -7,14 +7,20 @@ const AUTH_HEADERS = API_KEY ? {
 const CE = "CE";
 const EXTRA_CE = "EXTRA_CE";
 
-const CE_BASE_URL = "https://judge0-ce.p.sulu.sh";
-const EXTRA_CE_BASE_URL = "https://judge0-extra-ce.p.sulu.sh";
+const AUTHENTICATED_CE_BASE_URL = "https://judge0-ce.p.sulu.sh";
+const AUTHENTICATED_EXTRA_CE_BASE_URL = "https://judge0-extra-ce.p.sulu.sh";
 
-var BASE_URL = {};
-BASE_URL[CE] = CE_BASE_URL;
-BASE_URL[EXTRA_CE] = EXTRA_CE_BASE_URL;
+var AUTHENTICATED_BASE_URL = {};
+AUTHENTICATED_BASE_URL[CE] = AUTHENTICATED_CE_BASE_URL;
+AUTHENTICATED_BASE_URL[EXTRA_CE] = AUTHENTICATED_EXTRA_CE_BASE_URL;
 
-var apiUrl = CE_BASE_URL;
+const UNAUTHENTICATED_CE_BASE_URL = "https://ce.judge0.com";
+const UNAUTHENTICATED_EXTRA_CE_BASE_URL = "https://extra-ce.judge0.com";
+
+var UNAUTHENTICATED_BASE_URL = {};
+UNAUTHENTICATED_BASE_URL[CE] = UNAUTHENTICATED_CE_BASE_URL;
+UNAUTHENTICATED_BASE_URL[EXTRA_CE] = UNAUTHENTICATED_EXTRA_CE_BASE_URL;
+
 const INITIAL_WAIT_TIME_MS = 0;
 const WAIT_TIME_FUNCTION = i => 100;
 const MAX_PROBE_REQUESTS = 50;
@@ -37,6 +43,7 @@ var timeStart;
 var timeEnd;
 
 var sqliteAdditionalFiles;
+var languages = {};
 
 var layoutConfig = {
     settings: {
@@ -65,7 +72,7 @@ var layoutConfig = {
                 type: "component",
                 componentName: "stdin",
                 id: "stdin",
-                title: "< Input",
+                title: "Input",
                 isClosable: false,
                 componentState: {
                     readOnly: false
@@ -74,7 +81,7 @@ var layoutConfig = {
                 type: "component",
                 componentName: "stdout",
                 id: "stdout",
-                title: "> Output",
+                title: "Output",
                 isClosable: false,
                 componentState: {
                     readOnly: true
@@ -124,7 +131,7 @@ function showHttpError(jqXHR) {
 
 function handleRunError(jqXHR) {
     showHttpError(jqXHR);
-    $runBtn.removeClass("loading");
+    $runBtn.removeClass("disabled");
 }
 
 function handleResult(data) {
@@ -143,7 +150,19 @@ function handleResult(data) {
 
     stdoutEditor.setValue(output);
 
-    $runBtn.removeClass("loading");
+    $runBtn.removeClass("disabled");
+}
+
+async function getSelectedLanguage() {
+    return getLanguage(getSelectedLanguageFlavor(), getSelectedLanguageId())
+}
+
+function getSelectedLanguageId() {
+    return parseInt($selectLanguage.val());
+}
+
+function getSelectedLanguageFlavor() {
+    return $selectLanguage.find(":selected").attr("flavor");
 }
 
 function run() {
@@ -151,21 +170,22 @@ function run() {
         showError("Error", "Source code can't be empty!");
         return;
     } else {
-        $runBtn.addClass("loading");
+        $runBtn.addClass("disabled");
     }
 
     stdoutEditor.setValue("");
+    $statusLine.html("");
 
     let x = layout.root.getItemsById("stdout")[0];
     x.parent.header.parent.setActiveContentItem(x);
 
     let sourceValue = encode(sourceEditor.getValue());
     let stdinValue = encode(stdinEditor.getValue());
-    let languageId = parseInt($selectLanguage.val());
+    let languageId = getSelectedLanguageId();
     let compilerOptions = $compilerOptions.val();
     let commandLineArguments = $commandLineArguments.val();
 
-    let apiBaseUrl = BASE_URL[$selectLanguage.find(":selected").attr("flavor")];
+    let flavor = getSelectedLanguageFlavor();
 
     if (languageId === 44) {
         sourceValue = sourceEditor.getValue();
@@ -183,14 +203,14 @@ function run() {
     let sendRequest = function(data) {
         timeStart = performance.now();
         $.ajax({
-            url: `${apiBaseUrl}/submissions?base64_encoded=true&wait=false`,
+            url: `${AUTHENTICATED_BASE_URL[flavor]}/submissions?base64_encoded=true&wait=false`,
             type: "POST",
             contentType: "application/json",
             data: JSON.stringify(data),
             headers: AUTH_HEADERS,
             success: function (data) {
                 console.log(`Your submission token is: ${data.token}`);
-                setTimeout(fetchSubmission.bind(null, apiBaseUrl, data.token, 1), INITIAL_WAIT_TIME_MS);
+                setTimeout(fetchSubmission.bind(null, flavor, data.token, 1), INITIAL_WAIT_TIME_MS);
             },
             error: handleRunError
         });
@@ -218,7 +238,7 @@ function run() {
     }
 }
 
-function fetchSubmission(apiBaseUrl, submission_token, iteration) {
+function fetchSubmission(flavor, submission_token, iteration) {
     if (iteration >= MAX_PROBE_REQUESTS) {
         handleRunError({
             statusText: "Maximum number of probe requests reached.",
@@ -228,12 +248,11 @@ function fetchSubmission(apiBaseUrl, submission_token, iteration) {
     }
 
     $.ajax({
-        url: `${apiBaseUrl}/submissions/${submission_token}?base64_encoded=true`,
-        headers: AUTH_HEADERS,
+        url: `${UNAUTHENTICATED_BASE_URL[flavor]}/submissions/${submission_token}?base64_encoded=true`,
         success: function (data) {
             if (data.status.id <= 2) { // In Queue or Processing
                 $statusLine.html(data.status.description);
-                setTimeout(fetchSubmission.bind(null, apiBaseUrl, submission_token, iteration + 1), WAIT_TIME_FUNCTION(iteration));
+                setTimeout(fetchSubmission.bind(null, flavor, submission_token, iteration + 1), WAIT_TIME_FUNCTION(iteration));
             } else {
                 handleResult(data);
             }
@@ -242,10 +261,25 @@ function fetchSubmission(apiBaseUrl, submission_token, iteration) {
     });
 }
 
-function load() {
+
+
+function saveFile(content, filename) {
+    const blob = new Blob([content], { type: "text/plain" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+}
+
+async function open() {
+    $("#open-file-input").click();
 }
 
 function save() {
+    saveFile(sourceEditor.getValue(), getSourceCodeName());
 }
 
 function setFontSizeForAllEditors(fontSize) {
@@ -262,62 +296,106 @@ function getSourceCodeName() {
     return $(".lm_title")[0].innerText;
 }
 
-function loadLangauges() {
-    let options = [];
+async function loadLangauges() {
+    return new Promise((resolve, reject) => {
+        let options = [];
 
-    $.ajax({
-        url: CE_BASE_URL + "/languages",
-        headers: AUTH_HEADERS,
-        success: function (data) {
-            for (let i = 0; i < data.length; i++) {
-                let language = data[i];
-                let option = new Option(language.name, language.id);
-                option.setAttribute("flavor", CE);
-                option.setAttribute("langauge_mode", getEditorLanguageMode(language.name));
-
-                if (language.id !== 89) {
-                    options.push(option);
-                }
-
-                if (language.id === DEFAULT_LANGUAGE_ID) {
-                    option.selected = true;
-                }
-            }
-    }}).always(function() {
         $.ajax({
-            url: EXTRA_CE_BASE_URL + "/languages",
-            headers: AUTH_HEADERS,
+            url: UNAUTHENTICATED_CE_BASE_URL + "/languages",
             success: function (data) {
                 for (let i = 0; i < data.length; i++) {
                     let language = data[i];
                     let option = new Option(language.name, language.id);
-                    option.setAttribute("flavor", EXTRA_CE);
+                    option.setAttribute("flavor", CE);
                     option.setAttribute("langauge_mode", getEditorLanguageMode(language.name));
 
-                    if (options.findIndex((t) => (t.text === option.text)) === -1 && language.id !== 89) {
+                    if (language.id !== 89) {
                         options.push(option);
                     }
+
+                    if (language.id === DEFAULT_LANGUAGE_ID) {
+                        option.selected = true;
+                    }
                 }
-            }}).always(function() {
-                options.sort((a, b) => a.text.localeCompare(b.text));
-                $selectLanguage.append(options);
-            });
+            },
+            error: reject
+        }).always(function() {
+            $.ajax({
+                url: UNAUTHENTICATED_EXTRA_CE_BASE_URL + "/languages",
+                success: function (data) {
+                    for (let i = 0; i < data.length; i++) {
+                        let language = data[i];
+                        let option = new Option(language.name, language.id);
+                        option.setAttribute("flavor", EXTRA_CE);
+                        option.setAttribute("langauge_mode", getEditorLanguageMode(language.name));
+
+                        if (options.findIndex((t) => (t.text === option.text)) === -1 && language.id !== 89) {
+                            options.push(option);
+                        }
+                    }
+                },
+                error: reject
+                }).always(function() {
+                    options.sort((a, b) => a.text.localeCompare(b.text));
+                    $selectLanguage.append(options);
+                    resolve();
+                });
+        });
     });
 };
+
+async function loadSelectedLanguage() {
+    monaco.editor.setModelLanguage(sourceEditor.getModel(), $selectLanguage.find(":selected").attr("langauge_mode"));
+    setSourceCodeName((await getSelectedLanguage()).source_file);
+}
+
+async function getLanguage(flavor, languageId) {
+    return new Promise((resolve, reject) => {
+        if (languages[flavor] && languages[flavor][languageId]) {
+            resolve(languages[flavor][languageId]);
+            return;
+        }
+
+        $.ajax({
+            url: `${UNAUTHENTICATED_BASE_URL[flavor]}/languages/${languageId}`,
+            success: function(data) {
+                if (!languages[flavor]) {
+                    languages[flavor] = {};
+                }
+
+                languages[flavor][languageId] = data;
+                resolve(data);
+            },
+            error: reject
+        });
+    });
+}
+
+async function setDefaults() {
+    setFontSizeForAllEditors(fontSize);
+    sourceEditor.setValue(DEFAULT_SOURCE);
+    stdinEditor.setValue(DEFAULT_STDIN);
+    $compilerOptions.val(DEFAULT_COMPILER_OPTIONS);
+    $commandLineArguments.val(DEFAULT_CMD_ARGUMENTS);
+
+    $statusLine.html("");
+
+    loadSelectedLanguage();
+
+    sourceEditor.focus();
+}
 
 $(window).resize(function() {
     layout.updateSize();
 });
 
-$(document).ready(function () {
+$(document).ready(async function () {
     console.log("Hey, Judge0 IDE is open-sourced: https://github.com/judge0/ide. Have fun!");
 
     $selectLanguage = $("#select-language");
-    $selectLanguage.change(function () {
-        monaco.editor.setModelLanguage(sourceEditor.getModel(), $selectLanguage.find(":selected").attr("langauge_mode"));
-    });
+    $selectLanguage.change(loadSelectedLanguage);
 
-    loadLangauges();
+    await loadLangauges();
 
     $compilerOptions = $("#compiler-options");
     $commandLineArguments = $("#command-line-arguments");
@@ -328,16 +406,39 @@ $(document).ready(function () {
     $saveBtn = $("#save-btn");
     $saveBtn.click(save);
 
+    $openBtn = $("#open-btn");
+    $openBtn.click(open);
+
+    $("#open-file-input").change(function (e) {
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                sourceEditor.setValue(e.target.result);
+                setSourceCodeName(selectedFile.name);
+            };
+
+            reader.onerror = function (e) {
+                showError("Error", "Error reading file: " + e.target.error);
+            };
+
+            reader.readAsText(selectedFile);
+        }
+    });
+
     $statusLine = $("#status-line");
 
     $(document).on("keydown", "body", function (e) {
         var keyCode = e.keyCode || e.which;
-        if ((e.metaKey || e.ctrlKey) && keyCode === 13) { // Ctrl + Enter, CMD + Enter
+        if ((e.metaKey || e.ctrlKey) && keyCode === 13) { // Ctrl+Enter, CMD+Enter
             e.preventDefault();
             run();
-        } else if ((e.metaKey || e.ctrlKey) && keyCode === 17) { // Ctrl + S, CMD + S
+        } else if ((e.metaKey || e.ctrlKey) && keyCode === 83) { // Ctrl+S, CMD+S
             e.preventDefault();
             save();
+        } else if ((e.metaKey || e.ctrlKey) && keyCode === 79) { // Ctrl+O, CMD+O
+            e.preventDefault();
+            open();
         } else if (e.ctrlKey && keyCode == 107) { // Ctrl++
             e.preventDefault();
             fontSize += 1;
@@ -368,6 +469,7 @@ $(document).ready(function () {
 
             sourceEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, run);
             sourceEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, save);
+            sourceEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyO, open);
         });
 
         layout.registerComponent("stdin", function (container, state) {
@@ -396,20 +498,19 @@ $(document).ready(function () {
             });
         });
 
-        layout.on("initialised", function () {
-            setFontSizeForAllEditors(fontSize);
-            sourceEditor.setValue(DEFAULT_SOURCE);
-            stdinEditor.setValue(DEFAULT_STDIN);
-            $compilerOptions.val(DEFAULT_COMPILER_OPTIONS);
-            sourceEditor.focus();
-        });
+        layout.on("initialised", setDefaults);
 
         layout.init();
     });
 
+    let superKey = "⌘";
     if (!/(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
-        $(".super-key-label").html("Ctrl");
+        superKey = "Ctrl";
     }
+
+    [$runBtn, $saveBtn, $openBtn].forEach(btn => {
+        btn.attr("data-tooltip", `${superKey}${btn.attr("data-tooltip")}`);
+    })
 });
 
 const DEFAULT_SOURCE = "\
@@ -536,6 +637,7 @@ const DEFAULT_STDIN = "\
 ";
 
 const DEFAULT_COMPILER_OPTIONS = "-O3 --std=c++17 -Wall -Wextra -Wold-style-cast -Wuseless-cast -Wnull-dereference -Werror -Wfatal-errors -pedantic -pedantic-errors";
+const DEFAULT_CMD_ARGUMENTS = "";
 const DEFAULT_LANGUAGE_ID = 105;
 
 function getEditorLanguageMode(languageName) {

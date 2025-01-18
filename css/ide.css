@@ -5,10 +5,6 @@
     --judge0-violet: #5F3282;
 }
 
-* {
-    font-family: "JetBrains Mono" !important;
-}
-
 html, body {
     height: 100%;
     margin: 0;
@@ -16,14 +12,8 @@ html, body {
     padding: 0;
 }
 
-#site-navigation {
-    border-radius: 0;
-    margin: 0;
-    padding: 0;
-}
-
-#site-header {
-    border-radius: 0;
+#site-header, #site-footer {
+    font-family: "JetBrains Mono" !important;
 }
 
 #site-content {
@@ -36,6 +26,7 @@ html, body {
     bottom: 0;
     color: white;
     padding-left: 1rem;
+    padding-right: 1rem;
     position: absolute;
 }
 
@@ -49,7 +40,6 @@ html, body {
 
 #status-line {
     float: right;
-    padding-right: 1rem;
 }
 
 #run-btn {

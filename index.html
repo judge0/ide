@@ -25,8 +25,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" integrity="sha256-9mbkOfVho3ZPXfM7W8sV2SndrGDuh7wuyLjtsWeTI1Q=" crossorigin="anonymous" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js" integrity="sha256-t8GepnyPmw9t+foMh3mKNvcorqNHamSKtKRxxpUEgFI=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.css" integrity="sha512-KXol4x3sVoO+8ZsWPFI/r5KBVB/ssCGB5tsv2nVOKwLg33wTFP3fmnXa47FdSVIshVTgsYk/1734xSk9aFIa4A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.js" integrity="sha512-Xo0Jh8MsOn72LGV8kU5LsclG7SUzJsWGhXbWcYs2MAmChkQzwiW/yTQwdJ8w6UA9C6EVG18GHb/TrYpYCjyAQw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <script type="text/javascript" src="js/ide.js"></script>
     <link type="text/css" rel="stylesheet" href="css/ide.css">
@@ -60,31 +60,37 @@
 </head>
 
 <body>
-    <div id="site-navigation" class="ui inverted menu">
-        <div id="site-header" class="header borderless item">JUDGE0 IDE</div>
-        <div class="item borderless">
+    <div id="site-navigation" class="ui top attached inverted menu">
+        <div id="site-header" class="header item">JUDGE0 IDE</div>
+        <div class="item">
             <div class="ui input">
                 <select id="select-language" class="ui dropdown"></select>
             </div>
         </div>
-        <div class="item borderless fitted">
+        <div class="item">
             <div class="ui input">
                 <input id="compiler-options" type="text" placeholder="Compiler options"></input>
             </div>
         </div>
-        <div class="item borderless">
+        <div class="item">
             <div class="ui input">
                 <input id="command-line-arguments" type="text" placeholder="Command line arguments"></input>
             </div>
         </div>
-        <div class="item borderless fitted">
-            <div class="ui input">
-                <button id="run-btn" class="ui primary button">Run (<span class="super-key-label">⌘</span> + ↵)</button>
-            </div>
+        <div class="item">
+            <button id="run-btn" class="ui primary labeled icon button" data-tooltip=" + ↵" data-position="bottom center"><i class="play icon"></i>Run Code</button>
         </div>
-        <div class="item borderless">
-            <div class="ui input">
-                <button id="save-btn" class="ui button">Save (<span class="super-key-label">⌘</span> + S)</button>
+        <div class="item">
+            <button id="open-btn" class="ui labeled icon button" data-tooltip=" + O" data-position="bottom center"><i class="file icon"></i>Open File</button>
+            <input type="file" id="open-file-input" style="display: none;">
+        </div>
+        <div class="item">
+            <button id="save-btn" class="ui labeled icon button" data-tooltip=" + S" data-position="bottom center"><i class="save icon"></i>Save File</button>
+        </div>
+        <div class="right menu">
+            <div class="link item">
+                <i class="github icon"></i>
+                <a href="https://github.com/judge0/ide" target="_blank">GitHub</a>
             </div>
         </div>
     </div>
@@ -92,6 +98,7 @@
     <div id="site-content"></div>
 
     <div id="site-modal" class="ui modal">
+        <i class="close icon"></i>
         <div class="header">
             <span id="title"></span>
         </div>
@@ -102,13 +109,11 @@
     </div>
 
     <div id="site-footer" class="ui fluid container">
-        <span>•</span>
         <span><a href="PRIVACY.md">Privacy Policy</a></span>
         <span>•</span>
         <span><a href="TERMS.md">Terms of Service</a></span>
         <span>•</span>
-        <span>© 2016-2025 <a href="https://judge0.com">Judge0 d.o.o.</a> – All Rights Reserved.</a>
-        <span>•</span>
+        <span><i class="copyright outline icon"></i>2016-2025 <a href="https://judge0.com">Judge0 d.o.o.</a> – All Rights Reserved.</a>
         <span id="status-line"></span>
     </div>
 </body>
