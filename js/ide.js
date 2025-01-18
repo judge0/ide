@@ -710,9 +710,27 @@ function getEditorLanguageMode(languageName) {
 }
 
 const EXTENSIONS_TABLE = {
+    "asm": {"flavor": CE, "language_id": 45}, // Assembly (NASM 2.14.02)
+    "c": {"flavor": CE, "language_id": 103}, // C (GCC 14.1.0)
+    "cpp": {"flavor": CE, "language_id": 105}, // C++ (GCC 14.1.0)
+    "cs": {"flavor": EXTRA_CE, "language_id": 29}, // C# (.NET Core SDK 7.0.400)
+    "go": {"flavor": CE, "language_id": 95}, // Go (1.18.5)
+    "java": {"flavor": CE, "language_id": 91}, // Java (JDK 17.0.6)
+    "js": {"flavor": CE, "language_id": 102}, // JavaScript (Node.js 22.08.0)
+    "lua": {"flavor": CE, "language_id": 64}, // Lua (5.3.5)
+    "pas": {"flavor": CE, "language_id": 67}, // Pascal (FPC 3.0.4)
+    "php": {"flavor": CE, "language_id": 98}, // PHP (8.3.11)
     "py": {"flavor": EXTRA_CE, "language_id": 25}, // Python for ML (3.11.2)
+    "r": {"flavor": CE, "language_id": 99}, // R (4.4.1)
+    "rb": {"flavor": CE, "language_id": 72}, // Ruby (2.7.0)
+    "rs": {"flavor": CE, "language_id": 73}, // Rust (1.40.0)
+    "scala": {"flavor": CE, "language_id": 81}, // Scala (2.13.2)
+    "sh": {"flavor": CE, "language_id": 46}, // Bash (5.0.0)
+    "swift": {"flavor": CE, "language_id": 83}, // Swift (5.2.3)
+    "ts": {"flavor": CE, "language_id": 101}, // TypeScript (5.6.2)
+    "txt": {"flavor": CE, "language_id": 43}, // Plain Text
 };
 
 function getLanguageForExtension(extension) {
-    return EXTENSIONS_TABLE[extension] || {"flavor": CE, "language_id": 54}; // Plain Text (https://ce.judge0.com/languages/54)
+    return EXTENSIONS_TABLE[extension] || {"flavor": CE, "language_id": 43}; // Plain Text (https://ce.judge0.com/languages/43)
 }
