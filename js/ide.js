@@ -286,8 +286,8 @@ function getSourceCodeName() {
 function openFile(content, filename) {
     clear();
     sourceEditor.setValue(content);
-    setSourceCodeName(filename);
     selectLanguageForExtension(filename.split(".").pop());
+    setSourceCodeName(filename);
 }
 
 function saveFile(content, filename) {
