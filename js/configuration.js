@@ -1,6 +1,9 @@
 "use strict";
 import query from "./query.js";
 import ls from "./local_storage.js";
+import { IS_ELECTRON } from "./electron.js";
+import { IS_PUTER } from "./puter.js";
+import { IS_STANDALONE } from "./standalone.js";
 
 const DEFAULT_STYLE_OPTIONS = {
     showLogo: true,
@@ -139,7 +142,16 @@ const configuration = {
     },
     getConfig() {
         if (!CONFIGURATION) {
-            CONFIGURATION = new Proxy(JSON.parse(JSON.stringify(DEFAULT_CONFIGURATION)), {
+            let initialConfig = DEFAULT_CONFIGURATION;
+            if (IS_ELECTRON) {
+                initialConfig = DEFAULT_CONFIGURATIONS.electron;
+            } else if (IS_PUTER) {
+                initialConfig = DEFAULT_CONFIGURATIONS.puter;
+            } else if (IS_STANDALONE) {
+                initialConfig = DEFAULT_CONFIGURATIONS.standalone;
+            }
+
+            CONFIGURATION = new Proxy(JSON.parse(JSON.stringify(initialConfig)), {
                 get: PROXY_HANDLER.get,
                 set: function(obj, key, val) {
                     if (LEGAL_VALUES[key] && !LEGAL_VALUES[key].includes(val)) {

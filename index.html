@@ -35,6 +35,7 @@
     <script type="module" src="/js/puter.js"></script>
     <script type="module" src="/js/query.js"></script>
     <script type="module" src="/js/site.js"></script>
+    <script type="module" src="/js/standalone.js"></script>
     <script type="module" src="/js/style.js"></script>
     <script type="module" src="/js/theme.js"></script>
 
@@ -49,27 +50,25 @@
     programming online, snippet, snippets, code snippet, code snippets, pastebin, execute code, programming in browser, run c online, run C++ online,
     run java online, run python online, run ruby online, run c# online, run rust online, run pascal online, run basic online">
 
-    <meta property="og:url" content="https://ide.judge0.com">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Judge0 IDE">
+    <meta property="og:description" content="Free and open-source online code editor and compiler">
     <meta property="og:image" content="https://raw.githubusercontent.com/judge0/ide/refs/heads/master/.github/wallpaper.png">
     <meta property="og:image:alt" content="Judge0 IDE">
-    <meta property="og:description" content="Free and open-source online code editor and compiler">
-    <meta property="og:site_name" content="Judge0 IDE">
     <meta property="og:locale" content="en_US">
+    <meta property="og:site_name" content="Judge0 IDE">
+    <meta property="og:title" content="Judge0 IDE">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ide.judge0.com">
 
-    <meta property="twitter:url" content="https://ide.judge0.com">
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="Judge0 IDE">
-    <meta property="twitter:image" content="https://raw.githubusercontent.com/judge0/ide/refs/heads/master/.github/wallpaper.png">
     <meta property="twitter:description" content="Free and open-source online code editor and compiler">
+    <meta property="twitter:image" content="https://raw.githubusercontent.com/judge0/ide/refs/heads/master/.github/wallpaper.png">
+    <meta property="twitter:title" content="Judge0 IDE">
+    <meta property="twitter:url" content="https://ide.judge0.com">
 
-    <link rel="shortcut icon" href="/favicons/favicon.ico">
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png"><!-- 180×180 -->
 
-    <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg">
-    <link rel="icon" type="image/png" sizes="96x96" href="/favicons/favicon-96x96.png">
-
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicons/favicon-180x180.png">
     <meta name="apple-mobile-web-app-title" content="Judge0 IDE">
 
     <link rel="manifest" href="/manifest.json">
@@ -80,8 +79,10 @@
 
 <body class="flex flex-col text-black bg-white size-full dark:bg-black dark:text-white" style="opacity: 0 !important;">
     <header class="flex items-center p-2 space-x-2 judge0-showNavigation">
-        <a href="https://judge0.com" target="_blank" rel="noopener" tabindex="-1" class="w-8 h-8 rounded-md judge0-showLogo">
-            <img src="./images/icon_var2_rounded_512.png">
+        <a href="https://judge0.com" target="_blank" rel="noopener" tabindex="-1" class="judge0-showLogo">
+            <img src="/icon.svg" class="size-8 rounded-md xl:hidden" />
+            <img src="/images/logo_black.svg" class="h-4 max-xl:hidden px-4 block dark:hidden" />
+            <img src="/images/logo_white.svg" class="h-4 max-xl:hidden px-4 hidden dark:block" />
         </a>
         <div class="judge0-showFileMenu judge0-dropdown">
             <button class="h-8 px-4 text-sm transition rounded-md judge0-dropdown-btn dark:hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 hover:bg-zinc-100">File</button>
@@ -122,16 +123,16 @@
             Run
         </button>
         <div class="judge0-showPuterSignInOutButton">
-            <button id="judge0-sign-in-btn" class="flex items-center justify-center h-8 gap-2 px-4 text-sm transition rounded-md text-zinc-800 dark:text-white dark:hover:bg-zinc-700 dark:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 bg-zinc-100 hover:bg-zinc-200">
+            <button id="judge0-sign-in-btn" class="flex items-center justify-center h-8 gap-2 px-4 text-sm transition rounded-md text-zinc-800 dark:text-white dark:hover:bg-zinc-700 dark:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 bg-zinc-100 hover:bg-zinc-200 text-nowrap">
                 <i class="fa-arrow-right-to-bracket fa-solid"></i>
                 Sign in with Puter
             </button>
-            <button id="judge0-sign-out-btn" class="flex items-center justify-center h-8 gap-2 px-4 text-sm transition rounded-md text-zinc-800 dark:text-white dark:hover:bg-zinc-700 dark:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 bg-zinc-100 hover:bg-zinc-200">
+            <button id="judge0-sign-out-btn" class="flex items-center justify-center h-8 gap-2 px-4 text-sm transition rounded-md text-zinc-800 dark:text-white dark:hover:bg-zinc-700 dark:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 bg-zinc-100 hover:bg-zinc-200 text-nowrap">
                 <i class="fa-arrow-right-from-bracket fa-solid"></i>
                 <span id="judge0-puter-username"></span>
             </button>
         </div>
-        <button id="judge0-theme-btn" class="w-8 h-8 text-sm transition rounded-md text-zinc-800 dark:text-white dark:hover:bg-zinc-700 dark:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 bg-zinc-100 hover:bg-zinc-200 judge0-showThemeButton"><i class="fa-solid fa-sun"></i></button>
+        <button id="judge0-theme-btn" class="size-8 text-sm transition rounded-md text-zinc-800 dark:text-white dark:hover:bg-zinc-700 dark:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 bg-zinc-100 hover:bg-zinc-200 judge0-showThemeButton"><i class="fa-solid fa-sun"></i></button>
     </header>
 
     <main class="flex-grow min-h-0 overflow-hidden"></main>
@@ -140,6 +141,11 @@
         <a href="https://judge0.com" target="_blank" rel="noopener" tabindex="-1">© <span id="judge0-year">2025</span> Judge0 - All Rights Reserved</a>
     </footer>
 
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("/sw.js");
+        }
+    </script>
     <!-- <div id="judge0-site-navigation" class="fixed top borderless ui menu judge0-showNavigation">
         <a id="judge0-header" href="https://judge0.com" target="_blank" class="header item judge0-showLogo">
             <img id="judge0-logo" src="./images/icon_var2_rounded_512.png">
