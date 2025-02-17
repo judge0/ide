@@ -10,7 +10,6 @@ const language = {
                 const response = await fetch(`${UNAUTHENTICATED_BASE_URL[flavor]}/languages`);
                 const data = await response.json();
                 if (data && data.length) {
-                    console.log(data);
                     LANGUAGES.push(...data.map(function (language) {
                         return {
                             ...language,

@@ -20,7 +20,12 @@ document.body.addEventListener("click", function (event) {
     const dropdownBtn = event.target.closest(".judge0-dropdown-btn");
 
     if (event.target && dropdownBtn && dropdownBtn.contains(event.target)) {
-        dropdown.querySelector(".judge0-dropdown-menu").classList.toggle("judge0-hidden");
+        if ("ontouchstart" in window || navigator.maxTouchPoints > 0) {
+            return;
+        }
+        const dropdownMenu = dropdown.querySelector(".judge0-dropdown-menu");
+        dropdownMenu.setAttribute("data-judge0-action", "click");
+        dropdownMenu.classList.toggle("judge0-hidden");
     } else if (event.target && event.target.classList.contains("judge0-dropdown-option")) {
         const value = dropdown.querySelector(".judge0-dropdown-value");
         value.innerText = event.target.innerText;
@@ -49,6 +54,51 @@ document.body.addEventListener("click", function (event) {
     document.querySelectorAll(".judge0-dropdown-menu").forEach(function (dropdownMenu) {
         if (!dropdownMenu.contains(event.target) && dropdown !== dropdownMenu.closest(".judge0-dropdown")) {
             dropdownMenu.classList.add("judge0-hidden");
+            dropdownMenu.setAttribute("data-judge0-action", "");
+        }
+    });
+});
+
+document.body.addEventListener("mouseover", function (event) {
+    const dropdown = event.target.closest(".judge0-dropdown");
+
+    if (event.target && dropdown && dropdown.contains(event.target)) {
+        const dropdownMenu = dropdown.querySelector(".judge0-dropdown-menu");
+        if (dropdownMenu.getAttribute("data-judge0-action") === "click") {
+            return;
+        }
+        dropdownMenu.classList.remove("judge0-hidden");
+
+        document.querySelectorAll(".judge0-dropdown-menu").forEach(function (dropdownMenu) {
+            if (!dropdownMenu.contains(event.target) && dropdown !== dropdownMenu.closest(".judge0-dropdown")) {
+                dropdownMenu.classList.add("judge0-hidden");
+                dropdownMenu.setAttribute("data-judge0-action", "");
+            }
+        });
+    } else {
+        document.querySelectorAll(".judge0-dropdown-menu").forEach(function (dropdownMenu) {
+            if (!event.target.contains(dropdownMenu)) {
+                dropdownMenu.classList.add("judge0-hidden");
+                dropdownMenu.setAttribute("data-judge0-action", "");
+            }
+        });
+    }
+});
+
+document.body.addEventListener("touchend", function (event) {
+    const dropdown = event.target.closest(".judge0-dropdown");
+    const dropdownBtn = event.target.closest(".judge0-dropdown-btn");
+
+    if (event.target && dropdownBtn && dropdownBtn.contains(event.target)) {
+        const dropdownMenu = dropdown.querySelector(".judge0-dropdown-menu");
+        dropdownMenu.setAttribute("data-judge0-action", "click");
+        dropdownMenu.classList.toggle("judge0-hidden");
+    }
+
+    document.querySelectorAll(".judge0-dropdown-menu").forEach(function (dropdownMenu) {
+        if (!dropdownMenu.contains(event.target) && dropdown !== dropdownMenu.closest(".judge0-dropdown")) {
+            dropdownMenu.classList.add("judge0-hidden");
+            dropdownMenu.setAttribute("data-judge0-action", "");
         }
     });
 });
