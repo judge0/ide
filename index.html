@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-US" class="size-full overflow-hidden">
+<html lang="en-US" class="overflow-hidden size-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -81,8 +81,8 @@
     <header class="flex items-center p-2 space-x-2 judge0-showNavigation">
         <a href="https://judge0.com" target="_blank" rel="noopener" tabindex="-1" class="judge0-showLogo">
             <img src="/icon.svg" class="size-8 xl:hidden" />
-            <img src="/images/logo_black.svg" class="h-4 max-xl:hidden px-4 block dark:hidden" />
-            <img src="/images/logo_white.svg" class="h-4 max-xl:hidden px-4 hidden dark:block" />
+            <img src="/images/logo_black.svg" class="block h-4 px-4 max-xl:hidden dark:hidden" />
+            <img src="/images/logo_white.svg" class="hidden h-4 px-4 max-xl:hidden dark:block" />
         </a>
         <div class="judge0-showFileMenu judge0-dropdown">
             <button class="h-8 px-4 text-sm transition rounded-md judge0-dropdown-btn dark:hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 hover:bg-zinc-100">File</button>
@@ -97,28 +97,28 @@
             <button class="h-8 px-4 text-sm transition rounded-md judge0-dropdown-btn dark:hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 hover:bg-zinc-100">Help</button>
             <div class="absolute judge0-hidden mt-1 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-md [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-md [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-track]:bg-transparent dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700 text-sm bg-white border rounded-md shadow-md judge0-dropdown-menu max-h-1/2 dark:border-zinc-800 dark:bg-black z-50">
                 <div class="p-1">
-                    <a class="flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="https://github.com/judge0/ide" target="_blank" rel="noopener"><i class="text-center w-6 fa-brands fa-github"></i><span>GitHub Repository</span></a>
-                    <a class="flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="/embed" target="_blank" rel="noopener"><i class="text-center w-6 fa-solid fa-code"></i><span>Embed Guide</span></a>
-                    <a class="flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="https://platform.sulu.sh/apis/judge0" target="_blank" rel="noopener"><i class="text-center w-6 fa-solid fa-book"></i><span>HTTP API Documentation</span></a>
-                    <a class="flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="/PRIVACY.md" target="_blank" rel="noopener"><i class="text-center w-6 fa-solid fa-shield-halved"></i><span>Privacy Policy</span></a>
-                    <a class="flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="/TERMS.md" target="_blank" rel="noopener"><i class="text-center w-6 fa-solid fa-file-signature"></i><span>Terms of Service</span></a>
+                    <a class="flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="https://github.com/judge0/ide" target="_blank" rel="noopener"><i class="w-6 text-center fa-brands fa-github"></i><span>GitHub Repository</span></a>
+                    <a class="flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="/embed" target="_blank" rel="noopener"><i class="w-6 text-center fa-solid fa-code"></i><span>Embed Guide</span></a>
+                    <a class="flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="https://platform.sulu.sh/apis/judge0" target="_blank" rel="noopener"><i class="w-6 text-center fa-solid fa-book"></i><span>HTTP API Documentation</span></a>
+                    <a class="flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="/PRIVACY.md" target="_blank" rel="noopener"><i class="w-6 text-center fa-solid fa-shield-halved"></i><span>Privacy Policy</span></a>
+                    <a class="flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="/TERMS.md" target="_blank" rel="noopener"><i class="w-6 text-center fa-solid fa-file-signature"></i><span>Terms of Service</span></a>
                 </div>
             </div>
         </div>
         <div id="judge0-select-language" class="judge0-showSelectLanguage judge0-dropdown">
-            <button class="flex items-center justify-between h-8 px-3 text-sm text-left w-50 bg-transparent border rounded-md judge0-dropdown-btn dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2">
+            <button class="flex items-center justify-between h-8 px-3 text-sm text-left bg-transparent border rounded-md w-50 judge0-dropdown-btn dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2">
                 <span class="overflow-hidden text-nowrap judge0-dropdown-value"></span>
-                <i class="opacity-50 text-xs fa-solid fa-chevron-down"></i>
+                <i class="text-xs opacity-50 fa-solid fa-chevron-down"></i>
             </button>
             <div class="absolute judge0-hidden mt-1 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-md [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-md [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-track]:bg-transparent dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700 text-sm bg-white border rounded-md shadow-md judge0-dropdown-menu max-h-1/2 dark:border-zinc-800 dark:bg-black z-50">
                 <ul class="p-1 judge0-dropdown-options">
-                    <li class="judge0-hidden px-4 py-1 rounded-md cursor-pointer judge0-dropdown-option hover:bg-zinc-100 dark:hover:bg-zinc-800"></li>
+                    <li class="px-4 py-1 rounded-md cursor-pointer judge0-hidden judge0-dropdown-option hover:bg-zinc-100 dark:hover:bg-zinc-800"></li>
                 </ul>
             </div>
         </div>
-        <input id="judge0-compiler-options" class="w-50 h-8 px-3 text-sm bg-transparent border rounded-md dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 placeholder:text-sm judge0-showCompilerOptions" placeholder="Compiler options" type="text">
-        <input id="judge0-command-line-arguments" class="w-50 h-8 px-3 text-sm bg-transparent border rounded-md dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 placeholder:text-sm judge0-showCommandLineArguments" placeholder="Command line arguments" type="text">
-        <button id="judge0-run-btn" class="flex items-center justify-center h-8 gap-2 px-4 text-sm font-semibold transition bg-blue-800 rounded-md focus-visible:outline-none focus-visible:ring-2 hover:bg-blue-900 dark:hover:bg-blue-700 text-white judge0-showRunButton">
+        <input id="judge0-compiler-options" class="h-8 px-3 text-sm bg-transparent border rounded-md w-50 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 placeholder:text-sm judge0-showCompilerOptions" placeholder="Compiler options" type="text">
+        <input id="judge0-command-line-arguments" class="h-8 px-3 text-sm bg-transparent border rounded-md w-50 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 placeholder:text-sm judge0-showCommandLineArguments" placeholder="Command line arguments" type="text">
+        <button id="judge0-run-btn" class="flex items-center justify-center h-8 gap-2 px-4 text-sm font-semibold text-white transition bg-blue-800 rounded-md focus-visible:outline-none focus-visible:ring-2 hover:bg-blue-900 dark:hover:bg-blue-700 judge0-showRunButton">
             <i class="fa-solid fa-play"></i>
             Run
         </button>
@@ -132,7 +132,7 @@
                 <span id="judge0-puter-username"></span>
             </button>
         </div>
-        <button id="judge0-theme-btn" class="size-8 text-sm transition rounded-md text-zinc-800 dark:text-white dark:hover:bg-zinc-700 dark:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 bg-zinc-100 hover:bg-zinc-200 judge0-showThemeButton"><i class="fa-solid fa-sun"></i></button>
+        <button id="judge0-theme-btn" class="text-sm transition rounded-md size-8 text-zinc-800 dark:text-white dark:hover:bg-zinc-700 dark:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 bg-zinc-100 hover:bg-zinc-200 judge0-showThemeButton"><i class="fa-solid fa-sun"></i></button>
     </header>
 
     <main class="flex-grow min-h-0 overflow-hidden"></main>
