@@ -11,7 +11,6 @@ const ide = {
             type: configuration.get("appOptions.mainLayout"),
             content: [{
                 type: "component",
-                width: 66,
                 componentName: "source",
                 id: "source",
                 title: "Source Code",
@@ -22,9 +21,10 @@ const ide = {
             }, {
                 type: configuration.get("appOptions.assistantLayout"),
                 title: "AI Assistant and I/O",
+                width: 33,
+                height: 33,
                 content: [configuration.get("appOptions.showAIAssistant") ? {
                     type: "component",
-                    height: 66,
                     componentName: "ai",
                     id: "ai",
                     title: "AI Assistant",
@@ -35,6 +35,8 @@ const ide = {
                 } : null, {
                     type: configuration.get("appOptions.ioLayout"),
                     title: "I/O",
+                    width: 33,
+                    height: 33,
                     content: [
                         configuration.get("appOptions.showInput") ? {
                             type: "component",

@@ -67,7 +67,7 @@
 
     <link rel="icon" href="/favicon.ico" sizes="32x32">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png"><!-- 180×180 -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
     <meta name="apple-mobile-web-app-title" content="Judge0 IDE">
 
@@ -84,7 +84,7 @@
             <img src="/images/logo_black.svg" class="block h-4 px-4 dark:hidden max-xl:hidden" />
             <img src="/images/logo_white.svg" class="hidden h-4 px-4 xl:dark:block" />
         </a>
-        <div class="judge0-showFileMenu judge0-dropdown">
+        <div class="judge0-showFileMenu judge0-dropdown max-sm:hidden">
             <button class="h-8 px-4 text-sm transition rounded-md judge0-dropdown-btn dark:hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 hover:bg-zinc-100">File</button>
             <div class="absolute judge0-hidden mt-1 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-md [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-md [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-track]:bg-transparent dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700 text-sm bg-white border rounded-md shadow-md judge0-dropdown-menu max-h-1/2 dark:border-zinc-800 dark:bg-black z-50">
                 <ul class="p-1">
@@ -93,7 +93,7 @@
                 </ul>
             </div>
         </div>
-        <div class="judge0-showHelpMenu judge0-dropdown">
+        <div class="judge0-showHelpMenu judge0-dropdown max-sm:hidden">
             <button class="h-8 px-4 text-sm transition rounded-md judge0-dropdown-btn dark:hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 hover:bg-zinc-100">Help</button>
             <div class="absolute judge0-hidden mt-1 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-md [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-md [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-track]:bg-transparent dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700 text-sm bg-white border rounded-md shadow-md judge0-dropdown-menu max-h-1/2 dark:border-zinc-800 dark:bg-black z-50">
                 <div class="p-1">
@@ -116,13 +116,13 @@
                 </ul>
             </div>
         </div>
-        <input id="judge0-compiler-options" class="h-8 px-3 text-sm bg-transparent border rounded-md w-50 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 placeholder:text-sm judge0-showCompilerOptions" placeholder="Compiler options" type="text">
-        <input id="judge0-command-line-arguments" class="h-8 px-3 text-sm bg-transparent border rounded-md w-50 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 placeholder:text-sm judge0-showCommandLineArguments" placeholder="Command line arguments" type="text">
+        <input id="judge0-compiler-options" class="h-8 px-3 text-sm bg-transparent border rounded-md max-sm:hidden w-50 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 placeholder:text-sm judge0-showCompilerOptions" placeholder="Compiler options" type="text">
+        <input id="judge0-command-line-arguments" class="h-8 px-3 text-sm bg-transparent border rounded-md max-sm:hidden w-50 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 placeholder:text-sm judge0-showCommandLineArguments" placeholder="Command line arguments" type="text">
         <button id="judge0-run-btn" class="flex items-center justify-center h-8 gap-2 px-4 text-sm font-semibold text-white transition bg-blue-800 rounded-md focus-visible:outline-none focus-visible:ring-2 hover:bg-blue-900 dark:hover:bg-blue-700 judge0-showRunButton">
             <i class="fa-solid fa-play"></i>
             Run
         </button>
-        <div class="judge0-showPuterSignInOutButton">
+        <div class="judge0-showPuterSignInOutButton max-sm:hidden">
             <button id="judge0-sign-in-btn" class="flex items-center justify-center h-8 gap-2 px-4 text-sm transition rounded-md text-zinc-800 dark:text-white dark:hover:bg-zinc-700 dark:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 bg-zinc-100 hover:bg-zinc-200 text-nowrap">
                 <i class="fa-arrow-right-to-bracket fa-solid"></i>
                 Sign in with Puter

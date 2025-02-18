@@ -5,6 +5,8 @@ import { IS_ELECTRON } from "./electron.js";
 import { IS_PUTER } from "./puter.js";
 import { IS_STANDALONE } from "./standalone.js";
 
+const IS_SMALL_SCREEN = window.innerWidth <= 640;
+
 const DEFAULT_STYLE_OPTIONS = {
     showLogo: true,
     showFileMenu: true,
@@ -21,10 +23,10 @@ const DEFAULT_STYLE_OPTIONS = {
 };
 
 const DEFAULT_APP_OPTIONS = {
-    showAIAssistant: true,
+    showAIAssistant: !IS_SMALL_SCREEN,
     ioLayout: "stack",
-    assistantLayout: "column",
-    mainLayout: "row",
+    assistantLayout: IS_SMALL_SCREEN ? "row" : "column",
+    mainLayout: IS_SMALL_SCREEN ? "column" : "row",
     showInput: true,
     showOutput: true,
     apiKey: ""
