@@ -2,7 +2,7 @@
 <html lang="en-US" class="overflow-hidden size-full">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <script src="https://cdn.jsdelivr.net/npm/@unocss/runtime"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@unocss/reset/tailwind.min.css" />
@@ -78,11 +78,11 @@
 </head>
 
 <body class="flex flex-col text-black bg-white size-full dark:bg-black dark:text-white" style="opacity: 0 !important;">
-    <header class="flex items-center p-2 space-x-2 judge0-showNavigation">
+    <header class="flex flex-wrap items-center justify-center gap-2 p-2 max-xl:justify-start judge0-showNavigation">
         <a href="https://judge0.com" target="_blank" rel="noopener" tabindex="-1" class="judge0-showLogo">
             <img src="/icon.svg" class="size-8 xl:hidden" />
-            <img src="/images/logo_black.svg" class="block h-4 px-4 max-xl:hidden dark:hidden" />
-            <img src="/images/logo_white.svg" class="hidden h-4 px-4 max-xl:hidden dark:block" />
+            <img src="/images/logo_black.svg" class="block h-4 px-4 dark:hidden max-xl:hidden" />
+            <img src="/images/logo_white.svg" class="hidden h-4 px-4 xl:dark:block" />
         </a>
         <div class="judge0-showFileMenu judge0-dropdown">
             <button class="h-8 px-4 text-sm transition rounded-md judge0-dropdown-btn dark:hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 hover:bg-zinc-100">File</button>
@@ -137,7 +137,7 @@
 
     <main class="flex-grow min-h-0 overflow-hidden"></main>
 
-    <footer class="text-xs text-center transition opacity-40 hover:opacity-100 judge0-showCopyright">
+    <footer class="text-xs text-center transition opacity-40 hover:opacity-100 max-sm:hidden judge0-showCopyright">
         <a href="https://judge0.com" target="_blank" rel="noopener" tabindex="-1">© <span id="judge0-year">2025</span> Judge0 - All Rights Reserved</a>
     </footer>
 
