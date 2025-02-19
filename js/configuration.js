@@ -5,38 +5,42 @@ import { IS_ELECTRON } from "./electron.js";
 import { IS_PUTER } from "./puter.js";
 import { IS_STANDALONE } from "./standalone.js";
 
-const IS_SMALL_SCREEN = window.innerWidth <= 640;
+const SCREEN_SM = window.innerWidth >= 640;
+const SCREEN_MD = window.innerWidth >= 768;
+const SCREEN_LG = window.innerWidth >= 1024;
+const SCREEN_XL = window.innerWidth >= 1280;
+const SCREEN_2XL = window.innerWidth >= 1536;
 
 const DEFAULT_STYLE_OPTIONS = {
+    showCommandLineArguments: SCREEN_SM,
+    showCompilerOptions: SCREEN_SM,
+    showCopyright: SCREEN_SM,
+    showFileMenu: SCREEN_SM,
+    showHelpMenu: SCREEN_SM,
     showLogo: true,
-    showFileMenu: true,
-    showHelpMenu: true,
-    showSelectLanguage: true,
-    showCompilerOptions: true,
-    showCommandLineArguments: true,
+    showNavigation: true,
+    showPuterSignInOutButton: SCREEN_SM,
     showRunButton: true,
-    showThemeButton: true,
-    showPuterSignInOutButton: true,
+    showSelectLanguage: true,
     showStatusLine: true,
-    showCopyright: true,
-    showNavigation: true
+    showThemeButton: true,
 };
 
 const DEFAULT_APP_OPTIONS = {
-    showAIAssistant: !IS_SMALL_SCREEN,
+    apiKey: "",
+    assistantLayout: SCREEN_SM ? "column" : "row",
     ioLayout: "stack",
-    assistantLayout: IS_SMALL_SCREEN ? "row" : "column",
-    mainLayout: IS_SMALL_SCREEN ? "column" : "row",
+    mainLayout: SCREEN_SM ? "row" : "column",
+    showAIAssistant: SCREEN_SM,
     showInput: true,
     showOutput: true,
-    apiKey: ""
 };
 
 const DEFAULT_CONFIGURATION = {
     theme: "system",
     style: "default",
     styleOptions: DEFAULT_STYLE_OPTIONS,
-    appOptions: DEFAULT_APP_OPTIONS
+    appOptions: DEFAULT_APP_OPTIONS,
 };
 
 const DEFAULT_CONFIGURATIONS = {
@@ -46,20 +50,48 @@ const DEFAULT_CONFIGURATIONS = {
         style: "minimal",
         styleOptions: {
             ...DEFAULT_STYLE_OPTIONS,
-            showLogo: false,
+            showCommandLineArguments: false,
+            showCompilerOptions: false,
             showFileMenu: false,
             showHelpMenu: false,
-            showCompilerOptions: false,
-            showCommandLineArguments: false,
-            showThemeButton: false,
+            showLogo: false,
             showPuterSignInOutButton: false,
             showStatusLine: false,
-            showCopyright: false
+            showThemeButton: false,
+        },
+        appOptions: {
+            ...DEFAULT_APP_OPTIONS,
+            ioLayout: "column",
+            showAIAssistant: false,
+        }
+    },
+    clean: {
+        ...DEFAULT_CONFIGURATION,
+        style: "clean",
+        styleOptions: {
+            ...DEFAULT_STYLE_OPTIONS,
+            showFileMenu: false,
+            showHelpMenu: false,
+            showLogo: false,
+            showPuterSignInOutButton: false,
         },
         appOptions: {
             ...DEFAULT_APP_OPTIONS,
             showAIAssistant: false,
-            ioLayout: "column",
+        }
+    },
+    simple: {
+        ...DEFAULT_CONFIGURATION,
+        style: "simple",
+        styleOptions: {
+            ...DEFAULT_STYLE_OPTIONS,
+            showFileMenu: false,
+            showHelpMenu: false,
+            showPuterSignInOutButton: false,
+        },
+        appOptions: {
+            ...DEFAULT_APP_OPTIONS,
+            showAIAssistant: false,
         }
     },
     standalone: {
@@ -67,8 +99,8 @@ const DEFAULT_CONFIGURATIONS = {
         style: "standalone",
         styleOptions: {
             ...DEFAULT_STYLE_OPTIONS,
+            showCopyright: false,
             showLogo: false,
-            showCopyright: false
         }
     },
     electron: {
@@ -76,8 +108,8 @@ const DEFAULT_CONFIGURATIONS = {
         style: "electron",
         styleOptions: {
             ...DEFAULT_STYLE_OPTIONS,
+            showCopyright: false,
             showLogo: false,
-            showCopyright: false
         }
     },
     puter: {
@@ -85,7 +117,9 @@ const DEFAULT_CONFIGURATIONS = {
         style: "puter",
         styleOptions: {
             ...DEFAULT_STYLE_OPTIONS,
-            showLogo: false
+            showCopyright: false,
+            showLogo: false,
+            showPuterSignInOutButton: false,
         }
     }
 };
