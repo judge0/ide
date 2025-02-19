@@ -1,83 +1,82 @@
 "use strict";
-import configuration from "./configuration.js";
+import configuration from "../configuration.js";
 
-const ide = {
-    LAYOUT_CONFIG: {
-        settings: {
-            showPopoutIcon: false,
-            reorderEnabled: true
-        },
+const LAYOUT_CONFIG = {
+    settings: {
+        showPopoutIcon: false,
+        reorderEnabled: true
+    },
+    content: [{
+        type: configuration.getConfig().appOptions.mainLayout,
         content: [{
-            type: configuration.get("appOptions.mainLayout"),
-            content: [{
+            type: "component",
+            componentName: "source",
+            id: "source",
+            title: "Source Code",
+            isClosable: false,
+            componentState: {
+                readOnly: false
+            }
+        }, {
+            type: configuration.getConfig().appOptions.assistantLayout,
+            title: "AI Assistant and I/O",
+            width: 33,
+            height: 33,
+            content: [configuration.getConfig().appOptions.showAIAssistant ? {
                 type: "component",
-                componentName: "source",
-                id: "source",
-                title: "Source Code",
+                componentName: "ai",
+                id: "ai",
+                title: "AI Assistant",
                 isClosable: false,
                 componentState: {
                     readOnly: false
                 }
-            }, {
-                type: configuration.get("appOptions.assistantLayout"),
-                title: "AI Assistant and I/O",
+            } : null, {
+                type: configuration.getConfig().appOptions.ioLayout,
+                title: "I/O",
                 width: 33,
                 height: 33,
-                content: [configuration.get("appOptions.showAIAssistant") ? {
-                    type: "component",
-                    componentName: "ai",
-                    id: "ai",
-                    title: "AI Assistant",
-                    isClosable: false,
-                    componentState: {
-                        readOnly: false
-                    }
-                } : null, {
-                    type: configuration.get("appOptions.ioLayout"),
-                    title: "I/O",
-                    width: 33,
-                    height: 33,
-                    content: [
-                        configuration.get("appOptions.showInput") ? {
-                            type: "component",
-                            componentName: "stdin",
-                            id: "stdin",
-                            title: "Input",
-                            isClosable: false,
-                            componentState: {
-                                readOnly: false
-                            }
-                        } : null, configuration.get("appOptions.showOutput") ? {
-                            type: "component",
-                            componentName: "stdout",
-                            id: "stdout",
-                            title: "Output",
-                            isClosable: false,
-                            componentState: {
-                                readOnly: true
-                            }
-                        } : null].filter(Boolean)
-                }].filter(Boolean)
-            }]
+                content: [
+                    configuration.getConfig().appOptions.showInput ? {
+                        type: "component",
+                        componentName: "stdin",
+                        id: "stdin",
+                        title: "Input",
+                        isClosable: false,
+                        componentState: {
+                            readOnly: false
+                        }
+                    } : null, configuration.getConfig().appOptions.showOutput ? {
+                        type: "component",
+                        componentName: "stdout",
+                        id: "stdout",
+                        title: "Output",
+                        isClosable: false,
+                        componentState: {
+                            readOnly: true
+                        }
+                    } : null].filter(Boolean)
+            }].filter(Boolean)
         }]
-    },
+    }]
+};
+
+const editor = {
     layout: null,
     sourceEditor: null,
     stdinEditor: null,
     stdoutEditor: null,
-    onMonacoReady: function(callback) {
-        require(["vs/editor/editor.main"], callback);
-    }
+    onMonacoReady: (callback) => require(["vs/editor/editor.main"], callback)
 };
 
-export default ide;
+export default editor;
 
-document.addEventListener("DOMContentLoaded", function () {
-    ide.onMonacoReady(function() {
-        ide.layout = new GoldenLayout(ide.LAYOUT_CONFIG, document.getElementsByTagName("main")[0]);
+document.addEventListener("DOMContentLoaded", () => {
+    editor.onMonacoReady(() => {
+        editor.layout = new GoldenLayout(LAYOUT_CONFIG, document.getElementsByTagName("main")[0]);
 
-        ide.layout.registerComponent("source", function (container, state) {
-            ide.sourceEditor = monaco.editor.create(container.getElement()[0], {
+        editor.layout.registerComponent("source", function (container, state) {
+            editor.sourceEditor = monaco.editor.create(container.getElement()[0], {
                 automaticLayout: true,
                 scrollBeyondLastLine: true,
                 readOnly: state.readOnly,
@@ -88,7 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
 
-            // ide.sourceEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, run);
+            // editor.sourceEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, run);
 
             // monaco.languages.registerInlineCompletionsProvider('*', {
             //     provideInlineCompletions: async (model, position) => {
@@ -161,8 +160,8 @@ document.addEventListener("DOMContentLoaded", function () {
             // });
         });
 
-        ide.layout.registerComponent("stdin", function (container, state) {
-            ide.stdinEditor = monaco.editor.create(container.getElement()[0], {
+        editor.layout.registerComponent("stdin", function (container, state) {
+            editor.stdinEditor = monaco.editor.create(container.getElement()[0], {
                 automaticLayout: true,
                 scrollBeyondLastLine: false,
                 readOnly: state.readOnly,
@@ -174,8 +173,8 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
 
-        ide.layout.registerComponent("stdout", function (container, state) {
-            ide.stdoutEditor = monaco.editor.create(container.getElement()[0], {
+        editor.layout.registerComponent("stdout", function (container, state) {
+            editor.stdoutEditor = monaco.editor.create(container.getElement()[0], {
                 automaticLayout: true,
                 scrollBeyondLastLine: false,
                 readOnly: state.readOnly,
@@ -187,18 +186,18 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
 
-        ide.layout.registerComponent("ai", function (container, state) {
+        editor.layout.registerComponent("ai", function (container, state) {
             // container.getElement()[0].appendChild(document.getElementById("judge0-chat-container"));
         });
 
-        ide.layout.on("initialised", function () {
+        editor.layout.on("initialised", () => {
             window.top.postMessage({ event: "initialised" }, "*");
         });
 
-        window.addEventListener("resize", function() {
-            ide.layout.updateSize();
+        window.addEventListener("resize", () => {
+            editor.layout.updateSize();
         });
 
-        ide.layout.init();
+        editor.layout.init();
     });
 });

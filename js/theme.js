@@ -1,6 +1,6 @@
 "use strict";
 import configuration from "./configuration.js";
-import ide from "./layout.js";
+import editor from "./editor/editor.js";
 
 const theme = {
     set(name, save = true) {
@@ -17,11 +17,10 @@ const theme = {
         document.getElementById("judge0-golden-layout-dark-theme-stylesheet").disabled = isLight;
         document.getElementById("judge0-golden-layout-light-theme-stylesheet").disabled = !isLight;
 
-        ide.onMonacoReady(function() {
+        editor.onMonacoReady(() => {
             monaco.editor.setTheme(isLight ? "vs-light" : "vs-dark");
         });
 
-        // document.getElementById("judge0-theme-toggle-btn").setAttribute("data-content", `Switch between dark, light, and system theme (currently ${resolvedName} theme)`);
         const themeBtnIcon = document.getElementById("judge0-theme-btn").querySelector("i");
         if (resolvedName === "dark") {
             themeBtnIcon.classList = "fa-solid fa-moon";
@@ -78,12 +77,12 @@ const theme = {
 
 export default theme;
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("judge0-theme-btn").addEventListener("click", theme.toggle);
     theme.set(configuration.get("theme"), false);
 });
 
-window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
     ["system", "reverse-system"].forEach(t => {
         if (configuration.get("theme") === t) {
             theme.set(t, false);
