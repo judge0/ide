@@ -78,67 +78,75 @@
 </head>
 
 <body class="flex flex-col text-black bg-white size-full dark:bg-black dark:text-white" style="opacity: 0 !important;">
-    <header class="flex flex-wrap items-center justify-center gap-2 p-2 max-xl:justify-start judge0-showNavigation">
-        <a href="https://judge0.com" target="_blank" rel="noopener" tabindex="-1" class="judge0-showLogo">
-            <img src="/icon.svg" class="size-8 xl:hidden" />
-            <img src="/images/logo_black.svg" class="block h-4 px-4 dark:hidden max-xl:hidden" />
-            <img src="/images/logo_white.svg" class="hidden h-4 px-4 xl:dark:block" />
-        </a>
-        <div class="judge0-showFileMenu judge0-dropdown max-sm:hidden">
-            <button class="h-8 px-4 text-sm transition rounded-md judge0-dropdown-btn dark:hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 hover:bg-zinc-100">File</button>
-            <div class="absolute judge0-invisible mt-1 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-track]:bg-transparent dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700 text-sm bg-white border rounded-xl shadow-md judge0-dropdown-menu max-h-1/2 dark:border-zinc-800 dark:bg-black z-50">
-                <ul class="p-2">
-                    <li class="flex items-center gap-2 px-4 py-1 rounded-md cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800"><i class="w-6 text-center fa-solid fa-file"></i><span>Open File...</span></li>
-                    <li class="flex items-center gap-2 px-4 py-1 rounded-md cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800"><i class="w-6 text-center fa-solid fa-floppy-disk"></i><span>Save</span></li>
-                </ul>
+    <header class="flex flex-wrap items-center justify-between gap-2 p-2 max-xl:justify-center judge0-showNavigation">
+        <div class="flex flex-wrap items-center justify-center gap-2">
+            <a href="https://judge0.com" target="_blank" rel="noopener" tabindex="-1" class="judge0-showLogo">
+                <img src="/icon.svg" class="size-8 xl:hidden" />
+                <img src="/images/logo_black.svg" class="block h-4 px-4 dark:hidden max-xl:hidden" />
+                <img src="/images/logo_white.svg" class="hidden h-4 px-4 xl:dark:block" />
+            </a>
+            <div class="judge0-showFileMenu judge0-dropdown">
+                <button class="h-8 px-4 text-sm transition rounded-md judge0-dropdown-btn dark:hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 hover:bg-zinc-100">File</button>
+                <div class="absolute judge0-invisible mt-1 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-track]:bg-transparent dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700 text-sm bg-white border rounded-xl shadow-md judge0-dropdown-menu max-h-1/2 dark:border-zinc-800 dark:bg-black z-50">
+                    <ul class="p-2">
+                        <li class="flex items-center gap-2 px-4 py-1 rounded-md cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800"><i class="w-6 text-center fa-solid fa-file"></i><span>Open File...</span></li>
+                        <li class="flex items-center gap-2 px-4 py-1 rounded-md cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800"><i class="w-6 text-center fa-solid fa-floppy-disk"></i><span>Save</span></li>
+                    </ul>
+                </div>
             </div>
-        </div>
-        <div class="judge0-showHelpMenu judge0-dropdown max-sm:hidden">
-            <button class="h-8 px-4 text-sm transition rounded-md judge0-dropdown-btn dark:hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 hover:bg-zinc-100">Help</button>
-            <div class="absolute judge0-invisible mt-1 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-track]:bg-transparent dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700 text-sm bg-white border rounded-xl shadow-md judge0-dropdown-menu max-h-1/2 dark:border-zinc-800 dark:bg-black z-50">
-                <div class="p-2">
-                    <a class="flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="https://github.com/judge0/ide" target="_blank" rel="noopener"><i class="w-6 text-center fa-brands fa-github"></i><span>GitHub Repository</span></a>
-                    <a class="flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="/embed" target="_blank" rel="noopener"><i class="w-6 text-center fa-solid fa-code"></i><span>Embed Guide</span></a>
-                    <a class="flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="https://platform.sulu.sh/apis/judge0" target="_blank" rel="noopener"><i class="w-6 text-center fa-solid fa-book"></i><span>HTTP API Documentation</span></a>
-                    <a class="flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="/PRIVACY.md" target="_blank" rel="noopener"><i class="w-6 text-center fa-solid fa-shield-halved"></i><span>Privacy Policy</span></a>
-                    <a class="flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="/TERMS.md" target="_blank" rel="noopener"><i class="w-6 text-center fa-solid fa-file-signature"></i><span>Terms of Service</span></a>
+            <div class="judge0-showHelpMenu judge0-dropdown">
+                <button class="h-8 px-4 text-sm transition rounded-md judge0-dropdown-btn dark:hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 hover:bg-zinc-100">Help</button>
+                <div class="absolute judge0-invisible mt-1 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-track]:bg-transparent dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700 text-sm bg-white border rounded-xl shadow-md judge0-dropdown-menu max-h-1/2 dark:border-zinc-800 dark:bg-black z-50">
+                    <div class="p-2">
+                        <a class="flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="https://github.com/judge0/ide" target="_blank" rel="noopener"><i class="w-6 text-center fa-brands fa-github"></i><span>GitHub Repository</span></a>
+                        <a class="flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="/embed" target="_blank" rel="noopener"><i class="w-6 text-center fa-solid fa-code"></i><span>Embed Guide</span></a>
+                        <a class="flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="https://platform.sulu.sh/apis/judge0" target="_blank" rel="noopener"><i class="w-6 text-center fa-solid fa-book"></i><span>HTTP API Documentation</span></a>
+                        <a class="flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="/PRIVACY.md" target="_blank" rel="noopener"><i class="w-6 text-center fa-solid fa-shield-halved"></i><span>Privacy Policy</span></a>
+                        <a class="flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="/TERMS.md" target="_blank" rel="noopener"><i class="w-6 text-center fa-solid fa-file-signature"></i><span>Terms of Service</span></a>
+                    </div>
                 </div>
             </div>
         </div>
-        <div id="judge0-select-language" class="judge0-showSelectLanguage judge0-dropdown">
-            <button class="flex items-center justify-between h-8 px-3 text-sm text-left bg-transparent border rounded-md w-50 judge0-dropdown-btn dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2">
-                <span class="overflow-hidden text-nowrap judge0-dropdown-value"></span>
-                <i class="text-xs opacity-50 fa-solid fa-chevron-down"></i>
-            </button>
-            <div class="absolute judge0-invisible mt-1 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-track]:bg-transparent dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700 text-sm bg-white border rounded-xl shadow-md judge0-dropdown-menu max-h-1/2 dark:border-zinc-800 dark:bg-black z-50">
-                <ul class="p-2 judge0-dropdown-options">
-                    <li class="px-4 py-1 rounded-md cursor-pointer judge0-hidden judge0-dropdown-option hover:bg-zinc-100 dark:hover:bg-zinc-800 aria-checked:bg-blue-800 aria-checked:text-white hover:aria-checked:bg-blue-800 hover:aria-checked:text-white"></li>
-                </ul>
+        <div class="flex flex-wrap items-center justify-center gap-2">
+            <div id="judge0-select-language" class="judge0-showSelectLanguage judge0-dropdown">
+                <button class="flex items-center justify-between h-8 px-3 text-sm text-left bg-transparent border rounded-md w-50 judge0-dropdown-btn dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2">
+                    <span class="overflow-hidden text-nowrap judge0-dropdown-value"></span>
+                    <i class="text-xs opacity-50 fa-solid fa-chevron-down"></i>
+                </button>
+                <div class="absolute judge0-invisible mt-1 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-track]:bg-transparent dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700 text-sm bg-white border rounded-xl shadow-md judge0-dropdown-menu max-h-1/2 dark:border-zinc-800 dark:bg-black z-50">
+                    <ul class="p-2 judge0-dropdown-options">
+                        <li class="px-4 py-1 rounded-md cursor-pointer judge0-hidden judge0-dropdown-option hover:bg-zinc-100 dark:hover:bg-zinc-800 aria-checked:bg-blue-800 aria-checked:text-white hover:aria-checked:bg-blue-800 hover:aria-checked:text-white"></li>
+                    </ul>
+                </div>
             </div>
-        </div>
-        <input id="judge0-compiler-options" class="h-8 px-3 text-sm bg-transparent border rounded-md max-sm:hidden w-50 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 placeholder:text-sm judge0-showCompilerOptions" placeholder="Compiler options" type="text">
-        <input id="judge0-command-line-arguments" class="h-8 px-3 text-sm bg-transparent border rounded-md max-sm:hidden w-50 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 placeholder:text-sm judge0-showCommandLineArguments" placeholder="Command line arguments" type="text">
-        <button id="judge0-run-btn" class="flex items-center justify-center h-8 gap-2 px-4 text-sm font-semibold text-white transition bg-blue-800 rounded-md focus-visible:outline-none focus-visible:ring-2 hover:bg-blue-900 dark:hover:bg-blue-700 judge0-showRunButton">
-            <i class="fa-solid fa-play"></i>
-            Run
-        </button>
-        <div class="judge0-showPuterSignInOutButton max-sm:hidden">
-            <button id="judge0-sign-in-btn" class="flex items-center justify-center h-8 gap-2 px-4 text-sm transition rounded-md text-zinc-800 dark:text-white dark:hover:bg-zinc-700 dark:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 bg-zinc-100 hover:bg-zinc-200 text-nowrap">
-                <i class="fa-arrow-right-to-bracket fa-solid"></i>
-                Sign in with Puter
-            </button>
-            <button id="judge0-sign-out-btn" class="flex items-center justify-center h-8 gap-2 px-4 text-sm transition rounded-md text-zinc-800 dark:text-white dark:hover:bg-zinc-700 dark:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 bg-zinc-100 hover:bg-zinc-200 text-nowrap">
-                <i class="fa-arrow-right-from-bracket fa-solid"></i>
-                <span id="judge0-puter-username"></span>
+            <div class="flex flex-wrap items-center justify-center gap-2">
+                <input id="judge0-compiler-options" class="h-8 px-3 text-sm bg-transparent border rounded-md w-50 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 placeholder:text-sm judge0-showCompilerOptions" placeholder="Compiler options" type="text">
+                <input id="judge0-command-line-arguments" class="h-8 px-3 text-sm bg-transparent border rounded-md w-50 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 placeholder:text-sm judge0-showCommandLineArguments" placeholder="Command line arguments" type="text">
+            </div>
+            <button id="judge0-run-btn" class="flex items-center justify-center h-8 gap-2 px-4 text-sm font-semibold text-white transition bg-blue-800 rounded-md focus-visible:outline-none focus-visible:ring-2 hover:bg-blue-900 dark:hover:bg-blue-700 judge0-showRunButton">
+                <i class="fa-solid fa-play"></i>
+                Run
             </button>
         </div>
-        <button id="judge0-theme-btn" class="text-sm transition rounded-md size-8 text-zinc-800 dark:text-white dark:hover:bg-zinc-700 dark:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 bg-zinc-100 hover:bg-zinc-200 judge0-showThemeButton"><i class="fa-solid fa-sun"></i></button>
+        <div class="flex flex-wrap items-center justify-center gap-2">
+            <div class="judge0-showPuterSignInOutButton">
+                <button id="judge0-sign-in-btn" class="flex items-center justify-center h-8 gap-2 px-4 text-sm transition rounded-md text-zinc-800 dark:text-white dark:hover:bg-zinc-700 dark:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 bg-zinc-100 hover:bg-zinc-200 text-nowrap">
+                    <i class="fa-arrow-right-to-bracket fa-solid"></i>
+                    Sign in with Puter
+                </button>
+                <button id="judge0-sign-out-btn" class="flex items-center justify-center h-8 gap-2 px-4 text-sm transition rounded-md text-zinc-800 dark:text-white dark:hover:bg-zinc-700 dark:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 bg-zinc-100 hover:bg-zinc-200 text-nowrap">
+                    <i class="fa-arrow-right-from-bracket fa-solid"></i>
+                    <span id="judge0-puter-username"></span>
+                </button>
+            </div>
+            <button id="judge0-theme-btn" class="text-sm transition rounded-md size-8 text-zinc-800 dark:text-white dark:hover:bg-zinc-700 dark:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 bg-zinc-100 hover:bg-zinc-200 judge0-showThemeButton"><i class="fa-solid fa-sun"></i></button>
+        </div>
     </header>
 
     <main class="flex-grow min-h-0 overflow-hidden"></main>
 
     <footer class="text-xs text-center transition opacity-40 hover:opacity-100 max-sm:hidden judge0-showCopyright">
-        <a href="https://judge0.com" target="_blank" rel="noopener" tabindex="-1">© 2016 - <span id="judge0-year">2025</span> Judge0 d.o.o.</a>
+        <a href="https://judge0.com" target="_blank" rel="noopener" tabindex="-1">© 2016–<span id="judge0-year">2025</span> Judge0 d.o.o. All rights reserved.</a>
     </footer>
 
     <script>
