@@ -17,9 +17,7 @@ const theme = {
         document.getElementById("judge0-golden-layout-dark-theme-stylesheet").disabled = isLight;
         document.getElementById("judge0-golden-layout-light-theme-stylesheet").disabled = !isLight;
 
-        editor.onMonacoReady(() => {
-            monaco.editor.setTheme(isLight ? "vs-light" : "vs-dark");
-        });
+        monaco.editor.setTheme(isLight ? "vs-light" : "vs-dark");
 
         const themeBtnIcon = document.getElementById("judge0-theme-btn").querySelector("i");
         if (resolvedName === "dark") {
@@ -79,7 +77,9 @@ export default theme;
 
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("judge0-theme-btn").addEventListener("click", theme.toggle);
-    theme.set(configuration.get("theme"), false);
+    editor.onInitialized(() => {
+        theme.set(configuration.get("theme"), false);
+    });
 });
 
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {

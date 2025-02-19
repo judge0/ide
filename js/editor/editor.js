@@ -61,17 +61,31 @@ const LAYOUT_CONFIG = {
     }]
 };
 
+const INITIALIZE_CALLBACK_QUEUE = [];
+
 const editor = {
     layout: null,
     sourceEditor: null,
     stdinEditor: null,
     stdoutEditor: null,
-    onMonacoReady: (callback) => require(["vs/editor/editor.main"], callback)
+    compilerOptions: null,
+    commandLineArguments: null,
+    onMonacoReady: (callback) => require(["vs/editor/editor.main"], callback),
+    onInitialized: (callback) => {
+        if (editor.layout && editor.layout.isInitialised) {
+            callback();
+        } else {
+            INITIALIZE_CALLBACK_QUEUE.push(callback);
+        }
+    }
 };
 
 export default editor;
 
 document.addEventListener("DOMContentLoaded", () => {
+    editor.compilerOptions = document.getElementById("judge0-compiler-options");
+    editor.commandLineArguments = document.getElementById("judge0-command-line-arguments");
+
     editor.onMonacoReady(() => {
         editor.layout = new GoldenLayout(LAYOUT_CONFIG, document.getElementsByTagName("main")[0]);
 
@@ -191,6 +205,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         editor.layout.on("initialised", () => {
+            while (INITIALIZE_CALLBACK_QUEUE.length) {
+                INITIALIZE_CALLBACK_QUEUE.shift()();
+            }
             window.top.postMessage({ event: "initialised" }, "*");
         });
 
