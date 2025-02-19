@@ -1,7 +1,7 @@
 "use strict";
 
 document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("judge0-year").innerText = new Date().getFullYear();
+    document.getElementById("judge0-year").textContent = new Date().getFullYear();
 });
 
 window.addEventListener("load", function () {

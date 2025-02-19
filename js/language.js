@@ -42,32 +42,34 @@ document.addEventListener("DOMContentLoaded", async function () {
     language.getAll().then(function (languages) {
         const isAdded = [];
         const selectLanguageDropdown = document.getElementById("judge0-select-language");
-        const selectedLanguage = selectLanguageDropdown.querySelector(".judge0-dropdown-value");
         const options = selectLanguageDropdown.querySelector(".judge0-dropdown-options");
 
         const template = selectLanguageDropdown.querySelector(".judge0-dropdown-option").cloneNode(false);
         template.classList.remove("judge0-hidden");
 
+        let defaultOption;
         languages.forEach(function (language) {
             if (isAdded.includes(language.name)) {
                 return;
             }
 
             isAdded.push(language.name);
+
             const option = template.cloneNode(false);
-            option.innerText = language.name;
+            option.textContent = language.name;
             option.setAttribute("data-judge0-flavor", language.flavor);
             option.setAttribute("data-judge0-language-id", language.id);
 
-            if (language.default) {
-                option.classList.add("font-semibold");
-                selectedLanguage.innerText = language.name;
-                selectedLanguage.setAttribute("data-judge0-flavor", language.flavor);
-                selectedLanguage.setAttribute("data-judge0-language-id", language.id);
-            }
-
             options.appendChild(option);
+
+            if (language.default) {
+                defaultOption = options.lastElementChild;
+            }
         });
+
+        if (defaultOption) {
+            defaultOption.click();
+        }
     });
 });
 

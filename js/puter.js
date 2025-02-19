@@ -8,7 +8,7 @@ export function usePuter() {
 
 async function uiSignIn() {
     const signOutBtn = document.getElementById("judge0-sign-out-btn");
-    signOutBtn.querySelector("#judge0-puter-username").innerText = (await puter.auth.getUser()).username;
+    signOutBtn.querySelector("#judge0-puter-username").textContent = (await puter.auth.getUser()).username;
     document.getElementById("judge0-sign-in-btn").classList.add("judge0-hidden");
     signOutBtn.classList.remove("judge0-hidden");
 
@@ -27,7 +27,7 @@ function uiSignOut() {
     const signOutBtn = document.getElementById("judge0-sign-out-btn");
     document.getElementById("judge0-sign-in-btn").classList.remove("judge0-hidden");
     signOutBtn.classList.add("judge0-hidden");
-    signOutBtn.querySelector("#judge0-puter-username").innerText = "";
+    signOutBtn.querySelector("#judge0-puter-username").textContent = "";
 
     // const modelSelect = document.getElementById("judge0-chat-model-select");
     // modelSelect.closest(".ui.selection.dropdown").classList.add("disabled");

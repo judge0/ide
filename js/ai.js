@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
         userInput.disabled = true;
 
         const userMessage = document.createElement("div");
-        userMessage.innerText = userInputValue;
+        userMessage.textContent = userInputValue;
         userMessage.classList.add("ui", "message", "judge0-message", "judge0-user-message");
         if (!theme.isLight()) {
             userMessage.classList.add("inverted");

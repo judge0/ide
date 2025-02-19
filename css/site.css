@@ -1,3 +1,7 @@
 .judge0-hidden {
     display: none !important;
 }
+
+.judge0-invisible {
+    visibility: hidden !important;
+}
