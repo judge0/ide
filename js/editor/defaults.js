@@ -1,5 +1,7 @@
 "use strict";
 import editor from "./editor.js";
+import language from "./language.js";
+import { DEFAULT_LANGUAGE } from "../clients.js";
 
 const DEFAULT_SOURCE = `\
 #include <algorithm>
@@ -128,8 +130,13 @@ const DEFAULT_COMPILER_OPTIONS = "-O3 --std=c++17 -Wall -Wextra -Wold-style-cast
 const DEFAULT_COMMAND_LINE_ARGUMENTS = "";
 
 editor.onInitialized(() => {
-    editor.sourceEditor.setValue(DEFAULT_SOURCE);
-    editor.stdinEditor.setValue(DEFAULT_STDIN);
-    editor.compilerOptions.textContent = DEFAULT_COMPILER_OPTIONS;
-    editor.commandLineArguments.textContent = DEFAULT_COMMAND_LINE_ARGUMENTS;
+    language.onInitialized(() => {
+        editor.sourceEditor.setValue(DEFAULT_SOURCE);
+        editor.stdinEditor.setValue(DEFAULT_STDIN);
+        editor.compilerOptions.value = DEFAULT_COMPILER_OPTIONS;
+        editor.commandLineArguments.value = DEFAULT_COMMAND_LINE_ARGUMENTS;
+
+        const flavor = Object.keys(DEFAULT_LANGUAGE)[0];
+        editor.selectLanguage(flavor, DEFAULT_LANGUAGE[flavor]);
+    });
 });

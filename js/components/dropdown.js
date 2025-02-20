@@ -11,8 +11,8 @@ function hideDropdown(dropdown) {
 }
 
 function hideOtherDropdowns(dropdown) {
-    document.querySelectorAll(".judge0-dropdown").forEach(function (d) {
-        if (d != dropdown) {
+    document.querySelectorAll(".judge0-dropdown").forEach(d => {
+        if (d !== dropdown) {
             hideDropdown(d);
         }
     });
@@ -32,7 +32,7 @@ function handleEvent(event) {
             }
 
             const dropdownMenu = dropdown.querySelector(".judge0-dropdown-menu");
-            dropdownMenu.querySelectorAll(".judge0-dropdown-option").forEach(function (option) {
+            dropdownMenu.querySelectorAll(".judge0-dropdown-option").forEach(option => {
                 option.removeAttribute("aria-checked");
             });
 

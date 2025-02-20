@@ -1,6 +1,33 @@
 "use strict";
 import configuration from "../configuration.js";
 
+const DEFAULT_EDITOR_LANGUAGE_MODE = "plaintext";
+
+const LANGUAGE_NAME_TO_EDITOR_LANGUAGE_MODE = {
+    "Bash": "shell",
+    "C": "c",
+    "C#": "csharp",
+    "C++": "cpp",
+    "C3": "c",
+    "Clojure": "clojure",
+    "F#": "fsharp",
+    "Go": "go",
+    "Java": "java",
+    "JavaScript": "javascript",
+    "Kotlin": "kotlin",
+    "Objective-C": "objective-c",
+    "PHP": "php",
+    "Pascal": "pascal",
+    "Perl": "perl",
+    "Python": "python",
+    "R": "r",
+    "Ruby": "ruby",
+    "SQL": "sql",
+    "Swift": "swift",
+    "TypeScript": "typescript",
+    "Visual Basic": "vb"
+};
+
 const LAYOUT_CONFIG = {
     settings: {
         showPopoutIcon: false,
@@ -63,6 +90,9 @@ const LAYOUT_CONFIG = {
 
 const INITIALIZE_CALLBACK_QUEUE = [];
 
+var gSelectLanguageElement;
+var gSelectLanguageValueElement;
+
 const editor = {
     layout: null,
     sourceEditor: null,
@@ -70,13 +100,38 @@ const editor = {
     stdoutEditor: null,
     compilerOptions: null,
     commandLineArguments: null,
-    onMonacoReady: (callback) => require(["vs/editor/editor.main"], callback),
-    onInitialized: (callback) => {
+    onInitialized: callback => {
         if (editor.layout && editor.layout.isInitialised) {
             callback();
         } else {
             INITIALIZE_CALLBACK_QUEUE.push(callback);
         }
+    },
+    getSelectedFlavor: () => {
+        return gSelectLanguageValueElement.getAttribute("data-judge0-flavor");
+    },
+    getSelectedLanguageId: () => {
+        return gSelectLanguageValueElement.getAttribute("data-judge0-language-id");
+    },
+    getSelectedLangaugeName: () => {
+        return gSelectLanguageValueElement.textContent;
+    },
+    selectLanguage: (flavor, languageId) => {
+        const option = gSelectLanguageElement.querySelector(`.judge0-dropdown-option[data-judge0-flavor="${flavor}"][data-judge0-language-id="${languageId}"]`);
+        if (option) {
+            option.click();
+        }
+    },
+    resolveEditorLanguageMode: languageName => {
+        for (let key in LANGUAGE_NAME_TO_EDITOR_LANGUAGE_MODE) {
+            if (languageName.toLowerCase().startsWith(key.toLowerCase())) {
+                return LANGUAGE_NAME_TO_EDITOR_LANGUAGE_MODE[key];
+            }
+        }
+        return DEFAULT_EDITOR_LANGUAGE_MODE;
+    },
+    setEditorLanguageMode: languageName => {
+        monaco.editor.setModelLanguage(editor.sourceEditor.getModel(), editor.resolveEditorLanguageMode(languageName));
     }
 };
 
@@ -86,7 +141,14 @@ document.addEventListener("DOMContentLoaded", () => {
     editor.compilerOptions = document.getElementById("judge0-compiler-options");
     editor.commandLineArguments = document.getElementById("judge0-command-line-arguments");
 
-    editor.onMonacoReady(() => {
+    gSelectLanguageElement = document.getElementById("judge0-select-language");
+    gSelectLanguageValueElement = gSelectLanguageElement.querySelector(".judge0-dropdown-value");
+
+    new MutationObserver(() => {
+        editor.setEditorLanguageMode(editor.getSelectedLangaugeName());
+    }).observe(gSelectLanguageValueElement, { childList: true, subtree: false });
+
+    require(["vs/editor/editor.main"], () => {
         editor.layout = new GoldenLayout(LAYOUT_CONFIG, document.getElementsByTagName("main")[0]);
 
         editor.layout.registerComponent("source", function (container, state) {
@@ -94,8 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 automaticLayout: true,
                 scrollBeyondLastLine: true,
                 readOnly: state.readOnly,
-                language: "cpp",
-                fontFamily: "JetBrains Mono",
+                language: "plaintext",
                 minimap: {
                     enabled: true
                 }
@@ -180,7 +241,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 scrollBeyondLastLine: false,
                 readOnly: state.readOnly,
                 language: "plaintext",
-                fontFamily: "JetBrains Mono",
                 minimap: {
                     enabled: false
                 }
@@ -193,7 +253,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 scrollBeyondLastLine: false,
                 readOnly: state.readOnly,
                 language: "plaintext",
-                fontFamily: "JetBrains Mono",
                 minimap: {
                     enabled: false
                 }

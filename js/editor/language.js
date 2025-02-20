@@ -2,21 +2,23 @@
 import { FLAVORS, UNAUTHENTICATED_BASE_URL, DEFAULT_LANGUAGE, LANGUAGE_IDS_TO_SKIP } from "../clients.js";
 
 const LANGUAGES = [];
+const INITIALIZE_CALLBACK_QUEUE = [];
 
 const language = {
+    isInitialized: false,
     fetchAll: async () => {
         if (!LANGUAGES.length) {
             for (const flavor of FLAVORS) {
                 const response = await fetch(`${UNAUTHENTICATED_BASE_URL[flavor]}/languages`);
                 const data = await response.json();
                 if (data && data.length) {
-                    LANGUAGES.push(...data.map((language) => {
+                    LANGUAGES.push(...data.map(language => {
                         return {
                             ...language,
                             flavor: flavor,
                             default: language.id === DEFAULT_LANGUAGE[flavor]
                         };
-                    }).filter((language) => {
+                    }).filter(language => {
                         return !LANGUAGE_IDS_TO_SKIP[flavor].includes(language.id);
                     }));
                 }
@@ -29,17 +31,26 @@ const language = {
                 return FLAVORS.indexOf(a.flavor) - FLAVORS.indexOf(b.flavor);
             });
         }
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             resolve(LANGUAGES);
         });
     },
     getAll: async () => {
         return language.fetchAll();
     },
+    onInitialized: callback => {
+        if (language.isInitialized) {
+            callback();
+        } else {
+            INITIALIZE_CALLBACK_QUEUE.push(callback);
+        }
+    },
 };
 
-document.addEventListener("DOMContentLoaded", async () => {
-    language.getAll().then((languages) => {
+export default language;
+
+document.addEventListener("DOMContentLoaded", () => {
+    language.getAll().then(languages => {
         const isAdded = [];
         const selectLanguageDropdown = document.getElementById("judge0-select-language");
         const options = selectLanguageDropdown.querySelector(".judge0-dropdown-options");
@@ -47,8 +58,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const template = selectLanguageDropdown.querySelector(".judge0-dropdown-option").cloneNode(false);
         template.classList.remove("judge0-hidden");
 
-        let defaultOption;
-        languages.forEach((language) => {
+        languages.forEach(language => {
             if (isAdded.includes(language.name)) {
                 return;
             }
@@ -61,16 +71,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             option.setAttribute("data-judge0-language-id", language.id);
 
             options.appendChild(option);
-
-            if (language.default) {
-                defaultOption = options.lastElementChild;
-            }
         });
 
-        if (defaultOption) {
-            defaultOption.click();
+        language.isInitialized = true;
+
+        while (INITIALIZE_CALLBACK_QUEUE.length) {
+            INITIALIZE_CALLBACK_QUEUE.shift()();
         }
     });
 });
-
-export default language;
