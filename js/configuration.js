@@ -5,51 +5,86 @@ import { IS_ELECTRON } from "./electron.js";
 import { IS_PUTER } from "./puter.js";
 import { IS_STANDALONE } from "./standalone.js";
 
+function setAllBooleans(obj, val) {
+    const copy = JSON.parse(JSON.stringify(obj));
+    for (const key of Object.keys(obj)) {
+        if (typeof copy[key] === "boolean") {
+            copy[key] = val;
+        }
+    }
+    return copy;
+}
+
 const SCREEN_SM = window.innerWidth >= 640;
 const SCREEN_MD = window.innerWidth >= 768;
 const SCREEN_LG = window.innerWidth >= 1024;
 const SCREEN_XL = window.innerWidth >= 1280;
 const SCREEN_2XL = window.innerWidth >= 1536;
 
-const DEFAULT_STYLE_OPTIONS = {
-    showCommandLineArguments: SCREEN_SM,
-    showCompilerOptions: SCREEN_SM,
-    showCopyright: SCREEN_SM,
-    showFileMenu: SCREEN_SM,
-    showHelpMenu: SCREEN_SM,
+const FULL_STYLE_OPTIONS = {
+    showCommandLineArguments: true,
+    showCompilerOptions: true,
+    showCopyright: true,
+    showFileMenu: true,
+    showHelpMenu: true,
     showLogo: true,
     showNavigation: true,
-    showPuterSignInOutButton: SCREEN_SM,
+    showPuterSignInOutButton: true,
     showRunButton: true,
     showSelectLanguage: true,
     showStatusLine: true,
     showThemeButton: true,
 };
 
-const DEFAULT_APP_OPTIONS = {
+const FULL_APP_OPTIONS = {
     apiKey: "",
-    assistantLayout: SCREEN_SM ? "column" : "row",
+    assistantLayout: "column",
     ioLayout: "stack",
-    mainLayout: SCREEN_SM ? "row" : "column",
-    showAIAssistant: SCREEN_SM,
+    mainLayout: "row",
+    showAIAssistant: true,
     showInput: true,
     showOutput: true,
+    showMinimap: true,
 };
 
-const DEFAULT_CONFIGURATION = {
+const FULL_CONFIGURATION = {
     theme: "system",
-    style: "default",
-    styleOptions: DEFAULT_STYLE_OPTIONS,
-    appOptions: DEFAULT_APP_OPTIONS,
+    style: "full",
+    styleOptions: FULL_STYLE_OPTIONS,
+    appOptions: FULL_APP_OPTIONS,
 };
 
 const DEFAULT_CONFIGURATIONS = {
-    default: DEFAULT_CONFIGURATION,
+    default: {
+        ...FULL_STYLE_OPTIONS,
+        style: "default",
+        styleOptions: {
+            ...FULL_STYLE_OPTIONS,
+            showCommandLineArguments: SCREEN_SM,
+            showCompilerOptions: SCREEN_SM,
+            showCopyright: SCREEN_SM,
+            showFileMenu: SCREEN_SM,
+            showHelpMenu: SCREEN_SM,
+            showPuterSignInOutButton: SCREEN_SM,
+        },
+        appOptions: {
+            ...FULL_APP_OPTIONS,
+            assistantLayout: SCREEN_SM ? "column" : "row",
+            mainLayout: SCREEN_SM ? "row" : "column",
+            showAIAssistant: SCREEN_SM,
+        }
+    },
+    none: {
+        ...FULL_CONFIGURATION,
+        style: "none",
+        styleOptions: setAllBooleans(FULL_STYLE_OPTIONS, false),
+        appOptions: setAllBooleans(FULL_APP_OPTIONS, false),
+    },
     minimal: {
-        ...DEFAULT_CONFIGURATION,
+        ...FULL_CONFIGURATION,
         style: "minimal",
         styleOptions: {
-            ...DEFAULT_STYLE_OPTIONS,
+            ...FULL_STYLE_OPTIONS,
             showCommandLineArguments: false,
             showCompilerOptions: false,
             showFileMenu: false,
@@ -60,72 +95,73 @@ const DEFAULT_CONFIGURATIONS = {
             showThemeButton: false,
         },
         appOptions: {
-            ...DEFAULT_APP_OPTIONS,
+            ...FULL_APP_OPTIONS,
             ioLayout: "column",
             showAIAssistant: false,
         }
     },
     clean: {
-        ...DEFAULT_CONFIGURATION,
+        ...FULL_CONFIGURATION,
         style: "clean",
         styleOptions: {
-            ...DEFAULT_STYLE_OPTIONS,
+            ...FULL_STYLE_OPTIONS,
             showFileMenu: false,
             showHelpMenu: false,
             showLogo: false,
             showPuterSignInOutButton: false,
         },
         appOptions: {
-            ...DEFAULT_APP_OPTIONS,
+            ...FULL_APP_OPTIONS,
             showAIAssistant: false,
         }
     },
     simple: {
-        ...DEFAULT_CONFIGURATION,
+        ...FULL_CONFIGURATION,
         style: "simple",
         styleOptions: {
-            ...DEFAULT_STYLE_OPTIONS,
+            ...FULL_STYLE_OPTIONS,
             showFileMenu: false,
             showHelpMenu: false,
             showPuterSignInOutButton: false,
         },
         appOptions: {
-            ...DEFAULT_APP_OPTIONS,
+            ...FULL_APP_OPTIONS,
             showAIAssistant: false,
         }
     },
     standalone: {
-        ...DEFAULT_CONFIGURATION,
+        ...FULL_CONFIGURATION,
         style: "standalone",
         styleOptions: {
-            ...DEFAULT_STYLE_OPTIONS,
+            ...FULL_STYLE_OPTIONS,
             showCopyright: false,
             showLogo: false,
         }
     },
     electron: {
-        ...DEFAULT_CONFIGURATION,
+        ...FULL_CONFIGURATION,
         style: "electron",
         styleOptions: {
-            ...DEFAULT_STYLE_OPTIONS,
+            ...FULL_STYLE_OPTIONS,
             showCopyright: false,
             showLogo: false,
         }
     },
     puter: {
-        ...DEFAULT_CONFIGURATION,
+        ...FULL_CONFIGURATION,
         style: "puter",
         styleOptions: {
-            ...DEFAULT_STYLE_OPTIONS,
+            ...FULL_STYLE_OPTIONS,
             showCopyright: false,
             showLogo: false,
             showPuterSignInOutButton: false,
         }
-    }
+    },
+    full: FULL_CONFIGURATION,
 };
 
 const PROXY_HANDLER = {
-    get: function(obj, key) {
+    get: (obj, key) => {
         if (!key) {
             return null;
         }
@@ -139,7 +175,7 @@ const PROXY_HANDLER = {
 
         return obj;
     },
-    set: function(obj, key, val) {
+    set: (obj, key, val) => {
         if (!key) {
             return false;
         }
@@ -165,7 +201,8 @@ const LEGAL_VALUES = new Proxy({
     style: Object.keys(DEFAULT_CONFIGURATIONS),
     appOptions: {
         ioLayout: ["stack", "row", "column"],
-        assistantLayout: ["stack", "row", "column"]
+        assistantLayout: ["stack", "row", "column"],
+        mainLayout: ["stack", "row", "column"],
     }
 }, PROXY_HANDLER);
 
@@ -178,7 +215,7 @@ const configuration = {
     },
     getConfig() {
         if (!CONFIGURATION) {
-            let initialConfig = DEFAULT_CONFIGURATION;
+            let initialConfig = DEFAULT_CONFIGURATIONS.default;
             if (IS_ELECTRON) {
                 initialConfig = DEFAULT_CONFIGURATIONS.electron;
             } else if (IS_PUTER) {
@@ -189,7 +226,7 @@ const configuration = {
 
             CONFIGURATION = new Proxy(JSON.parse(JSON.stringify(initialConfig)), {
                 get: PROXY_HANDLER.get,
-                set: function(obj, key, val) {
+                set: (obj, key, val) => {
                     if (LEGAL_VALUES[key] && !LEGAL_VALUES[key].includes(val)) {
                         return true;
                     }
@@ -216,7 +253,7 @@ const configuration = {
     getLoadedConfig() {
         if (!LOADED_CONFIGURATION) {
             LOADED_CONFIGURATION = new Proxy({}, PROXY_HANDLER);
-            for (const key of configuration.getKeys(DEFAULT_CONFIGURATION)) {
+            for (const key of configuration.getKeys(DEFAULT_CONFIGURATIONS.default)) {
                 const val = query.get(`${ls.PREFIX}${key}`) || ls.get(key);
                 if (val) {
                     LOADED_CONFIGURATION[key] = val;

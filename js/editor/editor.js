@@ -44,7 +44,7 @@ const LAYOUT_CONFIG = {
             componentState: {
                 readOnly: false
             }
-        }, {
+        }, configuration.getConfig().appOptions.showAIAssistant || configuration.getConfig().appOptions.showInput || configuration.getConfig().appOptions.showOutput ? {
             type: configuration.getConfig().appOptions.assistantLayout,
             title: "AI Assistant and I/O",
             width: 33,
@@ -58,7 +58,7 @@ const LAYOUT_CONFIG = {
                 componentState: {
                     readOnly: false
                 }
-            } : null, {
+            } : null, configuration.getConfig().appOptions.showInput || configuration.getConfig().appOptions.showOutput ? {
                 type: configuration.getConfig().appOptions.ioLayout,
                 title: "I/O",
                 width: 33,
@@ -83,8 +83,8 @@ const LAYOUT_CONFIG = {
                             readOnly: true
                         }
                     } : null].filter(Boolean)
-            }].filter(Boolean)
-        }]
+            } : null].filter(Boolean)
+        } : null].filter(Boolean)
     }]
 };
 
@@ -158,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 readOnly: state.readOnly,
                 language: "plaintext",
                 minimap: {
-                    enabled: true
+                    enabled: configuration.getConfig().appOptions.showMinimap
                 }
             });
 

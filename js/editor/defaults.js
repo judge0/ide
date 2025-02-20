@@ -132,7 +132,11 @@ const DEFAULT_COMMAND_LINE_ARGUMENTS = "";
 editor.onInitialized(() => {
     language.onInitialized(() => {
         editor.sourceEditor.setValue(DEFAULT_SOURCE);
-        editor.stdinEditor.setValue(DEFAULT_STDIN);
+
+        if (editor.stdinEditor) {
+            editor.stdinEditor.setValue(DEFAULT_STDIN);
+        }
+
         editor.compilerOptions.value = DEFAULT_COMPILER_OPTIONS;
         editor.commandLineArguments.value = DEFAULT_COMMAND_LINE_ARGUMENTS;
 
