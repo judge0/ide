@@ -2,8 +2,8 @@
 import configuration from "./configuration.js";
 
 const style = {
-    apply(name) {
-        configuration.set("style", name);
+    apply(name = configuration.getConfig().style) {
+        configuration.getConfig().style = name;
         const config = configuration.getConfig();
         Object.keys(config.styleOptions).forEach(styleOption => {
             const showOption = config.styleOptions[styleOption];
@@ -37,6 +37,6 @@ const style = {
 
 export default style;
 
-document.addEventListener("DOMContentLoaded", function () {
-    style.apply(configuration.get("style"));
+document.addEventListener("DOMContentLoaded", () => {
+    style.apply();
 });
