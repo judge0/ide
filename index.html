@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-US" class="overflow-hidden size-full">
+<html lang="en-US" class="overflow-hidden size-full monaco-component">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -79,7 +79,7 @@
     <meta name="theme-color" content="#ffffff">
 </head>
 
-<body class="flex flex-col text-black bg-white size-full dark:bg-black dark:text-white" style="opacity: 0 !important;">
+<body class="flex flex-col size-full text-[--vscode-editor-foreground] bg-[--vscode-editor-background]" style="opacity: 0 !important;">
     <header class="flex flex-wrap items-center gap-2 p-2 judge0-showNavigation">
         <a href="https://judge0.com" target="_blank" rel="noopener" tabindex="-1" class="judge0-showLogo">
             <img src="/icon.svg" class="size-8 xl:hidden" />
@@ -87,54 +87,54 @@
             <img src="/images/logo_white.svg" class="hidden h-4 px-4 xl:dark:block" />
         </a>
         <div class="judge0-showFileMenu judge0-dropdown">
-            <button class="inline-flex items-center justify-center h-8 px-4 py-2 transition rounded-md judge0-dropdown-btn dark:hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 hover:bg-zinc-100">File</button>
-            <div class="absolute judge0-invisible mt-1 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-track]:bg-transparent dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700  bg-white border rounded-xl shadow-md judge0-dropdown-menu max-h-1/2 dark:border-zinc-800 dark:bg-black z-50">
+            <button class="inline-flex items-center justify-center h-8 px-4 py-2 transition rounded-md hover:bg-[--vscode-list-hoverBackground] judge0-dropdown-btn focus-visible:outline-none focus-visible:ring-2 ">File</button>
+            <div class="absolute judge0-invisible mt-1 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[--vscode-list-hoverBackground] [&::-webkit-scrollbar-thumb]:rounded-full  border bg-[--vscode-editor-background] rounded-xl shadow-md judge0-dropdown-menu max-h-1/2 z-50">
                 <ul class="flex flex-col p-2">
-                    <li class="inline-flex items-center gap-2 px-4 py-1 rounded-md cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800"><i class="w-4 fa-solid fa-file"></i><span>Open File...</span></li>
-                    <li class="inline-flex items-center gap-2 px-4 py-1 rounded-md cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800"><i class="w-4 fa-solid fa-floppy-disk"></i><span>Save</span></li>
+                    <li class="inline-flex items-center gap-2 px-4 py-1 rounded-md cursor-pointer hover:bg-[--vscode-list-hoverBackground]"><i class="w-4 text-sm fa-solid fa-file"></i><span>Open File...</span></li>
+                    <li class="inline-flex items-center gap-2 px-4 py-1 rounded-md cursor-pointer hover:bg-[--vscode-list-hoverBackground]"><i class="w-4 text-sm fa-solid fa-floppy-disk"></i><span>Save</span></li>
                 </ul>
             </div>
         </div>
         <div class="judge0-showHelpMenu judge0-dropdown">
-            <button class="inline-flex items-center justify-center h-8 px-4 py-2 transition rounded-md judge0-dropdown-btn dark:hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 hover:bg-zinc-100">Help</button>
-            <div class="absolute judge0-invisible mt-1 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-track]:bg-transparent dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700  bg-white border rounded-xl shadow-md judge0-dropdown-menu max-h-1/2 dark:border-zinc-800 dark:bg-black z-50">
+            <button class="inline-flex items-center justify-center h-8 px-4 py-2 transition rounded-md hover:bg-[--vscode-list-hoverBackground] judge0-dropdown-btn focus-visible:outline-none focus-visible:ring-2 ">Help</button>
+            <div class="absolute judge0-invisible mt-1 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[--vscode-list-hoverBackground] [&::-webkit-scrollbar-thumb]:rounded-full  border bg-[--vscode-editor-background] rounded-xl shadow-md judge0-dropdown-menu max-h-1/2 z-50">
                 <div class="flex flex-col p-2">
-                    <a class="inline-flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="https://github.com/judge0/ide" target="_blank" rel="noopener"><i class="w-4 fa-brands fa-github"></i><span>GitHub Repository</span></a>
-                    <a class="inline-flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="/embed" target="_blank" rel="noopener"><i class="w-4 fa-solid fa-code"></i><span>Embed Guide</span></a>
-                    <a class="inline-flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="https://platform.sulu.sh/apis/judge0" target="_blank" rel="noopener"><i class="w-4 fa-solid fa-book"></i><span>HTTP API Documentation</span></a>
-                    <a class="inline-flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="/PRIVACY.md" target="_blank" rel="noopener"><i class="w-4 fa-solid fa-shield-halved"></i><span>Privacy Policy</span></a>
-                    <a class="inline-flex items-center gap-2 px-4 py-1 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800" href="/TERMS.md" target="_blank" rel="noopener"><i class="w-4 fa-solid fa-file-signature"></i><span>Terms of Service</span></a>
+                    <a class="inline-flex items-center gap-2 px-4 py-1 rounded-md hover:bg-[--vscode-list-hoverBackground]" href="https://github.com/judge0/ide" target="_blank" rel="noopener"><i class="w-4 text-sm fa-brands fa-github"></i><span>GitHub Repository</span></a>
+                    <a class="inline-flex items-center gap-2 px-4 py-1 rounded-md hover:bg-[--vscode-list-hoverBackground]" href="/embed" target="_blank" rel="noopener"><i class="w-4 text-sm fa-solid fa-code"></i><span>Embed Guide</span></a>
+                    <a class="inline-flex items-center gap-2 px-4 py-1 rounded-md hover:bg-[--vscode-list-hoverBackground]" href="https://platform.sulu.sh/apis/judge0" target="_blank" rel="noopener"><i class="w-4 text-sm fa-solid fa-book"></i><span>HTTP API Documentation</span></a>
+                    <a class="inline-flex items-center gap-2 px-4 py-1 rounded-md hover:bg-[--vscode-list-hoverBackground]" href="/PRIVACY.md" target="_blank" rel="noopener"><i class="w-4 text-sm fa-solid fa-shield-halved"></i><span>Privacy Policy</span></a>
+                    <a class="inline-flex items-center gap-2 px-4 py-1 rounded-md hover:bg-[--vscode-list-hoverBackground]" href="/TERMS.md" target="_blank" rel="noopener"><i class="w-4 text-sm fa-solid fa-file-signature"></i><span>Terms of Service</span></a>
                 </div>
             </div>
         </div>
         <div id="judge0-select-language" class="judge0-showSelectLanguage judge0-dropdown">
-            <button class="inline-flex items-center justify-between h-8 px-3 py-2 text-left bg-transparent border rounded-md w-50 judge0-dropdown-btn dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2">
+            <button class="inline-flex items-center justify-between h-8 px-3 py-2 text-left border rounded-md w-50 judge0-dropdown-btn focus-visible:outline-none focus-visible:ring-2">
                 <span class="overflow-hidden text-nowrap judge0-dropdown-value"></span>
                 <i class="text-xs opacity-50 fa-solid fa-chevron-down"></i>
             </button>
-            <div class="absolute judge0-invisible mt-1 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-track]:bg-transparent dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700  bg-white border rounded-xl shadow-md judge0-dropdown-menu max-h-1/2 dark:border-zinc-800 dark:bg-black z-50">
+            <div class="absolute judge0-invisible mt-1 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[--vscode-list-hoverBackground] [&::-webkit-scrollbar-thumb]:rounded-full  border bg-[--vscode-editor-background] rounded-xl shadow-md judge0-dropdown-menu max-h-1/2 z-50">
                 <ul class="flex flex-col p-2 judge0-dropdown-options">
-                    <li class="px-4 py-1 rounded-md cursor-pointer judge0-hidden judge0-dropdown-option hover:bg-zinc-100 dark:hover:bg-zinc-800 aria-checked:bg-blue-800 aria-checked:text-white hover:aria-checked:bg-blue-800 hover:aria-checked:text-white"></li>
+                    <li class="px-4 py-1 rounded-md cursor-pointer hover:bg-[--vscode-list-hoverBackground] judge0-hidden judge0-dropdown-option aria-checked:bg-[--vscode-list-activeSelectionBackground] aria-checked:text-[--vscode-list-activeSelectionForeground] hover:aria-checked:bg-[--vscode-list-activeSelectionBackground]"></li>
                 </ul>
             </div>
         </div>
-        <input id="judge0-compiler-options" class="inline-flex items-center flex-grow h-8 px-3 py-2 bg-transparent border rounded-md w-50 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 placeholder: judge0-showCompilerOptions" placeholder="Compiler options" type="text">
-        <input id="judge0-command-line-arguments" class="inline-flex items-center flex-grow h-8 px-3 py-2 bg-transparent border rounded-md w-50 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 placeholder: judge0-showCommandLineArguments" placeholder="Command line arguments" type="text">
-        <button id="judge0-run-btn" class="inline-flex items-center justify-center h-8 gap-2 px-4 py-2 text-white transition bg-blue-800 rounded-md focus-visible:outline-none focus-visible:ring-2 hover:bg-blue-900 dark:hover:bg-blue-700 judge0-showRunButton">
-            <i class="w-4 fa-solid fa-play"></i>
+        <input id="judge0-compiler-options" class="inline-flex items-center flex-grow h-8 px-3 py-2 bg-transparent border rounded-md w-50 focus-visible:outline-none focus-visible:ring-2 judge0-showCompilerOptions" placeholder="Compiler options" type="text">
+        <input id="judge0-command-line-arguments" class="inline-flex items-center flex-grow h-8 px-3 py-2 bg-transparent border rounded-md w-50 focus-visible:outline-none focus-visible:ring-2 judge0-showCommandLineArguments" placeholder="Command line arguments" type="text">
+        <button id="judge0-run-btn" class="inline-flex items-center justify-center h-8 gap-2 px-4 py-2 transition rounded-md focus-visible:outline-none focus-visible:ring-2 judge0-showRunButton bg-[--vscode-button-background] text-[--vscode-button-foreground] hover:bg-[--vscode-button-hoverBackground]">
+            <i class="w-4 text-sm fa-solid fa-play"></i>
             Run
         </button>
         <div class="judge0-showPuterSignInOutButton">
-            <button id="judge0-sign-in-btn" class="inline-flex items-center justify-center h-8 gap-2 px-4 py-2 transition rounded-md text-zinc-800 dark:text-white dark:hover:bg-zinc-700 dark:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 bg-zinc-100 hover:bg-zinc-200 text-nowrap">
-                <i class="w-4 fa-arrow-right-to-bracket fa-solid"></i>
+            <button id="judge0-sign-in-btn" class="inline-flex items-center bg-[--vscode-list-hoverBackground] active:bg-[--vscode-button-hoverBackground] hover:bg-[--vscode-button-background] hover:text-[--vscode-button-foreground] justify-center h-8 gap-2 px-4 py-2 transition rounded-md focus-visible:outline-none focus-visible:ring-2 text-nowrap">
+                <i class="w-4 text-sm fa-arrow-right-to-bracket fa-solid"></i>
                 Sign in with Puter
             </button>
-            <button id="judge0-sign-out-btn" class="inline-flex items-center justify-center h-8 gap-2 px-4 py-2 transition rounded-md text-zinc-800 dark:text-white dark:hover:bg-zinc-700 dark:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 bg-zinc-100 hover:bg-zinc-200 text-nowrap">
-                <i class="w-4 fa-arrow-right-from-bracket fa-solid"></i>
+            <button id="judge0-sign-out-btn" class="inline-flex items-center bg-[--vscode-list-hoverBackground] active:bg-[--vscode-button-hoverBackground] hover:bg-[--vscode-button-background] hover:text-[--vscode-button-foreground] justify-center h-8 gap-2 px-4 py-2 transition rounded-md focus-visible:outline-none focus-visible:ring-2 text-nowrap">
+                <i class="w-4 text-sm fa-arrow-right-from-bracket fa-solid"></i>
                 <span id="judge0-puter-username"></span>
             </button>
         </div>
-        <button id="judge0-theme-btn" class="inline-flex items-center justify-center transition rounded-md size-8 text-zinc-800 dark:text-white dark:hover:bg-zinc-700 dark:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 bg-zinc-100 hover:bg-zinc-200 judge0-showThemeButton"><i class="fa-solid fa-sun"></i></button>
+        <button id="judge0-theme-btn" class="inline-flex items-center bg-[--vscode-list-hoverBackground] active:bg-[--vscode-button-hoverBackground] hover:bg-[--vscode-button-background] hover:text-[--vscode-button-foreground] justify-center text-sm transition rounded-md size-8 focus-visible:outline-none focus-visible:ring-2 judge0-showThemeButton"><i class="fa-solid fa-sun"></i></button>
     </header>
 
     <main class="flex-grow"></main>

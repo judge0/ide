@@ -5,3 +5,7 @@
 .judge0-invisible {
     visibility: hidden !important;
 }
+
+:root {
+    --un-default-border-color: var(--vscode-dropdown-border);
+}
