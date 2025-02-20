@@ -20,6 +20,7 @@ function enableRunButton() {
 }
 
 function run() {
+    disableRunButton();
 };
 
 document.addEventListener("DOMContentLoaded", () => {
