@@ -29,7 +29,7 @@ const theme = {
         }
 
         document.head.querySelectorAll("meta[name='theme-color'], meta[name='msapplication-TileColor']").forEach(e => {
-            e.setAttribute("content", isLight ? "#ffffff" : "#000000");
+            e.setAttribute("content", isLight ? "#fffffe" : "#1e1e1e");
         });
     },
     toggle() {
