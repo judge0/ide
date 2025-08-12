@@ -10,13 +10,16 @@ const AUTH_HEADERS = API_KEY ? {
 const CE = "CE";
 const EXTRA_CE = "EXTRA_CE";
 
-const AUTHENTICATED_CE_BASE_URL = "https://judge0-ce.p.sulu.sh";
-const AUTHENTICATED_EXTRA_CE_BASE_URL = "https://judge0-extra-ce.p.sulu.sh";
+// Point IDE to your backend wrapper that implements Judge0-compatible endpoints
+const API_ORIGIN = window.location.origin;
+const AUTHENTICATED_CE_BASE_URL = `${API_ORIGIN}/api/programming-language/judge-api-v2`;
+const AUTHENTICATED_EXTRA_CE_BASE_URL = `${API_ORIGIN}/api/programming-language/judge-api-v2`;
 
 var AUTHENTICATED_BASE_URL = {};
 AUTHENTICATED_BASE_URL[CE] = AUTHENTICATED_CE_BASE_URL;
 AUTHENTICATED_BASE_URL[EXTRA_CE] = AUTHENTICATED_EXTRA_CE_BASE_URL;
 
+// Use Judge0 public endpoints for languages and polling unless you expose those in your backend
 const UNAUTHENTICATED_CE_BASE_URL = "https://ce.judge0.com";
 const UNAUTHENTICATED_EXTRA_CE_BASE_URL = "https://extra-ce.judge0.com";
 
