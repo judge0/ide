@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Judge0 IDE Integration Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f5f5f5;
+        }
+        .test-cases {
+            margin-bottom: 20px;
+        }
+        .test-case {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .iframe-container {
+            height: 600px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        button {
+            padding: 8px 16px;
+            margin-right: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .log-container {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Judge0 IDE Integration Test</h1>
+        
+        <div class="controls">
+            <h2>Controls</h2>
+            <div>
+                <label for="ideUrl">IDE URL:</label>
+                <input type="text" id="ideUrl" value="http://localhost:3000" style="width: 300px;">
+                <button id="loadIdeBtn">Load IDE</button>
+            </div>
+            
+            <h3>Boilerplate Code</h3>
+            <textarea id="boilerplateCode">// Write your code here
+function decodeWays(digits) {
+    // Your implementation here
+    return 0;
+}</textarea>
+            <div>
+                <label for="language">Language:</label>
+                <select id="language">
+                    <option value="javascript">JavaScript</option>
+                    <option value="python">Python</option>
+                    <option value="java">Java</option>
+                    <option value="cpp">C++</option>
+                </select>
+                <button id="sendBoilerplateBtn" disabled>Send Boilerplate Code</button>
+            </div>
+        </div>
+        
+        <div class="test-cases">
+            <h2>Test Cases</h2>
+            
+            <div class="test-case">
+                <h3>Test Case #1</h3>
+                <div>Input: ["5","1","2"]</div>
+                <div>Expected Output: 2</div>
+                <div>Explanation: AB or L</div>
+                <button class="load-test-btn" data-input="5,1,2" disabled>Load in IDE</button>
+            </div>
+            
+            <div class="test-case">
+                <h3>Test Case #2</h3>
+                <div>Input: ["5","2","2","6"]</div>
+                <div>Expected Output: 3</div>
+                <div>Explanation: BZ, VF, BBF</div>
+                <button class="load-test-btn" data-input="5,2,2,6" disabled>Load in IDE</button>
+            </div>
+            
+            <div class="test-case">
+                <h3>Test Case #3</h3>
+                <div>Input: ["5","0"]</div>
+                <div>Expected Output: 0</div>
+                <div>Explanation: Invalid</div>
+                <button class="load-test-btn" data-input="5,0" disabled>Load in IDE</button>
+            </div>
+            
+            <button id="runAllTestsBtn" disabled>Run with Test Cases</button>
+        </div>
+        
+        <div class="iframe-container" id="iframeContainer">
+            <p>Click "Load IDE" to load the Judge0 IDE</p>
+        </div>
+        
+        <div class="log-container">
+            <h2>Communication Log</h2>
+            <div id="logEntries"></div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let ideIframe = null;
+        let isIdeReady = false;
+        
+        // DOM elements
+        const loadIdeBtn = document.getElementById('loadIdeBtn');
+        const sendBoilerplateBtn = document.getElementById('sendBoilerplateBtn');
+        const runAllTestsBtn = document.getElementById('runAllTestsBtn');
+        const loadTestBtns = document.querySelectorAll('.load-test-btn');
+        const iframeContainer = document.getElementById('iframeContainer');
+        const logEntries = document.getElementById('logEntries');
+        
+        // Test cases
+        const testCases = [
+            { input: "5,1,2", expectedOutput: "2", explanation: "AB or L" },
+            { input: "5,2,2,6", expectedOutput: "3", explanation: "BZ, VF, BBF" },
+            { input: "5,0", expectedOutput: "0", explanation: "Invalid" }
+        ];
+        
+        // Add log entry
+        function log(message, data = null) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            
+            let logText = `[${timestamp}] ${message}`;
+            if (data) {
+                logText += `: ${JSON.stringify(data, null, 2)}`;
+            }
+            
+            logEntry.textContent = logText;
+            logEntries.appendChild(logEntry);
+            logEntries.scrollTop = logEntries.scrollHeight;
+        }
+        
+        // Load IDE
+        loadIdeBtn.addEventListener('click', () => {
+            const ideUrl = document.getElementById('ideUrl').value;
+            if (!ideUrl) {
+                alert('Please enter a valid IDE URL');
+                return;
+            }
+            
+            log(`Loading IDE from ${ideUrl}`);
+            
+            // Create iframe
+            ideIframe = document.createElement('iframe');
+            ideIframe.src = ideUrl;
+            ideIframe.title = 'Judge0 IDE';
+            
+            // Clear container and add iframe
+            iframeContainer.innerHTML = '';
+            iframeContainer.appendChild(ideIframe);
+            
+            // Listen for messages from the IDE
+            window.addEventListener('message', handleIdeMessage);
+        });
+        
+        // Handle messages from IDE
+        function handleIdeMessage(event) {
+            const { type, payload } = event.data || {};
+            
+            if (!type) return;
+            
+            log(`Received message from IDE: ${type}`, payload);
+            
+            switch (type) {
+                case 'ideReady':
+                    isIdeReady = true;
+                    sendBoilerplateBtn.disabled = false;
+                    runAllTestsBtn.disabled = false;
+                    loadTestBtns.forEach(btn => btn.disabled = false);
+                    log('IDE is ready');
+                    break;
+                    
+                case 'codeChanged':
+                    log('Code changed in IDE', { code: payload.code.substring(0, 50) + '...' });
+                    break;
+                    
+                case 'runCode':
+                    log('Run button clicked in IDE', { 
+                        languageId: payload.languageId,
+                        code: payload.code.substring(0, 50) + '...' 
+                    });
+                    runCodeWithTestCases(payload.code);
+                    break;
+                    
+                case 'codeContent':
+                    log('Received code content from IDE', { 
+                        languageId: payload.languageId,
+                        code: payload.code.substring(0, 50) + '...' 
+                    });
+                    break;
+            }
+        }
+        
+        // Send boilerplate code to IDE
+        sendBoilerplateBtn.addEventListener('click', () => {
+            if (!ideIframe || !isIdeReady) {
+                alert('IDE is not ready yet');
+                return;
+            }
+            
+            const code = document.getElementById('boilerplateCode').value;
+            const language = document.getElementById('language').value;
+            
+            log('Sending boilerplate code to IDE', { language, code: code.substring(0, 50) + '...' });
+            
+            ideIframe.contentWindow.postMessage({
+                type: 'setBoilerplate',
+                payload: {
+                    code,
+                    language
+                }
+            }, '*');
+        });
+        
+        // Load test case in IDE
+        loadTestBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (!ideIframe || !isIdeReady) {
+                    alert('IDE is not ready yet');
+                    return;
+                }
+                
+                const input = btn.getAttribute('data-input');
+                
+                log('Loading test case in IDE', { input });
+                
+                ideIframe.contentWindow.postMessage({
+                    type: 'setInput',
+                    payload: {
+                        stdin: input
+                    }
+                }, '*');
+            });
+        });
+        
+        // Run code with test cases
+        runAllTestsBtn.addEventListener('click', () => {
+            if (!ideIframe || !isIdeReady) {
+                alert('IDE is not ready yet');
+                return;
+            }
+            
+            log('Getting current code from IDE');
+            
+            ideIframe.contentWindow.postMessage({
+                type: 'getCode'
+            }, '*');
+        });
+        
+        // Run code with test cases
+        function runCodeWithTestCases(code) {
+            log('Running code against test cases', { code: code.substring(0, 50) + '...' });
+            
+            // Simulate running code against test cases
+            setTimeout(() => {
+                // Create fake results
+                const results = {
+                    success: true,
+                    summary: {
+                        total: testCases.length,
+                        passed: Math.floor(Math.random() * (testCases.length + 1)),
+                        failed: 0
+                    },
+                    output: testCases.map((testCase, index) => {
+                        const passed = index < results.summary.passed;
+                        return {
+                            input: testCase.input,
+                            expectedOutput: testCase.expectedOutput,
+                            actualOutput: passed ? testCase.expectedOutput : (parseInt(testCase.expectedOutput) + 1).toString(),
+                            passed
+                        };
+                    })
+                };
+                
+                results.summary.failed = results.summary.total - results.summary.passed;
+                
+                log('Sending test results to IDE', results);
+                
+                ideIframe.contentWindow.postMessage({
+                    type: 'runResults',
+                    payload: results
+                }, '*');
+            }, 1000);
+        }
+        
+        // Initialize
+        log('Integration test page loaded');
+    </script>
+</body>
+</html>
