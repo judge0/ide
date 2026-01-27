@@ -21,6 +21,8 @@
             }
         };
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/openai@4.0.0/browser/openai.min.js"></script>
+    <script src="js/ai.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/goldenlayout.min.js" integrity="sha256-NhJAZDfGgv4PiB+GVlSrPdh3uc75XXYSM4su8hgTchI=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/css/goldenlayout-base.css" integrity="sha512-rGtzJyDE8egZ/OScuBNLW1EIhRydcfrZo14oTvZwRLzEZu+s8foCtwi0XhXsKnhuoQAwJ7POFARWdU4fBL7FbQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -228,5 +230,46 @@
             navigator.serviceWorker.register("sw.js").then(() => console.log("Service Worker Registered"));
         }
     </script>
+
+
+// Here I added the chat interface
+<div id="chat-window">
+    <div id="chat-messages"></div>
+    <input id="chat-input" type="text" placeholder="Ask a question..." />
+</div>
 </body>
 </html>
+<button id="optimize-btn" class="ui primary labeled icon button">
+    <i class="magic icon"></i>
+    Optimize Code
+</button>
+
+<div id="editor-container">
+    <div id="editor"></div>
+  </div>
+  <div id="judge0-chat-container">
+    <div id="judge0-chat-messages"></div>
+    <form id="judge0-chat-form">
+      <input id="judge0-chat-user-input" type="text">
+    </form>
+  </div>
+  <div id="analysis-results"></div>
+
+
+  <div class="ai-chat-container">
+    <div class="chat-header">
+      <h3>AI Assistant</h3>
+      <select id="ai-mode-select" class="ui dropdown">
+        <option value="debug">Debugging Assistant</option>
+        <option value="code">Code Completion</option>
+        <option value="explain">Explanation</option>
+      </select>
+    </div>
+    <div class="chat-messages" id="chat-messages"></div>
+    <div class="chat-input">
+      <textarea id="user-input" placeholder="Ask about your code..."></textarea>
+      <button id="send-btn" class="ui primary button">
+        <i class="paper plane icon"></i>
+      </button>
+    </div>
+  </div>

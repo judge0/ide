@@ -1,136 +1,233 @@
-"use strict";
-import theme from "./theme.js";
-import configuration from "./configuration.js";
-import { sourceEditor } from "./ide.js";
-
-const THREAD = [
-    {
-        role: "system",
-        content: `
-You are an AI assistant integrated into an online code editor.
-Your main job is to help users with their code, but you should also be able to engage in casual conversation.
-
-The following are your guidelines:
-1. **If the user asks for coding help**:
-   - Always consider the user's provided code.
-   - Analyze the code and provide relevant help (debugging, optimization, explanation, etc.).
-   - Make sure to be specific and clear when explaining things about their code.
-
-2. **If the user asks a casual question or makes a casual statement**:
-   - Engage in friendly, natural conversation.
-   - Do not reference the user's code unless they bring it up or ask for help.
-   - Be conversational and polite.
-
-3. **If the user's message is ambiguous or unclear**:
-   - Politely ask for clarification or more details to better understand the user's needs.
-   - If the user seems confused about something, help guide them toward what they need.
-
-4. **General Behavior**:
-   - Always respond in a helpful, friendly, and professional tone.
-   - Never assume the user's intent. If unsure, ask clarifying questions.
-   - Keep the conversation flowing naturally, even if the user hasn't directly asked about their code.
-
-You will always have access to the user's latest code.
-Use this context only when relevant to the user's message.
-If their message is unrelated to the code, focus solely on their conversational intent.
-        `.trim()
+// Chat interface component
+class AIChat {
+    constructor() {
+        this.setupEventListeners();
     }
-];
 
-document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("judge0-chat-form").addEventListener("submit", async function (event) {
-        event.preventDefault();
+    setupEventListeners() {
+        document.getElementById("judge0-chat-form").addEventListener("submit", async (event) => {
+            event.preventDefault();
 
-        const userInput = document.getElementById("judge0-chat-user-input");
-        const userInputValue = userInput.value.trim();
-        if (userInputValue === "") {
-            return;
-        }
+            const userInput = document.getElementById("judge0-chat-user-input");
+            const userInputValue = userInput.value.trim();
+            if (userInputValue === "") {
+                return;
+            }
 
-        const sendButton = document.getElementById("judge0-chat-send-button");
+            const sendButton = document.getElementById("judge0-chat-send-button");
+            const messages = document.getElementById("judge0-chat-messages");
+            
+            // Disable input and show loading state
+            sendButton.classList.add("loading");
+            userInput.disabled = true;
 
-        sendButton.classList.add("loading");
-        userInput.disabled = true;
+            // Display user message
+            const userMessage = document.createElement("div");
+            userMessage.innerText = userInputValue;
+            userMessage.classList.add("ui", "message", "judge0-message", "judge0-user-message");
+            if (!theme.isLight()) {
+                userMessage.classList.add("inverted");
+            }
+            messages.appendChild(userMessage);
 
-        const userMessage = document.createElement("div");
-        userMessage.innerText = userInputValue;
-        userMessage.classList.add("ui", "message", "judge0-message", "judge0-user-message");
-        if (!theme.isLight()) {
-            userMessage.classList.add("inverted");
-        }
+            // Clear input and scroll
+            userInput.value = "";
+            messages.scrollTop = messages.scrollHeight;
 
-        const messages = document.getElementById("judge0-chat-messages");
-        messages.appendChild(userMessage);
+            // Create AI message placeholder
+            const aiMessage = document.createElement("div");
+            aiMessage.classList.add("ui", "basic", "segment", "judge0-message", "loading");
+            if (!theme.isLight()) {
+                aiMessage.classList.add("inverted");
+            }
+            messages.appendChild(aiMessage);
+            messages.scrollTop = messages.scrollHeight;
 
-        userInput.value = "";
-        messages.scrollTop = messages.scrollHeight;
+            try {
+                // Get current code context
+                const currentCode = sourceEditor.getValue();
+                
+                // Create context-aware prompt
+                const prompt = `Current code:\n${currentCode}\n\nUser message: ${userInputValue}`;
+                
+                // Use Puter AI API
+                const aiResponse = await puter.ai.chat([{
+                    role: "user",
+                    content: prompt
+                }], {
+                    model: document.getElementById("judge0-chat-model-select").value,
+                });
 
-        THREAD.push({
-            role: "user",
-            content: `
-User's code:
-${sourceEditor.getValue()}
-
-User's message:
-${userInputValue}
-`.trim()
+                // Process response
+                let aiResponseValue = typeof aiResponse === "string" ? aiResponse : aiResponse.map(v => v.text).join("\n");
+                
+                // Display response with markdown formatting
+                aiMessage.innerHTML = DOMPurify.sanitize(marked.parse(aiResponseValue));
+                
+                // Render any math expressions
+                renderMathInElement(aiMessage, {
+                    delimiters: [
+                        { left: "\\(", right: "\\)", display: false },
+                        { left: "\\[", right: "\\]", display: true }
+                    ]
+                });
+            } catch (error) {
+                console.error('Chat error:', error);
+                aiMessage.innerText = "I encountered an error processing your request. Please try again.";
+            } finally {
+                // Reset UI state
+                aiMessage.classList.remove("loading");
+                messages.scrollTop = messages.scrollHeight;
+                userInput.disabled = false;
+                sendButton.classList.remove("loading");
+                userInput.focus();
+            }
         });
+    }
 
-
-        const aiMessage = document.createElement("div");
-        aiMessage.classList.add("ui", "basic", "segment", "judge0-message", "loading");
-        if (!theme.isLight()) {
-            aiMessage.classList.add("inverted");
-        }
-        messages.appendChild(aiMessage);
-        messages.scrollTop = messages.scrollHeight;
-
-        const aiResponse = await puter.ai.chat(THREAD, {
-            model: document.getElementById("judge0-chat-model-select").value,
+    // Add keyboard shortcut for chat focus
+    setupKeyboardShortcuts() {
+        document.addEventListener("keydown", function(e) {
+            if ((e.metaKey || e.ctrlKey) && e.key === "p") {
+                if (configuration.get("appOptions.showAIAssistant")) {
+                    e.preventDefault();
+                    document.getElementById("judge0-chat-user-input").focus();
+                }
+            }
         });
-        let aiResponseValue = aiResponse.toString();
-        if (typeof aiResponseValue !== "string") {
-            aiResponseValue = aiResponseValue.map(v => v.text).join("\n");
-        }
+    }
+}
 
-        THREAD.push({
-            role: "assistant",
-            content: aiResponseValue
-        });
-
-        aiMessage.innerHTML = DOMPurify.sanitize(aiResponseValue);
-        renderMathInElement(aiMessage, {
-            delimiters: [
-                { left: "\\(", right: "\\)", display: false },
-                { left: "\\[", right: "\\]", display: true }
-            ]
-        });
-        aiMessage.innerHTML = marked.parse(aiMessage.innerHTML);
-
-        aiMessage.classList.remove("loading");
-        messages.scrollTop = messages.scrollHeight;
-
-        userInput.disabled = false;
-        sendButton.classList.remove("loading");
-        userInput.focus();
-    });
-
-    document.getElementById("judge0-chat-model-select").addEventListener("change", function () {
-        const userInput = document.getElementById("judge0-chat-user-input");
-        userInput.placeholder = `Message ${this.value}`;
-    });
+// Initialize chat when document is ready
+document.addEventListener("DOMContentLoaded", () => {
+    const chat = new AIChat();
+    chat.setupKeyboardShortcuts();
 });
 
-document.addEventListener("keydown", function (e) {
-    if (e.metaKey || e.ctrlKey) {
-        switch (e.key) {
-            case "p":
-                if (!configuration.get("appOptions.showAIAssistant")) {
-                    break;
+
+// Configure Monaco Editor with inline suggestions
+require(["vs/editor/editor.main"], function() {
+    // Register inline suggestions provider for all languages
+    monaco.languages.registerInlineCompletionsProvider('*', {
+        provideInlineCompletions: async (model, position, context) => {
+            if (!puter.auth.isSignedIn() || 
+                !document.getElementById("judge0-inline-suggestions").checked || 
+                !configuration.get("appOptions.showAIAssistant")) {
+                return;
+            }
+
+            // Get text before and after cursor for context
+            const textBeforeCursor = model.getValueInRange({
+                startLineNumber: 1,
+                startColumn: 1,
+                endLineNumber: position.lineNumber,
+                endColumn: position.column
+            });
+
+            const textAfterCursor = model.getValueInRange({
+                startLineNumber: position.lineNumber,
+                startColumn: position.column,
+                endLineNumber: model.getLineCount(),
+                endColumn: model.getLineMaxColumn(model.getLineCount())
+            });
+
+            try {
+                // Get AI suggestion using Puter API
+                const aiResponse = await puter.ai.chat([{
+                    role: "user",
+                    content: `You are a code completion assistant. Given the following context, generate the most likely code completion.
+
+                    ### Code Before Cursor:
+                    ${textBeforeCursor}
+
+                    ### Code After Cursor:
+                    ${textAfterCursor}
+
+                    ### Instructions:
+                    - Predict the next logical code segment
+                    - Ensure the suggestion is syntactically and contextually correct
+                    - Keep the completion concise and relevant
+                    - Do not repeat existing code
+                    - Provide only the missing code
+                    - **Respond with only the code, without markdown formatting**
+                    - **Do not include triple backticks (\`\`\`) or additional explanations**
+
+                    ### Completion:`.trim()
+                }], {
+                    model: document.getElementById("judge0-chat-model-select").value,
+                });
+
+                // Process the response
+                let aiResponseValue = aiResponse?.toString().trim() || "";
+                if (Array.isArray(aiResponseValue)) {
+                    aiResponseValue = aiResponseValue.map(v => v.text).join("\n").trim();
                 }
-                e.preventDefault();
-                document.getElementById("judge0-chat-user-input").focus();
-                break;
-        }
+
+                if (!aiResponseValue || aiResponseValue.length === 0) {
+                    return;
+                }
+
+                // Return the suggestion
+                return {
+                    items: [{
+                        insertText: aiResponseValue,
+                        range: {
+                            startLineNumber: position.lineNumber,
+                            startColumn: position.column,
+                            endLineNumber: position.lineNumber,
+                            endColumn: position.column
+                        }
+                    }]
+                };
+            } catch (error) {
+                console.error('Inline suggestion error:', error);
+                return null;
+            }
+        },
+        
+        // Required but can be empty for basic implementation
+        handleItemDidShow: () => {},
+        handleItemDidHide: () => {},
+        freeInlineCompletions: () => {}
+    });
+
+    // Add UI toggle for inline suggestions
+    const settingsContainer = document.querySelector('.settings-container');
+    if (settingsContainer) {
+        const toggleDiv = document.createElement('div');
+        toggleDiv.className = 'ui toggle checkbox';
+        toggleDiv.innerHTML = `
+            <input type="checkbox" id="judge0-inline-suggestions" checked>
+            <label>Enable AI inline suggestions</label>
+        `;
+        settingsContainer.appendChild(toggleDiv);
+    }
+});
+
+// Update the editor configuration with inline suggestions enabled
+const editorConfig = {
+    value: '// Start coding here...',
+    language: 'javascript',
+    theme: 'vs-dark',
+    automaticLayout: true,
+    inlineSuggest: {
+        enabled: true,
+        mode: 'subword'
+    },
+    // Other existing editor options...
+    minimap: {
+        enabled: true
+    }
+};
+
+// Create editor with updated configuration
+sourceEditor = monaco.editor.create(container.getElement()[0], editorConfig);
+
+// Add keyboard shortcut for accepting suggestions
+sourceEditor.addCommand(monaco.KeyMod.Alt | monaco.KeyCode.Tab, () => {
+    // Accept the current inline suggestion if present
+    const controller = sourceEditor.getContribution('editor.contrib.inlineSuggestionController');
+    if (controller) {
+        controller.accept();
     }
 });

@@ -5,3 +5,55 @@ html, body {
     padding: 0;
     overflow: hidden;
 }
+
+
+#chat-window {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    background: #f1f1f1;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#chat-messages {
+    height: 200px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+#chat-input {
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+
+/* Light Theme */
+#chat-window {
+    background: #f1f1f1;
+    border: 1px solid #ccc;
+    color: #000;
+}
+
+/* Dark Theme */
+.dark-theme #chat-window {
+    background: #333;
+    border: 1px solid #555;
+    color: #fff;
+}
+
+/* Inline Chat Window */
+#inline-chat-window {
+    background: #fff;
+    border: 1px solid #ccc;
+    color: #000;
+}
+
+.dark-theme #inline-chat-window {
+    background: #444;
+    border: 1px solid #666;
+    color: #fff;
+}

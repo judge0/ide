@@ -1,50 +1,103 @@
-.judge0-file-menu {
-    min-width: 15rem !important;
+.ai-chat-container {
+  background: var(--bg-color);
+  border-left: 1px solid #ddd;
+  height: 100vh;
+  width: 350px;
+  display: flex;
+  flex-direction: column;
 }
 
-#judge0-chat-container {
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.chat-input {
+  padding: 1rem;
+  border-top: 1px solid #eee;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ai-message, .user-message {
+  padding: 0.8rem;
+  margin: 0.5rem 0;
+  border-radius: 8px;
+  max-width: 80%;
+}
+
+.user-message {
+  background: #007bff;
+  color: white;
+  margin-left: auto;
+}
+
+.ai-message {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.loading-dots::after {
+  content: '...';
+  animation: dots 1s infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60% { content: '...'; }
+}
+
+
+
+.ai-chat-container {
+    background: var(--bg-color);
+    border-left: 1px solid #ddd;
+    height: 100vh;
+    width: 350px;
     display: flex;
     flex-direction: column;
-    height: 100%;
-    padding: 0;
-}
-
-#judge0-chat-container > .ui.menu {
-    border-bottom: none;
-}
-
-#judge0-chat-messages {
-    flex-grow: 1;
+  }
+  
+  .chat-messages {
+    flex: 1;
     overflow-y: auto;
-}
-
-#judge0-chat-messages pre {
-    overflow-x: auto;
-}
-
-.judge0-user-message {
-    margin-left: auto !important;
-    margin-right: 1em !important;
-    margin-top: 1em !important;
-    max-width: 66%;
-    overflow-wrap: break-word;
-    width: fit-content;
-}
-
-#judge0-chat-input-container {
-    margin-top: 0;
-}
-
-#judge0-status-line:empty {
-    display: none;
-}
-
-.judge0-hidden, .judge0-style-hidden {
-    display: none !important;
-}
-
-@media (display-mode: standalone) {
-    .judge0-standalone-hidden {
-        display: none !important;
-    }
-}
+    padding: 1rem;
+  }
+  
+  .chat-input {
+    padding: 1rem;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .ai-message, .user-message {
+    padding: 0.8rem;
+    margin: 0.5rem 0;
+    border-radius: 8px;
+    max-width: 80%;
+  }
+  
+  .user-message {
+    background: #007bff;
+    color: white;
+    margin-left: auto;
+  }
+  
+  .ai-message {
+    background: #f0f0f0;
+    color: #333;
+  }
+  
+  .loading-dots::after {
+    content: '...';
+    animation: dots 1s infinite;
+  }
+  
+  @keyframes dots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60% { content: '...'; }
+  }

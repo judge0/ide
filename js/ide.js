@@ -181,6 +181,17 @@ async function getSelectedLanguage() {
     return getLanguage(getSelectedLanguageFlavor(), getSelectedLanguageId())
 }
 
+// addded error handling here:
+
+async function handleCompilationError(errorMessage) {
+    const prompt = `The following code has an error: ${errorMessage}. Suggest a fix.`;
+    const fix = await sendChatMessage(prompt);
+    document.getElementById('chat-messages').innerHTML += `<div><strong>AI:</strong> ${fix}</div>`;
+}
+
+
+
+
 function getSelectedLanguageId() {
     return parseInt($selectLanguage.val());
 }
@@ -938,3 +949,34 @@ const EXTENSIONS_TABLE = {
 function getLanguageForExtension(extension) {
     return EXTENSIONS_TABLE[extension] || { "flavor": CE, "language_id": 43 }; // Plain Text (https://ce.judge0.com/languages/43)
 }
+
+
+
+require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }});
+require(['vs/editor/editor.main'], function() {
+    const editor = monaco.editor.create(document.getElementById('editor'), {
+        value: '// Start coding here...',
+        language: 'javascript',
+        theme: 'vs-dark',
+        automaticLayout: true,
+        suggest: {
+            showWords: true,
+            showSnippets: true,
+            showClasses: true,
+            showFunctions: true
+        }
+    });
+
+    // Example: Add AI-driven autocomplete
+    editor.addAction({
+        id: 'ai-autocomplete',
+        label: 'AI Autocomplete',
+        keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.Space],
+        run: async function(editor) {
+            const code = editor.getValue();
+            const prompt = `Complete the following code:\n${code}`;
+            const completion = await sendChatMessage(prompt);
+            editor.setValue(code + '\n' + completion);
+        }
+    });
+});
