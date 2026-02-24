@@ -584,7 +584,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             sourceEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, run);
 
-            monaco.languages.registerInlineCompletionsProvider('*', {
+            /*monaco.languages.registerInlineCompletionsProvider('*', {
                 provideInlineCompletions: async (model, position) => {
                     if (!puter.auth.isSignedIn() || !document.getElementById("judge0-inline-suggestions").checked || !configuration.get("appOptions.showAIAssistant")) {
                         return;
@@ -652,7 +652,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 },
                 handleItemDidShow: () => { },
                 freeInlineCompletions: () => { }
-            });
+            });*/
         });
 
         layout.registerComponent("stdin", function (container, state) {
