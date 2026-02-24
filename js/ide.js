@@ -35,11 +35,14 @@ var layout;
 export var sourceEditor;
 var stdinEditor;
 var stdoutEditor;
+var compileOutEditor;
+var runOutEditor;
 
 var $selectLanguage;
 var $compilerOptions;
 var $commandLineArguments;
 var $runBtn;
+var $clearBtn;
 var $statusLine;
 
 var timeStart;
@@ -92,9 +95,19 @@ var layoutConfig = {
                         }
                     } : null, configuration.get("appOptions.showOutput") ? {
                         type: "component",
-                        componentName: "stdout",
-                        id: "stdout",
-                        title: "Output",
+                        componentName: "compileOut",
+                        id: "compileOut",
+                        title: "Compile",
+                        isClosable: false,
+                        componentState: {
+                            readOnly: true
+                        }
+                    } : null,
+                    configuration.get("appOptions.showOutput") ? {
+                        type: "component",
+                        componentName: "runOut",
+                        id: "runOut",
+                        title: "Runtime",
                         isClosable: false,
                         componentState: {
                             readOnly: true
@@ -156,16 +169,33 @@ function handleResult(data) {
 
     const status = data.status;
     const stdout = decode(data.stdout);
+    const stderr = decode(data.stderr);
     const compileOutput = decode(data.compile_output);
     const time = (data.time === null ? "-" : data.time + "s");
     const memory = (data.memory === null ? "-" : data.memory + "KB");
 
     $statusLine.html(`${status.description}, ${time}, ${memory} (TAT: ${tat}ms)`);
 
-    const output = [compileOutput, stdout].filter(x => x).join("\n").trimEnd();
+    /*const output = [compileOutput, stdout].filter(x => x).join("\n").trimEnd();
+    stdoutEditor.setValue(output);*/
+    
+    const runtimeOutput = [stdout, stderr].filter(x => x).join("\n").trimEnd();
+    const compileText = (compileOutput || "").trimEnd();
 
-    stdoutEditor.setValue(output);
-
+    // Compile tab: show compiler output or a friendly success message
+    if (compileOutEditor) {
+        compileOutEditor.setValue(compileText || "Compilation successful.");
+        const lastLine = compileOutEditor.getModel()?.getLineCount?.() ?? 1;
+        compileOutEditor.revealLine(lastLine);
+    }
+    // Runtime tab: show stdout + stderr (can be empty if program prints nothing)
+    if (runOutEditor) {
+        runOutEditor.setValue(runtimeOutput);
+        const lastLine = runOutEditor.getModel()?.getLineCount?.() ?? 1;
+        runOutEditor.revealLine(lastLine);
+    }
+    const output = [compileText, runtimeOutput].filter(x => x).join("\n").trimEnd();
+    
     $runBtn.removeClass("loading");
 
     window.top.postMessage(JSON.parse(JSON.stringify({
@@ -175,6 +205,20 @@ function handleResult(data) {
         memory: data.memory,
         output: output
     })), "*");
+}
+
+// Clear I/O editors and status line before running new code
+function clearIO() {
+    // Clear the I/O editors
+    if (stdinEditor) stdinEditor.setValue("");
+    if (compileOutEditor) compileOutEditor.setValue("");
+    if (runOutEditor) runOutEditor.setValue("");
+
+    // Optional: clear old status line
+    if ($statusLine) $statusLine.html("");
+
+    // Optional: stop a stuck spinner
+    if ($runBtn) $runBtn.removeClass("loading");
 }
 
 async function getSelectedLanguage() {
@@ -197,11 +241,18 @@ function run() {
         $runBtn.addClass("loading");
     }
 
-    stdoutEditor.setValue("");
+    //stdoutEditor.setValue("");
+    if (compileOutEditor) compileOutEditor.setValue("");
+    if (runOutEditor) runOutEditor.setValue("");
     $statusLine.html("");
 
-    let x = layout.root.getItemsById("stdout")[0];
-    x.parent.header.parent.setActiveContentItem(x);
+    /*let x = layout.root.getItemsById("runOut")[0];
+    x.parent.header.parent.setActiveContentItem(x);*/
+
+    const runtimeTab = layout.root.getItemsById("runOut")[0];
+    if (runtimeTab && runtimeTab.parent && runtimeTab.parent.header && runtimeTab.parent.header.parent) {
+        runtimeTab.parent.header.parent.setActiveContentItem(runtimeTab);
+    }
 
     let sourceValue = encode(sourceEditor.getValue());
     let stdinValue = encode(stdinEditor.getValue());
@@ -348,9 +399,11 @@ async function saveAction() {
 }
 
 function setFontSizeForAllEditors(fontSize) {
-    sourceEditor.updateOptions({ fontSize: fontSize });
-    stdinEditor.updateOptions({ fontSize: fontSize });
-    stdoutEditor.updateOptions({ fontSize: fontSize });
+    if (sourceEditor) sourceEditor.updateOptions({ fontSize });
+    if (stdinEditor) stdinEditor.updateOptions({ fontSize });
+    if (stdoutEditor) stdoutEditor.updateOptions({ fontSize });
+    if (compileOutEditor) compileOutEditor.updateOptions({ fontSize });
+    if (runOutEditor) runOutEditor.updateOptions({ fontSize });
 }
 
 async function loadLangauges() {
@@ -501,7 +554,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     $commandLineArguments = $("#command-line-arguments");
 
     $runBtn = $("#run-btn");
+    $clearBtn = $("#clear-btn");
     $runBtn.click(run);
+    $clearBtn.click(clearIO);
 
     $("#open-file-input").change(function (e) {
         const selectedFile = e.target.files[0];
@@ -667,6 +722,28 @@ document.addEventListener("DOMContentLoaded", async function () {
                 language: "plaintext",
                 minimap: {
                     enabled: false
+                }
+            });
+        });
+
+        layout.registerComponent("compileOut", function (container, state) {
+            compileOutEditor = monaco.editor.create(container.getElement()[0], {
+                automaticLayout: true,
+                scrollBeyondLastLine: false,
+                readOnly: true,
+                language: "plaintext",
+                minimap: { enabled: false 
+                }
+            });
+        });
+
+        layout.registerComponent("runOut", function (container, state) {
+            runOutEditor = monaco.editor.create(container.getElement()[0], {
+                automaticLayout: true,
+                scrollBeyondLastLine: false,
+                readOnly: true,
+                language: "plaintext",
+                minimap: { enabled: false 
                 }
             });
         });
