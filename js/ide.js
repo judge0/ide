@@ -42,6 +42,7 @@ var $selectLanguage;
 var $compilerOptions;
 var $commandLineArguments;
 var $runBtn;
+var $clearBtn;
 var $statusLine;
 
 var timeStart;
@@ -204,6 +205,20 @@ function handleResult(data) {
         memory: data.memory,
         output: output
     })), "*");
+}
+
+// Clear I/O editors and status line before running new code
+function clearIO() {
+    // Clear the I/O editors
+    if (stdinEditor) stdinEditor.setValue("");
+    if (compileOutEditor) compileOutEditor.setValue("");
+    if (runOutEditor) runOutEditor.setValue("");
+
+    // Optional: clear old status line
+    if ($statusLine) $statusLine.html("");
+
+    // Optional: stop a stuck spinner
+    if ($runBtn) $runBtn.removeClass("loading");
 }
 
 async function getSelectedLanguage() {
@@ -539,7 +554,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     $commandLineArguments = $("#command-line-arguments");
 
     $runBtn = $("#run-btn");
+    $clearBtn = $("#clear-btn");
     $runBtn.click(run);
+    $clearBtn.click(clearIO);
 
     $("#open-file-input").change(function (e) {
         const selectedFile = e.target.files[0];
