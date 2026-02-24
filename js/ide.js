@@ -589,7 +589,16 @@ document.addEventListener("DOMContentLoaded", async function () {
                  //Disable automatic bracket/quote closing
                 autoClosingBrackets: "never",
                 autoClosingQuotes: "never",
-                autoSurround: "never"
+                autoSurround: "never",
+
+                // Disable autocomplete
+                quickSuggestions: false,
+                suggestOnTriggerCharacters: false,
+                parameterHints: { enabled: false },
+                acceptSuggestionOnEnter: "off",
+                tabCompletion: "off",
+                wordBasedSuggestions: false,
+                snippetSuggestions: "none"
             });
 
             sourceEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, run);
