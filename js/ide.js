@@ -395,6 +395,7 @@ async function loadLangauges() {
             }).always(function () {
                 options.sort((a, b) => a.text.localeCompare(b.text));
                 $selectLanguage.append(options);
+                $selectLanguage.parent(".ui.dropdown").dropdown("refresh");
                 resolve();
             });
         });
@@ -402,8 +403,11 @@ async function loadLangauges() {
 };
 
 async function loadSelectedLanguage(skipSetDefaultSourceCodeName = false) {
+    if (!sourceEditor) {
+        console.warn("Editor not initialized yet");
+        return;
+    }
     monaco.editor.setModelLanguage(sourceEditor.getModel(), $selectLanguage.find(":selected").attr("langauge_mode"));
-
     if (!skipSetDefaultSourceCodeName) {
         setSourceCodeName((await getSelectedLanguage()).source_file);
     }
@@ -496,6 +500,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
 
     await loadLangauges();
+    // Default editor language for MVP
+    const JAVA_ID = "91"; // replace after you confirm
+    $selectLanguage.parent(".ui.dropdown").dropdown("set selected", JAVA_ID);
+    loadSelectedLanguage(true); // ensure Monaco updates; true avoids filename reset
 
     $compilerOptions = $("#compiler-options");
     $commandLineArguments = $("#command-line-arguments");
@@ -568,7 +576,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 automaticLayout: true,
                 scrollBeyondLastLine: true,
                 readOnly: state.readOnly,
-                language: "cpp",
+                language: "java",
                 minimap: {
                     enabled: true
                 }
