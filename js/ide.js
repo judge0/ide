@@ -579,7 +579,17 @@ document.addEventListener("DOMContentLoaded", async function () {
                 language: "java",
                 minimap: {
                     enabled: true
-                }
+                },
+
+                // Disable auto-indent
+                autoIndent: "none",
+                formatOnType: false,
+                formatOnPaste: false,
+
+                 //Disable automatic bracket/quote closing
+                autoClosingBrackets: "never",
+                autoClosingQuotes: "never",
+                autoSurround: "never"
             });
 
             sourceEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, run);
