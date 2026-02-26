@@ -448,6 +448,7 @@ async function loadLangauges() {
             }).always(function () {
                 options.sort((a, b) => a.text.localeCompare(b.text));
                 $selectLanguage.append(options);
+                $selectLanguage.parent(".ui.dropdown").dropdown("refresh");
                 resolve();
             });
         });
@@ -455,8 +456,11 @@ async function loadLangauges() {
 };
 
 async function loadSelectedLanguage(skipSetDefaultSourceCodeName = false) {
+    if (!sourceEditor) {
+        console.warn("Editor not initialized yet");
+        return;
+    }
     monaco.editor.setModelLanguage(sourceEditor.getModel(), $selectLanguage.find(":selected").attr("langauge_mode"));
-
     if (!skipSetDefaultSourceCodeName) {
         setSourceCodeName((await getSelectedLanguage()).source_file);
     }
@@ -549,6 +553,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
 
     await loadLangauges();
+    // Default editor language for MVP
+    const JAVA_ID = "91"; // replace after you confirm
+    $selectLanguage.parent(".ui.dropdown").dropdown("set selected", JAVA_ID);
+    loadSelectedLanguage(true); // ensure Monaco updates; true avoids filename reset
 
     $compilerOptions = $("#compiler-options");
     $commandLineArguments = $("#command-line-arguments");
@@ -623,15 +631,34 @@ document.addEventListener("DOMContentLoaded", async function () {
                 automaticLayout: true,
                 scrollBeyondLastLine: true,
                 readOnly: state.readOnly,
-                language: "cpp",
+                language: "java",
                 minimap: {
                     enabled: true
-                }
+                },
+
+                // Disable auto-indent
+                autoIndent: "none",
+                formatOnType: false,
+                formatOnPaste: false,
+
+                 //Disable automatic bracket/quote closing
+                autoClosingBrackets: "never",
+                autoClosingQuotes: "never",
+                autoSurround: "never",
+
+                // Disable autocomplete
+                quickSuggestions: false,
+                suggestOnTriggerCharacters: false,
+                parameterHints: { enabled: false },
+                acceptSuggestionOnEnter: "off",
+                tabCompletion: "off",
+                wordBasedSuggestions: false,
+                snippetSuggestions: "none"
             });
 
             sourceEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, run);
 
-            monaco.languages.registerInlineCompletionsProvider('*', {
+            /*monaco.languages.registerInlineCompletionsProvider('*', {
                 provideInlineCompletions: async (model, position) => {
                     if (!puter.auth.isSignedIn() || !document.getElementById("judge0-inline-suggestions").checked || !configuration.get("appOptions.showAIAssistant")) {
                         return;
@@ -699,7 +726,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 },
                 handleItemDidShow: () => { },
                 freeInlineCompletions: () => { }
-            });
+            });*/
         });
 
         layout.registerComponent("stdin", function (container, state) {
