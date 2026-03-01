@@ -39,6 +39,9 @@ var isSaving = false;
 var sourceContainer = null;
 var suppressDirty = true;   // true while we are loading/setting initial content
 
+// For autosave functionality
+var autosaveTimer = null;
+var AUTOSAVE_MS = 5000; // 2–5 seconds (pick what you want)
 
 export var sourceEditor;
 var stdinEditor;
@@ -411,6 +414,17 @@ function saveNow(reason) {
   updateSourceTabTitle();
 }
 
+// Schedules an automatic save after the user stops typing
+function scheduleAutosave() {
+  if (autosaveTimer) clearTimeout(autosaveTimer);
+
+  autosaveTimer = setTimeout(function () {
+    // Only save if there are unsaved changes
+    if (!hasUnsavedChanges) return;
+    saveNow("idle");
+  }, AUTOSAVE_MS);
+}
+
 function saveFile(content, filename) {
     const blob = new Blob([content], { type: "text/plain" });
     const link = document.createElement("a");
@@ -708,6 +722,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (suppressDirty) return;   // ignore changes caused by setValue/openFile/init
                 hasUnsavedChanges = true;
                 updateSourceTabTitle();
+                scheduleAutosave();         // schedule an autosave after user stops typing for a bit
             });
 
              // After initial editor setup/content load finishes, mark file as clean and enable dirty tracking
