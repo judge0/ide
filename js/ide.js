@@ -44,6 +44,7 @@ var $commandLineArguments;
 var $runBtn;
 var $clearBtn;
 var $statusLine;
+var $compileBtn;
 
 var timeStart;
 
@@ -232,6 +233,54 @@ function getSelectedLanguageId() {
 function getSelectedLanguageFlavor() {
     return $selectLanguage.find(":selected").attr("flavor");
 }
+
+function compileOnly() {
+    if (sourceEditor.getValue().trim() === "") {
+        showError("Error", "Source code can't be empty!");
+        return;
+    }
+
+    if (compileOutEditor) compileOutEditor.setValue("");
+    if (runOutEditor) runOutEditor.setValue("");
+
+    $statusLine.html("Compiling...");
+
+    let sourceValue = encode(sourceEditor.getValue());
+    let languageId = getSelectedLanguageId();
+    let flavor = getSelectedLanguageFlavor();
+
+    let data = {
+        source_code: sourceValue,
+        language_id: languageId,
+        stdin: encode(""),
+        redirect_stderr_to_stdout: false
+    };
+
+    $.ajax({
+        url: `${AUTHENTICATED_BASE_URL[flavor]}/submissions?base64_encoded=true&wait=true`,
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(data),
+        headers: AUTH_HEADERS,
+        success: function (data) {
+            const compileOutput = decode(data.compile_output);
+
+            if (compileOutEditor) {
+                compileOutEditor.setValue(
+                    compileOutput ? compileOutput : "Compilation successful."
+                );
+            }
+
+            if (runOutEditor) {
+                runOutEditor.setValue("");
+            }
+
+            $statusLine.html(data.status.description);
+        },
+        error: handleRunError
+    });
+}
+
 
 function run() {
     if (sourceEditor.getValue().trim() === "") {
@@ -563,8 +612,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     $runBtn = $("#run-btn");
     $clearBtn = $("#clear-btn");
+    $compileBtn = $("#compile-btn");
     $runBtn.click(run);
     $clearBtn.click(clearIO);
+    $compileBtn.click(compileOnly);
 
     $("#open-file-input").change(function (e) {
         const selectedFile = e.target.files[0];
