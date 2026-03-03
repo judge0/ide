@@ -10,15 +10,15 @@ const AUTH_HEADERS = API_KEY ? {
 const CE = "CE";
 const EXTRA_CE = "EXTRA_CE";
 
-const AUTHENTICATED_CE_BASE_URL = "https://ce.judge0.com";
-const AUTHENTICATED_EXTRA_CE_BASE_URL = "https://extra-ce.judge0.com";
+const AUTHENTICATED_CE_BASE_URL = "http://192.168.56.101:2358";
+const AUTHENTICATED_EXTRA_CE_BASE_URL = "http://192.168.56.101:2358";
 
 var AUTHENTICATED_BASE_URL = {};
 AUTHENTICATED_BASE_URL[CE] = AUTHENTICATED_CE_BASE_URL;
 AUTHENTICATED_BASE_URL[EXTRA_CE] = AUTHENTICATED_EXTRA_CE_BASE_URL;
 
-const UNAUTHENTICATED_CE_BASE_URL = "https://ce.judge0.com";
-const UNAUTHENTICATED_EXTRA_CE_BASE_URL = "https://extra-ce.judge0.com";
+const UNAUTHENTICATED_CE_BASE_URL = "http://192.168.56.101:2358";
+const UNAUTHENTICATED_EXTRA_CE_BASE_URL = "http://192.168.56.101:2358";
 
 var UNAUTHENTICATED_BASE_URL = {};
 UNAUTHENTICATED_BASE_URL[CE] = UNAUTHENTICATED_CE_BASE_URL;
@@ -45,6 +45,8 @@ var $runBtn;
 var $clearBtn;
 var $statusLine;
 var $compileBtn;
+var isCompileButtonClicked = false; //Variable to monitor compile button
+var compiledCode = null; //Variable to store code of the user
 
 var timeStart;
 
@@ -235,6 +237,7 @@ function getSelectedLanguageFlavor() {
 }
 
 function compileOnly() {
+    compiledCode = sourceEditor.getValue().trim();
     if (sourceEditor.getValue().trim() === "") {
         showError("Error", "Source code can't be empty!");
         return;
@@ -279,16 +282,25 @@ function compileOnly() {
         },
         error: handleRunError
     });
+    isCompileButtonClicked = true;	//No errors for compile button, so can now make a valid run attempt
 }
 
 
 function run() {
     if (sourceEditor.getValue().trim() === "") {
         showError("Error", "Source code can't be empty!");
-        return;
-    } else {
-        $runBtn.addClass("loading");
+	return;
     }
+    if (compiledCode !== sourceEditor.getValue().trim()){
+    	showError("Error", "Code has changed, must compile code first!");
+	return;
+    }
+    if (!isCompileButtonClicked){	//Checks to see if compile button is clicked		
+    	showError("Error", "Must compile code first");
+	return;
+    }
+    $runBtn.addClass("loading");
+    isCompileButtonClicked = false; 	//Resets compile button boolean for next run attempt
 
     //stdoutEditor.setValue("");
     if (compileOutEditor) compileOutEditor.setValue("");
