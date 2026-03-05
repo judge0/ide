@@ -55,6 +55,9 @@ var $commandLineArguments;
 var $runBtn;
 var $clearBtn;
 var $statusLine;
+var $compileBtn;
+var isCompileButtonClicked = false; //Variable to monitor compile button
+var compiledCode = null; //Variable to store code of the user
 
 var timeStart;
 
@@ -244,13 +247,71 @@ function getSelectedLanguageFlavor() {
     return $selectLanguage.find(":selected").attr("flavor");
 }
 
-function run() {
+function compileOnly() {
+    compiledCode = sourceEditor.getValue().trim();
     if (sourceEditor.getValue().trim() === "") {
         showError("Error", "Source code can't be empty!");
         return;
-    } else {
-        $runBtn.addClass("loading");
     }
+
+    if (compileOutEditor) compileOutEditor.setValue("");
+    if (runOutEditor) runOutEditor.setValue("");
+
+    $statusLine.html("Compiling...");
+
+    let sourceValue = encode(sourceEditor.getValue());
+    let languageId = getSelectedLanguageId();
+    let flavor = getSelectedLanguageFlavor();
+
+    let data = {
+        source_code: sourceValue,
+        language_id: languageId,
+        stdin: encode(""),
+        redirect_stderr_to_stdout: false
+    };
+
+    $.ajax({
+        url: `${AUTHENTICATED_BASE_URL[flavor]}/submissions?base64_encoded=true&wait=true`,
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(data),
+        headers: AUTH_HEADERS,
+        success: function (data) {
+            const compileOutput = decode(data.compile_output);
+
+            if (compileOutEditor) {
+                compileOutEditor.setValue(
+                    compileOutput ? compileOutput : "Compilation successful."
+                );
+            }
+
+            if (runOutEditor) {
+                runOutEditor.setValue("");
+            }
+
+            $statusLine.html(data.status.description);
+        },
+        error: handleRunError
+    });
+    isCompileButtonClicked = true;	//No errors for compile button, so can now make a valid run attempt
+}
+
+
+function run() {
+    if (sourceEditor.getValue().trim() === "") {
+        showError("Error", "Source code can't be empty!");
+	return;
+    }
+    if (compiledCode !== sourceEditor.getValue().trim()){
+    	showError("Error", "Code has changed, must compile code first!");
+	return;
+    }
+    if (!isCompileButtonClicked){	//Checks to see if compile button is clicked		
+    	showError("Error", "Must compile code first");
+	return;
+    }
+    $runBtn.addClass("loading");
+    isCompileButtonClicked = false; 	//Resets compile button boolean for next run attempt
 
     //stdoutEditor.setValue("");
     if (compileOutEditor) compileOutEditor.setValue("");
@@ -623,8 +684,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     $runBtn = $("#run-btn");
     $clearBtn = $("#clear-btn");
+    $compileBtn = $("#compile-btn");
     $runBtn.click(run);
     $clearBtn.click(clearIO);
+    $compileBtn.click(compileOnly);
 
     $("#open-file-input").change(function (e) {
         const selectedFile = e.target.files[0];

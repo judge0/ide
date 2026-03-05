@@ -22,6 +22,11 @@
     overflow-x: auto;
 }
 
+.item.judge0-showRunButton{
+    display:flex;
+    gap:10px;
+}
+
 .judge0-user-message {
     margin-left: auto !important;
     margin-right: 1em !important;
