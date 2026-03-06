@@ -38,5 +38,5 @@ app.get("/ssh-test", (req, res) => {
 
 //Start the server
 app.listen(4000, () => {
-  console.log("SSH bridge running on port 4000");
+  console.log("SSH bridge is running on port 4000");
 });
