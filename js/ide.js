@@ -32,6 +32,17 @@ var fontSize = 13;
 
 var layout;
 
+// variables to track the current file name and unsaved changes
+var currentFileName = "Main.java";
+var hasUnsavedChanges = false;
+var isSaving = false;
+var sourceContainer = null;
+var suppressDirty = true;   // true while we are loading/setting initial content
+
+// For autosave functionality
+var autosaveTimer = null;
+var AUTOSAVE_MS = 5000; // 2–5 seconds (pick what you want)
+
 export var sourceEditor;
 var stdinEditor;
 var stdoutEditor;
@@ -44,6 +55,9 @@ var $commandLineArguments;
 var $runBtn;
 var $clearBtn;
 var $statusLine;
+var $compileBtn;
+var isCompileButtonClicked = false; //Variable to monitor compile button
+var compiledCode = null; //Variable to store code of the user
 
 var timeStart;
 
@@ -233,13 +247,71 @@ function getSelectedLanguageFlavor() {
     return $selectLanguage.find(":selected").attr("flavor");
 }
 
-function run() {
+function compileOnly() {
+    compiledCode = sourceEditor.getValue().trim();
     if (sourceEditor.getValue().trim() === "") {
         showError("Error", "Source code can't be empty!");
         return;
-    } else {
-        $runBtn.addClass("loading");
     }
+
+    if (compileOutEditor) compileOutEditor.setValue("");
+    if (runOutEditor) runOutEditor.setValue("");
+
+    $statusLine.html("Compiling...");
+
+    let sourceValue = encode(sourceEditor.getValue());
+    let languageId = getSelectedLanguageId();
+    let flavor = getSelectedLanguageFlavor();
+
+    let data = {
+        source_code: sourceValue,
+        language_id: languageId,
+        stdin: encode(""),
+        redirect_stderr_to_stdout: false
+    };
+
+    $.ajax({
+        url: `${AUTHENTICATED_BASE_URL[flavor]}/submissions?base64_encoded=true&wait=true`,
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(data),
+        headers: AUTH_HEADERS,
+        success: function (data) {
+            const compileOutput = decode(data.compile_output);
+
+            if (compileOutEditor) {
+                compileOutEditor.setValue(
+                    compileOutput ? compileOutput : "Compilation successful."
+                );
+            }
+
+            if (runOutEditor) {
+                runOutEditor.setValue("");
+            }
+
+            $statusLine.html(data.status.description);
+        },
+        error: handleRunError
+    });
+    isCompileButtonClicked = true;	//No errors for compile button, so can now make a valid run attempt
+}
+
+
+function run() {
+    if (sourceEditor.getValue().trim() === "") {
+        showError("Error", "Source code can't be empty!");
+	return;
+    }
+    if (compiledCode !== sourceEditor.getValue().trim()){
+    	showError("Error", "Code has changed, must compile code first!");
+	return;
+    }
+    if (!isCompileButtonClicked){	//Checks to see if compile button is clicked		
+    	showError("Error", "Must compile code first");
+	return;
+    }
+    $runBtn.addClass("loading");
+    isCompileButtonClicked = false; 	//Resets compile button boolean for next run attempt
 
     //stdoutEditor.setValue("");
     if (compileOutEditor) compileOutEditor.setValue("");
@@ -350,19 +422,68 @@ function fetchSubmission(flavor, region, submission_token, iteration) {
     });
 }
 
-function setSourceCodeName(name) {
-    $(".lm_title")[0].innerText = name;
+// Helper function to update the source tab title with unsaved changes indicator and saving status
+function updateSourceTabTitle() {
+  if (!sourceContainer) return; // source tab not ready yet
+
+  var dot = hasUnsavedChanges ? " •" : "";
+  var saving = isSaving ? " — Saving..." : "";
+  sourceContainer.setTitle(currentFileName + dot + saving);
 }
 
-function getSourceCodeName() {
-    return $(".lm_title")[0].innerText;
+
+function setSourceCodeName(name) {
+  currentFileName = name;
+  updateSourceTabTitle();
 }
+
+/*function setSourceCodeName(name) {
+    $(".lm_title")[0].innerText = name;
+}*/
+
+/*function getSourceCodeName() {
+    return $(".lm_title")[0].innerText;
+}*/
 
 function openFile(content, filename) {
     clear();
+
+    suppressDirty = true;                 // prevent dirty flag during load
     sourceEditor.setValue(content);
+    suppressDirty = false;                // now allow user edits to mark dirty
+
     selectLanguageForExtension(filename.split(".").pop());
     setSourceCodeName(filename);
+
+    hasUnsavedChanges = false;            // freshly loaded file = clean
+    updateSourceTabTitle();               // ensure correct title
+}
+
+function saveNow(reason) {
+  if (!sourceEditor) return;
+
+  isSaving = true;
+  updateSourceTabTitle();
+
+  var content = sourceEditor.getValue();
+
+  // MVP: save to localStorage (silent autosave)
+  localStorage.setItem("autosave:" + currentFileName, content);
+
+  isSaving = false;
+  hasUnsavedChanges = false;
+  updateSourceTabTitle();
+}
+
+// Schedules an automatic save after the user stops typing
+function scheduleAutosave() {
+  if (autosaveTimer) clearTimeout(autosaveTimer);
+
+  autosaveTimer = setTimeout(function () {
+    // Only save if there are unsaved changes
+    if (!hasUnsavedChanges) return;
+    saveNow("idle");
+  }, AUTOSAVE_MS);
 }
 
 function saveFile(content, filename) {
@@ -563,8 +684,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     $runBtn = $("#run-btn");
     $clearBtn = $("#clear-btn");
+    $compileBtn = $("#compile-btn");
     $runBtn.click(run);
     $clearBtn.click(clearIO);
+    $compileBtn.click(compileOnly);
 
     $("#open-file-input").change(function (e) {
         const selectedFile = e.target.files[0];
@@ -627,6 +750,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         layout = new GoldenLayout(layoutConfig, $("#judge0-site-content"));
 
         layout.registerComponent("source", function (container, state) {
+            sourceContainer = container;
             sourceEditor = monaco.editor.create(container.getElement()[0], {
                 automaticLayout: true,
                 scrollBeyondLastLine: true,
@@ -654,6 +778,25 @@ document.addEventListener("DOMContentLoaded", async function () {
                 tabCompletion: "off",
                 wordBasedSuggestions: false,
                 snippetSuggestions: "none"
+            });
+
+            // When the user types in the source editor, mark file as modified
+           sourceEditor.onDidChangeModelContent(function () {
+                if (suppressDirty) return;   // ignore changes caused by setValue/openFile/init
+                hasUnsavedChanges = true;
+                updateSourceTabTitle();
+                scheduleAutosave();         // schedule an autosave after user stops typing for a bit
+            });
+
+             // After initial editor setup/content load finishes, mark file as clean and enable dirty tracking
+            setTimeout(function () {
+                hasUnsavedChanges = false;
+                suppressDirty = false;
+                updateSourceTabTitle();
+            }, 0);
+
+            sourceEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function () {
+                saveNow("manual");
             });
 
             sourceEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, run);

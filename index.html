@@ -124,12 +124,12 @@
         <div class="item judge0-showSelectLanguage">
             <select id="select-language" class="ui search selection dropdown"></select>
         </div>
-        <div class="item judge0-showCompilerOptions">
+        <!--<div class="item judge0-showCompilerOptions">
             <div class="ui left icon transparent input">
                 <i class="flag icon"></i>
                 <input id="compiler-options" type="text" placeholder="Compiler options"></input>
             </div>
-        </div>
+        </div> -->
         <div class="item judge0-showCommandLineArguments">
             <div class="ui left icon transparent input">
                 <i class="terminal icon"></i>
@@ -141,7 +141,10 @@
                 <i class="play icon"></i>
                 Run Code
             </button>
-            <button id="clear-btn" class="ui primary labeled icon button" data-content="+↵" style="margin-left: 10px;">
+            <button id="compile-btn" class="ui button">
+                 Compile Code
+            </button>
+            <button id="clear-btn" class="ui primary labeled icon button" data-content="+↵" >
                 <i class="trash icon"></i>
                 Clear
             </button>
@@ -151,16 +154,30 @@
             <div id="judge0-theme-toggle-btn" class="icon link item judge0-showThemeButton" data-content="">
                 <i id="judge0-theme-toggle-btn-icon" class="sun icon"></i>
             </div>
-            <div class="item judge0-showPuterSignInOutButton">
-                <button id="judge0-sign-in-btn" class="ui basic button">
+            <!--SIGN IN AND OUT BUTTONS FOR CSCI (csci.js)-->
+            <div class ="item judge0-showCSCISignInOutButton">
+                <button id="judge0-csci-sign-in-btn" class="ui basic button">
+                    <i class="sign-in icon"></i>
+                    Sign in with CSCI
+                </button>
+                <button id="judge0-csci-sign-out-btn" class="ui basic button" data-content="Sign out">
+                    <i class="sign-out icon"></i>
+                    <span id="judge0-csci-username">Sign out</span>
+                </button>
+
+
+            </div>
+            <!--SIGN IN AND OUT BUTTONS FOR PUTER (puter.js)-->
+               <!-- <div class="item judge0-showPuterSignInOutButton">
+            <button id="judge0-sign-in-btn" class="ui basic button">
                     <i class="sign-in icon"></i>
                     Sign in with Puter
                 </button>
                 <button id="judge0-sign-out-btn" class="ui basic button" data-content="Sign out">
                     <i class="sign-out icon"></i>
                     <span id="judge0-puter-username">Sign out</span>
-                </button>
-            </div>
+                </button> 
+            </div>-->
         </div>
     </div>
 
@@ -232,6 +249,28 @@
         if ("serviceWorker" in navigator) {
             navigator.serviceWorker.register("sw.js").then(() => console.log("Service Worker Registered"));
         }
+
+async function runSSH() {
+  try {
+    const response = await fetch("http://localhost:4000/ssh-test");
+    const result = await response.json();
+
+    console.log(result);
+
+    const outputElement = document.getElementById("output");
+    if (outputElement) {
+      outputElement.innerText = result.success
+        ? "SSH connection successful!"
+        : "SSH connection failed: " + result.error;
+    }
+
+  } catch (err) {
+    console.error("SSH error:", err);
+  }
+}
+
+runSSH();
+    
     </script>
 </body>
 </html>
