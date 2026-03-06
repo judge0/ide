@@ -235,6 +235,28 @@
         if ("serviceWorker" in navigator) {
             navigator.serviceWorker.register("sw.js").then(() => console.log("Service Worker Registered"));
         }
+
+async function runSSH() {
+  try {
+    const response = await fetch("http://localhost:4000/ssh-test");
+    const result = await response.json();
+
+    console.log(result);
+
+    const outputElement = document.getElementById("output");
+    if (outputElement) {
+      outputElement.innerText = result.success
+        ? "SSH connection successful!"
+        : "SSH connection failed: " + result.error;
+    }
+
+  } catch (err) {
+    console.error("SSH error:", err);
+  }
+}
+
+runSSH();
+    
     </script>
 </body>
 </html>
