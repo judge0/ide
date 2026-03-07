@@ -47,6 +47,8 @@
     <script type="module" src="js/query.js"></script>
     <script type="module" src="js/style.js"></script>
     <script type="module" src="js/theme.js"></script>
+    <!--CSCI SERVER-->
+    <script type="module" src="js/csci.js"></script>
 
     <link type="text/css" rel="stylesheet" href="css/ide.css">
     <link type="text/css" rel="stylesheet" href="css/semantic.css">
@@ -183,6 +185,28 @@
 
     <div id="judge0-site-content"></div>
 
+    <!--Sign in Modal for CSCI-->
+    <div id="judge0-csci-sign-in-modal" class="ui modal" autocomplete="off">
+        <div class="header">
+            Sign in with CSCI
+        </div>
+        <div class="content">
+            <form id="judge0-csci-sign-in-form" class="ui form">
+                <div class="field">
+                    <label>Email</label>
+                    <input type="email" id="modal_email" name="modal_email" placeholder="Email" required  autocapitalize="off" autocorrect="off" spellcheck="false">
+                </div>
+                <div class="field">
+                    <label>Password</label>
+                    <input type="password" id="modal_password" name="modal_password" placeholder="Password" required  autocapitalize="off" autocorrect="off" spellcheck="false">
+                </div>
+                <button id="judge0-csci-modal-sign-in-btn" type="submit" class="ui primary button">Sign In</button>
+                <button id="judge0-csci-modal-sign-in-cancel-btn" type="submit" class="ui secondary button">Cancel</button>
+            </form>
+        </div>
+
+  <!--END Sign in Modal for CSCI-->
+  
     <div id="judge0-site-modal" class="ui modal">
         <div class="header">
             <span id="title"></span>
@@ -250,26 +274,6 @@
             navigator.serviceWorker.register("sw.js").then(() => console.log("Service Worker Registered"));
         }
 
-async function runSSH() {
-  try {
-    const response = await fetch("http://localhost:4000/ssh-test");
-    const result = await response.json();
-
-    console.log(result);
-
-    const outputElement = document.getElementById("output");
-    if (outputElement) {
-      outputElement.innerText = result.success
-        ? "SSH connection successful!"
-        : "SSH connection failed: " + result.error;
-    }
-
-  } catch (err) {
-    console.error("SSH error:", err);
-  }
-}
-
-runSSH();
     
     </script>
 </body>
