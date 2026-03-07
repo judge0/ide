@@ -151,7 +151,7 @@ function showError(title, content) {
     $("#judge0-site-modal #title").html(title);
     $("#judge0-site-modal .content").html(content);
 
-    let reportTitle = encodeURIComponent(`Error on ${window.location.href}`);
+    let FTitle = encodeURIComponent(`Error on ${window.location.href}`);
     let reportBody = encodeURIComponent(
         `**Error Title**: ${title}\n` +
         `**Error Timestamp**: \`${new Date()}\`\n` +
