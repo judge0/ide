@@ -282,15 +282,17 @@ function compileOnly() {
         },
         error: handleRunError
     });
-    isCompileButtonClicked = true;	//No errors for compile button, so can now make a valid run attempt
+    if(!compileOutput){
+    	isCompileButtonClicked=true;
+    }	//No errors for compile button, so can now make a valid run attempt
 }
 
 
 function run() {
-    if (sourceEditor.getValue().trim() === "") {
+    /*if (sourceEditor.getValue().trim() === "") {
         showError("Error", "Source code can't be empty!");
 	return;
-    }
+    }*/ //Likely not needed because compileOnly does this
     if (compiledCode !== sourceEditor.getValue().trim()){
     	showError("Error", "Code has changed, must compile code first!");
 	return;
