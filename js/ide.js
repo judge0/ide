@@ -173,7 +173,7 @@ function handleResult(data) {
     const status = data.status;
     const stdout = decode(data.stdout);
     const stderr = decode(data.stderr);
-    const compileOutput = decode(data.compile_output);
+    const compileOutput = data.compile_output ? decode(data.compile_output) : null;
     const time = (data.time === null ? "-" : data.time + "s");
     const memory = (data.memory === null ? "-" : data.memory + "KB");
 
@@ -253,6 +253,11 @@ function compileOnly() {
     if (runOutEditor) runOutEditor.setValue("");
 
     $statusLine.html("Compiling...");
+    // Switch to Compile tab when compiling
+    const compileTab = layout.root.getItemsById("compileOut")[0];
+    if (compileTab && compileTab.parent && compileTab.parent.header && compileTab.parent.header.parent) {
+        compileTab.parent.header.parent.setActiveContentItem(compileTab);
+    }
 
     let sourceValue = encode(sourceEditor.getValue());
     let languageId = getSelectedLanguageId();
