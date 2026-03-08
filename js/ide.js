@@ -45,8 +45,8 @@ var $runBtn;
 var $clearBtn;
 var $statusLine;
 var $compileBtn;
-var isCompileButtonClicked = false; //Variable to monitor compile button
-var compiledCode = null; //Variable to store code of the user
+var lastCompiledCode=null;
+
 
 var timeStart;
 
@@ -237,11 +237,17 @@ function getSelectedLanguageFlavor() {
 }
 
 function compileOnly() {
-    compiledCode = sourceEditor.getValue().trim();
-    if (sourceEditor.getValue().trim() === "") {
+    const currentCode = sourceEditor.getValue().trim();
+
+    if (currentCode === "") {
         showError("Error", "Source code can't be empty!");
+        lastCompiledCode = null;
+        updateRunButtonState();
         return;
     }
+
+    lastCompiledCode = null;
+    updateRunButtonState();
 
     if (compileOutEditor) compileOutEditor.setValue("");
     if (runOutEditor) runOutEditor.setValue("");
@@ -279,30 +285,50 @@ function compileOnly() {
             }
 
             $statusLine.html(data.status.description);
+
+            // success only when there is no compile output
+            if (!compileOutput) {
+                lastCompiledCode = currentCode;
+            } else {
+                lastCompiledCode = null;
+            }
+
+            updateRunButtonState();
         },
-        error: handleRunError
+        error: function (jqXHR) {
+            lastCompiledCode = null;
+            updateRunButtonState();
+            handleRunError(jqXHR);
+        }
     });
-    if(!compileOutput){
-    	isCompileButtonClicked=true;
-    }	//No errors for compile button, so can now make a valid run attempt
 }
 
+function updateRunButtonState() {
+    if (!$runBtn) return;
+
+    const currentCode = sourceEditor ? sourceEditor.getValue().trim() : "";
+    const canRun = !!lastCompiledCode && currentCode === lastCompiledCode;
+
+    $runBtn.prop("disabled", !canRun);
+
+    if (canRun) {
+        $runBtn.removeClass("disabled");
+        $runBtn.addClass("primary");
+    } else {
+        $runBtn.addClass("disabled");
+        $runBtn.removeClass("primary");
+    }
+}
 
 function run() {
-    /*if (sourceEditor.getValue().trim() === "") {
-        showError("Error", "Source code can't be empty!");
-	return;
-    }*/ //Likely not needed because compileOnly does this
-    if (compiledCode !== sourceEditor.getValue().trim()){
-    	showError("Error", "Code has changed, must compile code first!");
-	return;
+    const currentCode = sourceEditor.getValue().trim();
+
+    if (!lastCompiledCode || currentCode !== lastCompiledCode) {
+        updateRunButtonState();
+        return;
     }
-    if (!isCompileButtonClicked){	//Checks to see if compile button is clicked		
-    	showError("Error", "Must compile code first");
-	return;
-    }
-    $runBtn.addClass("loading");
-    isCompileButtonClicked = false; 	//Resets compile button boolean for next run attempt
+
+    $runBtn.addClass("loading"); 
 
     //stdoutEditor.setValue("");
     if (compileOutEditor) compileOutEditor.setValue("");
@@ -625,6 +651,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     $commandLineArguments = $("#command-line-arguments");
 
     $runBtn = $("#run-btn");
+    updateRunButtonState();
+
     $clearBtn = $("#clear-btn");
     $compileBtn = $("#compile-btn");
     $runBtn.click(run);
@@ -723,6 +751,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             sourceEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, run);
 
+            sourceEditor.onDidChangeModelContent(() => {
+                lastCompiledCode = null;
+                updateRunButtonState();
+            });
             /*monaco.languages.registerInlineCompletionsProvider('*', {
                 provideInlineCompletions: async (model, position) => {
                     if (!puter.auth.isSignedIn() || !document.getElementById("judge0-inline-suggestions").checked || !configuration.get("appOptions.showAIAssistant")) {
