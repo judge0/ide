@@ -191,7 +191,7 @@
             Sign in with CSCI
         </div>
         <div class="content">
-            <form id="judge0-csci-sign-in-form" class="ui form">
+            <form id="judge0-csci-sign-in-form" class="ui form" method="POST" action="/login">
                 <div class="field">
                     <label>Email</label>
                     <input type="email" id="modal_email" name="modal_email" placeholder="Email" required  autocapitalize="off" autocorrect="off" spellcheck="false">
@@ -224,7 +224,7 @@
         </div>
     </div>
 
-    <!--<div id="judge0-chat-container" class="ui segment">
+    <div id="judge0-chat-container" class="ui segment">
         <div class="ui top attached borderless menu">
             <div class="item">
                 <div class="ui toggle checked checkbox">
@@ -263,7 +263,7 @@
                 </button>
             </form>
         </div>
-    </div> -->
+    </div> 
 
     <div id="judge0-status-line" class="ui bottom right attached mini label judge0-showStatusLine"></div>
 
