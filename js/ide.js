@@ -815,9 +815,24 @@ document.addEventListener("DOMContentLoaded", async function () {
                 snippetSuggestions: "none"
             });
 
+            // Ticket #2: Keystroke Tracking - Initialize activity log array
+            window.ACTIVITY_LOG = window.ACTIVITY_LOG || [];
+
             // When the user types in the source editor, mark file as modified
-           sourceEditor.onDidChangeModelContent(function () {
+           sourceEditor.onDidChangeModelContent(function (e) {
                 if (suppressDirty) return;   // ignore changes caused by setValue/openFile/init
+                
+                // Ticket #2: Keystroke Tracking - Track keystrokes, pastes, and deletions
+                e.changes.forEach(change => {
+                    if (change.text.length > 1) {
+                        window.ACTIVITY_LOG.push({ type: "paste", timestamp: new Date().toISOString(), text: change.text });
+                    } else if (change.text.length === 1) {
+                        window.ACTIVITY_LOG.push({ type: "keystroke", timestamp: new Date().toISOString(), key: change.text });
+                    } else if (change.text === "") {
+                        window.ACTIVITY_LOG.push({ type: "deletion", timestamp: new Date().toISOString(), length: change.rangeLength });
+                    }
+                });
+
                 hasUnsavedChanges = true;
                 updateSourceTabTitle();
                 scheduleAutosave();         // schedule an autosave after user stops typing for a bit
@@ -992,6 +1007,18 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     document.getElementById("judge0-open-file-btn").addEventListener("click", openAction);
     document.getElementById("judge0-save-btn").addEventListener("click", saveAction);
+
+    // Ticket #2: Keystroke Tracking - Event listener for downloading keystroke activity logs
+    const downloadLogsBtn = document.getElementById("judge0-download-logs-btn");
+    if (downloadLogsBtn) {
+        downloadLogsBtn.addEventListener("click", function() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(window.ACTIVITY_LOG || [], null, 2));
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", "keystroke_activity_log.json");
+            dlAnchorElem.click();
+        });
+    }
 
     window.onmessage = function (e) {
         if (!e.data) {
