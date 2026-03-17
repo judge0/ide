@@ -91,7 +91,7 @@ const httpsOptions = {
   cert: fs.readFileSync(path.join(__dirname, "server.cert")),
 };
 
-// Start HTTPS server on port 4000
-https.createServer(httpsOptions, app).listen(4000, "0.0.0.0", () => {
-  console.log("Server running on https://localhost:4000");
+// Start HTTPS server on port 2358
+https.createServer(httpsOptions, app).listen(2358, "0.0.0.0", () => {
+  console.log("Server running on http://localhost:2358");
 });
