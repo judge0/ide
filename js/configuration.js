@@ -21,7 +21,7 @@ const DEFAULT_CONFIGURATIONS = {
             showNavigation: true
         },
         appOptions: {
-            showAIAssistant: true,
+            showAIAssistant: false,
             ioLayout: "stack",
             assistantLayout: "column",
             mainLayout: "row",
@@ -73,7 +73,7 @@ const DEFAULT_CONFIGURATIONS = {
             showNavigation: true
         },
         appOptions: {
-            showAIAssistant: true,
+            showAIAssistant: false,
             ioLayout: "stack",
             assistantLayout: "column",
             mainLayout: "row",
@@ -99,7 +99,7 @@ const DEFAULT_CONFIGURATIONS = {
             showNavigation: true
         },
         appOptions: {
-            showAIAssistant: true,
+            showAIAssistant: false,
             ioLayout: "stack",
             assistantLayout: "column",
             mainLayout: "row",
@@ -125,7 +125,7 @@ const DEFAULT_CONFIGURATIONS = {
             showNavigation: true
         },
         appOptions: {
-            showAIAssistant: true,
+            showAIAssistant: false,
             ioLayout: "stack",
             assistantLayout: "column",
             mainLayout: "row",

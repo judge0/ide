@@ -108,6 +108,11 @@
                     <span class="description">+S</span>
                     <span class="text"><i class="save icon"></i>Save</span>
                 </div>
+                <!-- Ticket #2: Keystroke Tracking - Added Download Activity Logs button -->
+                <div id="judge0-download-logs-btn" class="item">
+                    <span class="description"></span>
+                    <span class="text"><i class="download icon"></i>Download Activity Logs</span>
+                </div>
             </div>
         </div>
         <div class="ui simple dropdown item judge0-showHelpMenu">
@@ -124,12 +129,12 @@
         <div class="item judge0-showSelectLanguage">
             <select id="select-language" class="ui search selection dropdown"></select>
         </div>
-        <div class="item judge0-showCompilerOptions">
+        <!--<div class="item judge0-showCompilerOptions">
             <div class="ui left icon transparent input">
                 <i class="flag icon"></i>
                 <input id="compiler-options" type="text" placeholder="Compiler options"></input>
             </div>
-        </div>
+        </div> -->
         <div class="item judge0-showCommandLineArguments">
             <div class="ui left icon transparent input">
                 <i class="terminal icon"></i>
@@ -137,10 +142,18 @@
             </div>
         </div>
         <div class="item judge0-showRunButton">
+            <button id="compile-btn" class="ui button">
+                 Compile Code
+            </button>
             <button id="run-btn" class="ui primary labeled icon button" data-content="+↵">
                 <i class="play icon"></i>
                 Run Code
             </button>
+            <button id="clear-btn" class="ui primary labeled icon button" data-content="+↵" >
+                <i class="trash icon"></i>
+                Clear
+            </button>
+
         </div>
         <div class="right menu">
             <div id="judge0-theme-toggle-btn" class="icon link item judge0-showThemeButton" data-content="">
