@@ -2,8 +2,7 @@
 
 const express = require("express");
 const { Client } = require("ssh2");
-const fs = require("fs");
-const https = require("https");
+const http = require("http");
 const path = require("path");
 
 const app = express();
@@ -85,13 +84,8 @@ app.post("/ssh-sign-out", (req, res) => {
   }
 });
 
-// HTTPS options (key + cert in same folder as ssh-bridge.js)
-const httpsOptions = {
-  key: fs.readFileSync(path.join(__dirname, "server.key")),
-  cert: fs.readFileSync(path.join(__dirname, "server.cert")),
-};
-
-// Start HTTPS server on port 2358
-https.createServer(httpsOptions, app).listen(2358, "0.0.0.0", () => {
-  console.log("Server running on http://localhost:2358");
+// Start HTTP server on port 3000
+// Note: running on 3000 to avoid conflict with Judge0 backend on 2358
+http.createServer(app).listen(3000, "0.0.0.0", () => {
+  console.log("Server running on http://localhost:3000");
 });
