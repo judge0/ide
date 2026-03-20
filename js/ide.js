@@ -10,15 +10,15 @@ const AUTH_HEADERS = API_KEY ? {
 const CE = "CE";
 const EXTRA_CE = "EXTRA_CE";
 
-const AUTHENTICATED_CE_BASE_URL = "http://localhost:2358";
-const AUTHENTICATED_EXTRA_CE_BASE_URL = "http://localhost:2358";
+const AUTHENTICATED_CE_BASE_URL = "http://35.153.133.130:2358";
+const AUTHENTICATED_EXTRA_CE_BASE_URL = "http://35.153.133.130:2358";
 
 var AUTHENTICATED_BASE_URL = {};
 AUTHENTICATED_BASE_URL[CE] = AUTHENTICATED_CE_BASE_URL;
 AUTHENTICATED_BASE_URL[EXTRA_CE] = AUTHENTICATED_EXTRA_CE_BASE_URL;
 
-const UNAUTHENTICATED_CE_BASE_URL = "http://localhost:2358";
-const UNAUTHENTICATED_EXTRA_CE_BASE_URL = "http://localhost:2358";
+const UNAUTHENTICATED_CE_BASE_URL = "http://35.153.133.130:2358";
+const UNAUTHENTICATED_EXTRA_CE_BASE_URL = "http://35.153.133.130:2358";
 
 var UNAUTHENTICATED_BASE_URL = {};
 UNAUTHENTICATED_BASE_URL[CE] = UNAUTHENTICATED_CE_BASE_URL;
@@ -511,11 +511,11 @@ async function saveAction() {
         if (gPuterFile) {
             gPuterFile.write(sourceEditor.getValue());
         } else {
-            gPuterFile = await puter.ui.showSaveFilePicker(sourceEditor.getValue(), getSourceCodeName());
+            gPuterFile = await puter.ui.showSaveFilePicker(sourceEditor.getValue(), currentFileName);
             setSourceCodeName(gPuterFile.name);
         }
     } else {
-        saveFile(sourceEditor.getValue(), getSourceCodeName());
+        saveFile(sourceEditor.getValue(), currentFileName);
     }
 }
 
@@ -1002,6 +1002,8 @@ const DEFAULT_SOURCE = "\
 public class Main {\n\
     public static void main(String[] args) {\n\
         System.out.println(\"Hello, World!\");\n\
+    }\n\
+}\n\
 ";
 
 /*const DEFAULT_STDIN = "\
