@@ -84,8 +84,7 @@ app.post("/ssh-sign-out", (req, res) => {
   }
 });
 
-// Start HTTP server on port 3000
-// Note: running on 3000 to avoid conflict with Judge0 backend on 2358
-http.createServer(app).listen(3000, "0.0.0.0", () => {
-  console.log("Server running on http://localhost:3000");
+// Start HTTP server on port 80
+http.createServer(app).listen(80, "0.0.0.0", () => {
+  console.log("Server running on http://localhost:80");
 });
