@@ -2,6 +2,7 @@
   "dependencies": {
     "cors": "^2.8.6",
     "express": "^5.2.1",
+    "http-proxy-middleware": "^3.0.3",
     "ssh2": "^1.17.0"
   }
 }

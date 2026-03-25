@@ -2,10 +2,28 @@
 
 const express = require("express");
 const { Client } = require("ssh2");
+const { createProxyMiddleware } = require("http-proxy-middleware");
 const http = require("http");
 const path = require("path");
 
 const app = express();
+
+// Judge0 auth token — lives here on the server, never sent to the browser
+const JUDGE0_AUTH_TOKEN = "yjjcWNpQGFQMkpmHQasOKegTvGL8yZ1sI4WM7YYkCuVoUwYt";
+
+// Proxy all /judge0/* requests to the Judge0 backend on port 2358
+// The browser calls /judge0/languages → this strips /judge0 and forwards to localhost:2358/languages
+// The proxy injects the X-Auth-Token header so the browser never needs to know the key
+app.use("/judge0", createProxyMiddleware({
+  target: "http://localhost:2358",
+  changeOrigin: true,
+  pathRewrite: { "^/judge0": "" },
+  on: {
+    proxyReq: (proxyReq) => {
+      proxyReq.setHeader("X-Auth-Token", JUDGE0_AUTH_TOKEN);
+    }
+  }
+}));
 
 // Enable JSON parsing
 app.use(express.json({ limit: "10kb" }));

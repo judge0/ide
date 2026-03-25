@@ -1,24 +1,22 @@
 import { usePuter } from "./puter.js";
 import configuration from "./configuration.js";
 
-const API_KEY = "yjjcWNpQGFQMkpmHQasOKegTvGL8yZ1sI4WM7YYkCuVoUwYt";
-
-const AUTH_HEADERS = API_KEY ? {
-    "Authorization": `Bearer ${API_KEY}`
-} : {};
+// API key and auth are handled server-side by the ssh-bridge proxy — not needed here
+const AUTH_HEADERS = {};
 
 const CE = "CE";
 const EXTRA_CE = "EXTRA_CE";
 
-const AUTHENTICATED_CE_BASE_URL = "http://35.153.133.130:2358";
-const AUTHENTICATED_EXTRA_CE_BASE_URL = "http://35.153.133.130:2358";
+// Relative URL: browser calls /judge0/... on port 80, proxy forwards to localhost:2358
+const AUTHENTICATED_CE_BASE_URL = "/judge0";
+const AUTHENTICATED_EXTRA_CE_BASE_URL = "/judge0";
 
 var AUTHENTICATED_BASE_URL = {};
 AUTHENTICATED_BASE_URL[CE] = AUTHENTICATED_CE_BASE_URL;
 AUTHENTICATED_BASE_URL[EXTRA_CE] = AUTHENTICATED_EXTRA_CE_BASE_URL;
 
-const UNAUTHENTICATED_CE_BASE_URL = "http://35.153.133.130:2358";
-const UNAUTHENTICATED_EXTRA_CE_BASE_URL = "http://35.153.133.130:2358";
+const UNAUTHENTICATED_CE_BASE_URL = "/judge0";
+const UNAUTHENTICATED_EXTRA_CE_BASE_URL = "/judge0";
 
 var UNAUTHENTICATED_BASE_URL = {};
 UNAUTHENTICATED_BASE_URL[CE] = UNAUTHENTICATED_CE_BASE_URL;
