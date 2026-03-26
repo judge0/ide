@@ -1,24 +1,22 @@
 import { usePuter } from "./puter.js";
 import configuration from "./configuration.js";
 
-const API_KEY = "";
-
-const AUTH_HEADERS = API_KEY ? {
-    "Authorization": `Bearer ${API_KEY}`
-} : {};
+// API key and auth are handled server-side by the ssh-bridge proxy — not needed here
+const AUTH_HEADERS = {};
 
 const CE = "CE";
 const EXTRA_CE = "EXTRA_CE";
 
-const AUTHENTICATED_CE_BASE_URL = "https://ce.judge0.com";
-const AUTHENTICATED_EXTRA_CE_BASE_URL = "https://extra-ce.judge0.com";
+// Relative URL: browser calls /judge0/... on port 80, proxy forwards to localhost:2358
+const AUTHENTICATED_CE_BASE_URL = "/judge0";
+const AUTHENTICATED_EXTRA_CE_BASE_URL = "/judge0";
 
 var AUTHENTICATED_BASE_URL = {};
 AUTHENTICATED_BASE_URL[CE] = AUTHENTICATED_CE_BASE_URL;
 AUTHENTICATED_BASE_URL[EXTRA_CE] = AUTHENTICATED_EXTRA_CE_BASE_URL;
 
-const UNAUTHENTICATED_CE_BASE_URL = "https://ce.judge0.com";
-const UNAUTHENTICATED_EXTRA_CE_BASE_URL = "https://extra-ce.judge0.com";
+const UNAUTHENTICATED_CE_BASE_URL = "/judge0";
+const UNAUTHENTICATED_EXTRA_CE_BASE_URL = "/judge0";
 
 var UNAUTHENTICATED_BASE_URL = {};
 UNAUTHENTICATED_BASE_URL[CE] = UNAUTHENTICATED_CE_BASE_URL;
@@ -151,7 +149,7 @@ function showError(title, content) {
     $("#judge0-site-modal #title").html(title);
     $("#judge0-site-modal .content").html(content);
 
-    let reportTitle = encodeURIComponent(`Error on ${window.location.href}`);
+    let FTitle = encodeURIComponent(`Error on ${window.location.href}`);
     let reportBody = encodeURIComponent(
         `**Error Title**: ${title}\n` +
         `**Error Timestamp**: \`${new Date()}\`\n` +
@@ -159,7 +157,7 @@ function showError(title, content) {
         `**Description**:\n${content}`
     );
 
-    $("#report-problem-btn").attr("href", `https://github.com/judge0/ide/issues/new?title=${reportTitle}&body=${reportBody}`);
+    $("#report-problem-btn").attr("href", `https://github.com/judge0/ide/issues/new?title=${FTitle}&body=${reportBody}`);
     $("#judge0-site-modal").modal("show");
 }
 
@@ -544,11 +542,11 @@ async function saveAction() {
         if (gPuterFile) {
             gPuterFile.write(sourceEditor.getValue());
         } else {
-            gPuterFile = await puter.ui.showSaveFilePicker(sourceEditor.getValue(), getSourceCodeName());
+            gPuterFile = await puter.ui.showSaveFilePicker(sourceEditor.getValue(), currentFileName);
             setSourceCodeName(gPuterFile.name);
         }
     } else {
-        saveFile(sourceEditor.getValue(), getSourceCodeName());
+        saveFile(sourceEditor.getValue(), currentFileName);
     }
 }
 
@@ -1038,113 +1036,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 });
 
 const DEFAULT_SOURCE = "\
-#include <algorithm>\n\
-#include <cstdint>\n\
-#include <iostream>\n\
-#include <limits>\n\
-#include <set>\n\
-#include <utility>\n\
-#include <vector>\n\
-\n\
-using Vertex    = std::uint16_t;\n\
-using Cost      = std::uint16_t;\n\
-using Edge      = std::pair< Vertex, Cost >;\n\
-using Graph     = std::vector< std::vector< Edge > >;\n\
-using CostTable = std::vector< std::uint64_t >;\n\
-\n\
-constexpr auto kInfiniteCost{ std::numeric_limits< CostTable::value_type >::max() };\n\
-\n\
-auto dijkstra( Vertex const start, Vertex const end, Graph const & graph, CostTable & costTable )\n\
-{\n\
-    std::fill( costTable.begin(), costTable.end(), kInfiniteCost );\n\
-    costTable[ start ] = 0;\n\
-\n\
-    std::set< std::pair< CostTable::value_type, Vertex > > minHeap;\n\
-    minHeap.emplace( 0, start );\n\
-\n\
-    while ( !minHeap.empty() )\n\
-    {\n\
-        auto const vertexCost{ minHeap.begin()->first  };\n\
-        auto const vertex    { minHeap.begin()->second };\n\
-\n\
-        minHeap.erase( minHeap.begin() );\n\
-\n\
-        if ( vertex == end )\n\
-        {\n\
-            break;\n\
-        }\n\
-\n\
-        for ( auto const & neighbourEdge : graph[ vertex ] )\n\
-        {\n\
-            auto const & neighbour{ neighbourEdge.first };\n\
-            auto const & cost{ neighbourEdge.second };\n\
-\n\
-            if ( costTable[ neighbour ] > vertexCost + cost )\n\
-            {\n\
-                minHeap.erase( { costTable[ neighbour ], neighbour } );\n\
-                costTable[ neighbour ] = vertexCost + cost;\n\
-                minHeap.emplace( costTable[ neighbour ], neighbour );\n\
-            }\n\
-        }\n\
+public class Main {\n\
+    public static void main(String[] args) {\n\
+        System.out.println(\"Hello, World!\");\n\
     }\n\
-\n\
-    return costTable[ end ];\n\
-}\n\
-\n\
-int main()\n\
-{\n\
-    constexpr std::uint16_t maxVertices{ 10000 };\n\
-\n\
-    Graph     graph    ( maxVertices );\n\
-    CostTable costTable( maxVertices );\n\
-\n\
-    std::uint16_t testCases;\n\
-    std::cin >> testCases;\n\
-\n\
-    while ( testCases-- > 0 )\n\
-    {\n\
-        for ( auto i{ 0 }; i < maxVertices; ++i )\n\
-        {\n\
-            graph[ i ].clear();\n\
-        }\n\
-\n\
-        std::uint16_t numberOfVertices;\n\
-        std::uint16_t numberOfEdges;\n\
-\n\
-        std::cin >> numberOfVertices >> numberOfEdges;\n\
-\n\
-        for ( auto i{ 0 }; i < numberOfEdges; ++i )\n\
-        {\n\
-            Vertex from;\n\
-            Vertex to;\n\
-            Cost   cost;\n\
-\n\
-            std::cin >> from >> to >> cost;\n\
-            graph[ from ].emplace_back( to, cost );\n\
-        }\n\
-\n\
-        Vertex start;\n\
-        Vertex end;\n\
-\n\
-        std::cin >> start >> end;\n\
-\n\
-        auto const result{ dijkstra( start, end, graph, costTable ) };\n\
-\n\
-        if ( result == kInfiniteCost )\n\
-        {\n\
-            std::cout << \"NO\\n\";\n\
-        }\n\
-        else\n\
-        {\n\
-            std::cout << result << '\\n';\n\
-        }\n\
-    }\n\
-\n\
-    return 0;\n\
 }\n\
 ";
 
-const DEFAULT_STDIN = "\
+/*const DEFAULT_STDIN = "\
 3\n\
 3 2\n\
 1 2 5\n\
@@ -1158,11 +1057,11 @@ const DEFAULT_STDIN = "\
 3 1\n\
 1 2 4\n\
 1 3\n\
-";
+";*/
 
 const DEFAULT_COMPILER_OPTIONS = "";
 const DEFAULT_CMD_ARGUMENTS = "";
-const DEFAULT_LANGUAGE_ID = 105; // C++ (GCC 14.1.0) (https://ce.judge0.com/languages/105)
+const DEFAULT_LANGUAGE_ID = 62; // Java (OpenJDK 13.0.1) (https://ce.judge0.com/languages/62)
 
 function getEditorLanguageMode(languageName) {
     const DEFAULT_EDITOR_LANGUAGE_MODE = "plaintext";

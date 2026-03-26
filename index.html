@@ -47,6 +47,8 @@
     <script type="module" src="js/query.js"></script>
     <script type="module" src="js/style.js"></script>
     <script type="module" src="js/theme.js"></script>
+    <!--CSCI SERVER-->
+    <script type="module" src="js/csci.js"></script>
 
     <link type="text/css" rel="stylesheet" href="css/ide.css">
     <link type="text/css" rel="stylesheet" href="css/semantic.css">
@@ -154,20 +156,56 @@
             <div id="judge0-theme-toggle-btn" class="icon link item judge0-showThemeButton" data-content="">
                 <i id="judge0-theme-toggle-btn-icon" class="sun icon"></i>
             </div>
-            <div class="item judge0-showPuterSignInOutButton">
-                <button id="judge0-sign-in-btn" class="ui basic button">
+            <!--SIGN IN AND OUT BUTTONS FOR CSCI (csci.js)-->
+            <div class ="item judge0-showCSCISignInOutButton">
+                <button id="judge0-csci-sign-in-btn" class="ui basic button">
+                    <i class="sign-in icon"></i>
+                    Sign in with CSCI
+                </button>
+                <button id="judge0-csci-sign-out-btn" class="ui basic button" data-content="Sign out">
+                    <i class="sign-out icon"></i>
+                    <span id="judge0-csci-username">Sign out</span>
+                </button>
+
+
+            </div>
+            <!--SIGN IN AND OUT BUTTONS FOR PUTER (puter.js)-->
+               <!-- <div class="item judge0-showPuterSignInOutButton">
+            <button id="judge0-sign-in-btn" class="ui basic button">
                     <i class="sign-in icon"></i>
                     Sign in with Puter
                 </button>
                 <button id="judge0-sign-out-btn" class="ui basic button" data-content="Sign out">
                     <i class="sign-out icon"></i>
                     <span id="judge0-puter-username">Sign out</span>
-                </button>
-            </div>
+                </button> 
+            </div>-->
         </div>
     </div>
 
     <div id="judge0-site-content"></div>
+
+    <!--Sign in Modal for CSCI-->
+    <div id="judge0-csci-sign-in-modal" class="ui modal" autocomplete="off">
+        <div class="header">
+            Sign in with CSCI
+        </div>
+        <div class="content">
+            <form id="judge0-csci-sign-in-form" class="ui form">
+                <div class="field">
+                    <label>Username</label>
+                    <input type="text" id="modal_username" name="modal_username" placeholder="Username" required autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+                </div>
+                <div class="field">
+                    <label>Password</label>
+                    <input type="password" id="modal_password" name="modal_password" placeholder="Password" required  autocapitalize="off" autocorrect="off" spellcheck="false">
+                </div>
+                <button id="judge0-csci-modal-sign-in-btn" type="button" class="ui primary button">Sign In</button>
+                <button id="judge0-csci-modal-sign-in-cancel-btn" type="button" class="ui secondary button">Cancel</button>
+            </form>
+        </div>
+    </div>
+    <!--END Sign in Modal for CSCI-->
 
     <div id="judge0-site-modal" class="ui modal">
         <div class="header">
@@ -225,7 +263,7 @@
                 </button>
             </form>
         </div>
-    </div>
+    </div> 
 
     <div id="judge0-status-line" class="ui bottom right attached mini label judge0-showStatusLine"></div>
 
@@ -235,6 +273,8 @@
         if ("serviceWorker" in navigator) {
             navigator.serviceWorker.register("sw.js").then(() => console.log("Service Worker Registered"));
         }
+
+    
     </script>
 </body>
 </html>
