@@ -71,7 +71,17 @@ var layoutConfig = {
         type: configuration.get("appOptions.mainLayout"),
         content: [{
             type: "component",
-            width: 66,
+            width: 15,
+            componentName: "fileExplorer",
+            id: "fileExplorer",
+            title: "Explorer",
+            isClosable: false,
+            componentState: {
+                readOnly: false
+            }
+        }, {
+            type: "component",
+            width: 51,
             componentName: "source",
             id: "source",
             title: "Source Code",
@@ -144,6 +154,227 @@ function decode(bytes) {
         return unescape(escaped);
     }
 }
+
+var gDirectoryHandles = []; // supports multiple open root directories
+var gCurrentFileHandle = null;
+var isPickerActive = false;
+var fileExplorerGLContainer = null;
+var fileExplorerVisible = true;
+
+function injectExplorerStyles() {
+    if (document.getElementById('judge0-explorer-styles')) return;
+    const s = document.createElement('style');
+    s.id = 'judge0-explorer-styles';
+    s.textContent = `
+        #judge0-file-explorer-container {
+            color: #cccccc;
+            font-size: 13px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-user-select: none; user-select: none;
+            padding-bottom: 20px;
+        }
+        .exp-empty { padding: 20px 14px; color: #666; font-size: 12px; line-height: 1.7; }
+        .exp-empty i { font-size: 22px; display: block; margin-bottom: 10px; color: #444; }
+        .exp-root { margin-bottom: 2px; }
+        .exp-root-header {
+            display: flex; align-items: center; gap: 5px;
+            padding: 5px 8px; cursor: pointer;
+            font-size: 11px; font-weight: 700;
+            letter-spacing: 0.05em; text-transform: uppercase;
+            color: #888; background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .exp-root-header:hover { background: rgba(255,255,255,0.07); color: #ccc; }
+        .exp-root-chevron { font-size: 10px; opacity: 0.6; flex-shrink: 0; transition: transform 0.1s; }
+        .exp-root-chevron.open { transform: rotate(90deg); }
+        .exp-root-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .exp-root-close {
+            opacity: 0; cursor: pointer; padding: 1px 4px; border-radius: 3px; color: #aaa;
+        }
+        .exp-root-header:hover .exp-root-close { opacity: 0.6; }
+        .exp-root-close:hover { opacity: 1 !important; color: #ff6b6b; background: rgba(255,80,80,0.1); }
+        
+        .exp-depth-line {
+            position: absolute; left: calc(var(--depth-indent) - 8px); 
+            top: 0; bottom: 0; width: 1px;
+            background: rgba(255,255,255,0.08); pointer-events: none;
+        }
+        .exp-item { display: flex; align-items: center; min-height: 22px; cursor: pointer; color: #ccc; position: relative; }
+        .exp-item:hover { background: rgba(255,255,255,0.06); }
+        .exp-item.exp-active { background: #094771 !important; color: #fff; }
+        .exp-item-inner { display: flex; align-items: center; gap: 6px; flex: 1; overflow: hidden; padding: 0 8px; }
+        .exp-folder-icon { font-size: 13px; color: #dcb67a; flex-shrink: 0; margin-right: 4px; }
+        .exp-file-icon { font-size: 12px; flex-shrink: 0; opacity: 0.8; margin-right: 4px; }
+        .exp-file-icon.java { color: #f89820; }
+        .exp-file-icon.python { color: #3776ab; }
+        .exp-file-icon.js { color: #f7df1e; }
+        .exp-file-icon.html { color: #e34f26; }
+        .exp-file-icon.css { color: #1572b6; }
+        .exp-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; font-family: 'Inter', sans-serif; }
+        .exp-actions { display: none; gap: 3px; padding-right: 8px; }
+        .exp-item:hover .exp-actions { display: flex; }
+        .exp-btn { opacity: 0.5; cursor: pointer; font-size: 11px; color: #ccc; }
+        .exp-btn:hover { opacity: 1; color: #fff; }
+        .exp-children { display: none; position: relative; }
+        .exp-children.open { display: block; }
+    `;
+    document.head.appendChild(s);
+}
+
+function getFileIcon(name) {
+    const ext = name.split('.').pop().toLowerCase();
+    const map = { 
+        js: 'file code outline yellow', 
+        ts: 'file code outline blue', 
+        py: 'file code outline python', 
+        java: 'file code outline java', 
+        html: 'file code outline html', 
+        css: 'file code outline css', 
+        sql: 'database orange',
+        txt: 'file alternate outline grey'
+    };
+    return map[ext] || 'file outline grey';
+}
+
+function markActiveFile(fileHandle) {
+    const container = document.getElementById('judge0-file-explorer-container');
+    if (!container) return;
+    container.querySelectorAll('.exp-item').forEach(el => el.classList.remove('exp-active'));
+    if (!fileHandle) return;
+    const match = container.querySelector(`.exp-item[data-name="${CSS.escape(fileHandle.name)}"]`);
+    if (match) match.classList.add('exp-active');
+}
+
+async function buildFileTree(dirHandle, parentEl, depth) {
+    try {
+        let entries = [];
+        for await (const entry of dirHandle.values()) entries.push(entry);
+        entries.sort((a,b) => (a.kind === b.kind) ? a.name.localeCompare(b.name) : (a.kind === 'directory' ? -1 : 1));
+
+        for (const entry of entries) {
+            const item = document.createElement('div');
+            item.className = 'exp-item';
+            item.dataset.name = entry.name;
+            const inner = document.createElement('div');
+            inner.className = 'exp-item-inner';
+            inner.style.setProperty('--depth-indent', (depth * 14 + 12) + 'px');
+            inner.style.paddingLeft = 'var(--depth-indent)';
+            
+            const icon = document.createElement('i');
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'exp-name';
+            nameSpan.innerText = entry.name;
+            inner.appendChild(icon);
+            inner.appendChild(nameSpan);
+
+            if (depth > 0) {
+                const line = document.createElement('div');
+                line.className = 'exp-depth-line';
+                item.appendChild(line);
+            }
+
+            const actions = document.createElement('div');
+            actions.className = 'exp-actions';
+            const makeBtn = (ic, t, h) => {
+                const b = document.createElement('i'); b.className = ic + ' icon exp-btn'; b.title = t;
+                b.onclick = e => { e.stopPropagation(); h(); }; return b;
+            };
+
+            if (entry.kind === 'directory') {
+                icon.className = 'folder icon exp-folder-icon';
+                actions.appendChild(makeBtn('plus', 'New File', async () => {
+                    const n = prompt('File name:'); if (n) { await entry.getFileHandle(n, {create:true}); renderExplorerRoot(dirHandle, item.closest('.exp-root')); }
+                }));
+            } else {
+                icon.className = getFileIcon(entry.name) + ' exp-file-icon';
+                if (gCurrentFileHandle && gCurrentFileHandle.name === entry.name) item.classList.add('exp-active');
+            }
+
+            actions.appendChild(makeBtn('trash alternate outline', 'Delete', async () => {
+                if (confirm(`Delete ${entry.name}?`)) { await dirHandle.removeEntry(entry.name, {recursive:true}); renderExplorerRoot(dirHandle, item.closest('.exp-root')); }
+            }));
+
+            item.appendChild(inner);
+            item.appendChild(actions);
+            parentEl.appendChild(item);
+
+            if (entry.kind === 'file') {
+                item.onclick = async () => {
+                    try { const f = await entry.getFile(); openFile(await f.text(), entry.name); gCurrentFileHandle = entry; markActiveFile(entry); }
+                    catch(e) { showError('Error', e.message); }
+                };
+            } else {
+                const children = document.createElement('div');
+                children.className = 'exp-children';
+                parentEl.appendChild(children);
+                let loaded = false;
+                item.onclick = async () => {
+                    const open = children.classList.toggle('open');
+                    icon.className = open ? 'folder open icon exp-folder-icon' : 'folder icon exp-folder-icon';
+                    if (open && !loaded) { await buildFileTree(entry, children, depth + 1); loaded = true; }
+                };
+            }
+        }
+    } catch(e) { console.error(e); }
+}
+
+async function renderExplorerRoot(handle, existingEl) {
+    const container = document.getElementById('judge0-file-explorer-container');
+    if (!container) return;
+    if (existingEl) existingEl.remove();
+    
+    const root = document.createElement('div');
+    root.className = 'exp-root';
+    const header = document.createElement('div');
+    header.className = 'exp-root-header';
+    header.innerHTML = `<i class="chevron right icon exp-root-chevron open"></i><span class="exp-root-label">${handle.name}</span><i class="times icon exp-root-close" title="Close Workspace"></i>`;
+    
+    const body = document.createElement('div');
+    body.className = 'exp-children open';
+    
+    header.onclick = (e) => {
+        if (e.target.classList.contains('exp-root-close')) {
+            gDirectoryHandles = gDirectoryHandles.filter(h => h !== handle);
+            root.remove(); if (!gDirectoryHandles.length) showExplorerEmpty();
+            return;
+        }
+        const open = body.classList.toggle('open');
+        header.querySelector('.exp-root-chevron').classList.toggle('open', open);
+    };
+
+    root.appendChild(header);
+    root.appendChild(body);
+    container.appendChild(root);
+    await buildFileTree(handle, body, 0);
+}
+
+function showExplorerEmpty() {
+    const c = document.getElementById('judge0-file-explorer-container');
+    if (!c) return; c.innerHTML = `<div class="exp-empty"><i class="folder open outline icon"></i>No folder opened.<br>File → Open Directory...</div>`;
+}
+
+async function refreshFileExplorer() {
+    injectExplorerStyles();
+    const c = document.getElementById('judge0-file-explorer-container');
+    if (!c) return; c.innerHTML = '';
+    if (!gDirectoryHandles.length) return showExplorerEmpty();
+    for (const h of gDirectoryHandles) await renderExplorerRoot(h);
+}
+
+async function openDirectoryAction(e) {
+    if (e) { e.preventDefault(); e.stopImmediatePropagation(); }
+    if (isPickerActive || !window.showDirectoryPicker) return;
+    isPickerActive = true;
+    try {
+        const h = await window.showDirectoryPicker({ mode: 'readwrite' });
+        if (!gDirectoryHandles.find(x => x.name === h.name)) {
+            gDirectoryHandles.push(h);
+            refreshFileExplorer();
+        }
+    } catch (err) { if (err.name !== 'AbortError') showError('Error', err.message); }
+    finally { isPickerActive = false; }
+}
+
 
 function showError(title, content) {
     $("#judge0-site-modal #title").html(title);
@@ -528,25 +759,80 @@ function saveFile(content, filename) {
     URL.revokeObjectURL(link.href);
 }
 
-async function openAction() {
+// When opening a single file, use the File System Access API to keep a writable handle
+async function openFilePickerAndHandle() {
+    if (isPickerActive) return;
+    if (!window.showOpenFilePicker) {
+        document.getElementById("open-file-input").click();
+        return;
+    }
+    isPickerActive = true;
+    try {
+        const [fileHandle] = await window.showOpenFilePicker();
+        const file = await fileHandle.getFile();
+        const text = await file.text();
+        openFile(text, file.name);
+        gCurrentFileHandle = fileHandle;
+        markActiveFile(fileHandle);
+    } catch (err) {
+        if (err.name !== "AbortError") console.error(err);
+    } finally {
+        isPickerActive = false;
+    }
+}
+
+async function openAction(e) {
+    if (e) e.preventDefault();
     if (usePuter()) {
         gPuterFile = await puter.ui.showOpenFilePicker();
         openFile(await (await gPuterFile.read()).text(), gPuterFile.name);
     } else {
-        document.getElementById("open-file-input").click();
+        openFilePickerAndHandle();
     }
 }
 
-async function saveAction() {
+async function saveAction(e) {
+    if (e) e.preventDefault();
     if (usePuter()) {
         if (gPuterFile) {
             gPuterFile.write(sourceEditor.getValue());
         } else {
-            gPuterFile = await puter.ui.showSaveFilePicker(sourceEditor.getValue(), currentFileName);
+            gPuterFile = await puter.ui.showSaveFilePicker(sourceEditor.getValue(), getSourceCodeName());
             setSourceCodeName(gPuterFile.name);
         }
+        hasUnsavedChanges = false;
+        updateSourceTabTitle();
     } else {
-        saveFile(sourceEditor.getValue(), currentFileName);
+        if (gCurrentFileHandle && window.showSaveFilePicker) {
+            try {
+                const writable = await gCurrentFileHandle.createWritable();
+                await writable.write(sourceEditor.getValue());
+                await writable.close();
+                hasUnsavedChanges = false;
+                updateSourceTabTitle();
+            } catch (err) {
+                if (err.name !== "AbortError") showError("Save Error", err.message);
+            }
+        } else {
+             if (window.showSaveFilePicker) {
+                 try {
+                     const newHandle = await window.showSaveFilePicker({ suggestedName: currentFileName });
+                     const writable = await newHandle.createWritable();
+                     await writable.write(sourceEditor.getValue());
+                     await writable.close();
+                     gCurrentFileHandle = newHandle;
+                     setSourceCodeName(newHandle.name);
+                     hasUnsavedChanges = false;
+                     updateSourceTabTitle();
+                 } catch (err) {
+                     if (err.name !== "AbortError") showError("Save Error", err.message);
+                 }
+             } else {
+                 saveFile(sourceEditor.getValue(), currentFileName);
+                 hasUnsavedChanges = false;
+                 updateSourceTabTitle();
+             }
+        }
     }
 }
 
@@ -704,7 +990,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         loadSelectedLanguage(skipSetDefaultSourceCodeName);
     });
 
-    await loadLangauges();
+    try {
+        await loadLangauges();
+    } catch (e) {
+        console.warn("Could not load backend APIs. Skipping fetch to render UI...", e);
+    }
     // Default editor language for MVP
     const JAVA_ID = "91"; // replace after you confirm
     $selectLanguage.parent(".ui.dropdown").dropdown("set selected", JAVA_ID);
@@ -959,6 +1249,29 @@ document.addEventListener("DOMContentLoaded", async function () {
             container.getElement()[0].appendChild(document.getElementById("judge0-chat-container"));
         });
 
+        layout.registerComponent("fileExplorer", function (container, state) {
+            fileExplorerGLContainer = container;
+
+            let el = document.getElementById("judge0-file-explorer-container");
+            if (!el) {
+                el = document.createElement("div");
+                el.id = "judge0-file-explorer-container";
+            }
+            el.style.cssText = 'height:100%; overflow-y:auto; font-family: inherit; box-sizing: border-box;';
+
+            // Empty state message
+            el.innerHTML = [
+                '<div style="padding:16px 12px; opacity:0.5; font-size:0.85em;">',
+                '<i class="folder open outline icon"></i>',
+                '<div style="margin-top:8px;">No directory opened.</div>',
+                '<div style="margin-top:4px; font-size:0.9em;">File → Open Directory...</div>',
+                '</div>'
+            ].join('');
+
+            container.getElement()[0].style.overflow = 'hidden';
+            container.getElement()[0].appendChild(el);
+        });
+
         layout.on("initialised", function () {
             setDefaults();
             refreshLayoutSize();
@@ -988,8 +1301,12 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
     }
 
-    document.getElementById("judge0-open-file-btn").addEventListener("click", openAction);
-    document.getElementById("judge0-save-btn").addEventListener("click", saveAction);
+    $("#judge0-open-file-btn").on("mousedown", openAction);
+    $("#judge0-open-dir-btn").on("mousedown", openDirectoryAction);
+    $("#judge0-save-btn").on("mousedown", saveAction);
+    $("#judge0-save-local-btn").on("mousedown", (e) => {
+        saveFile(sourceEditor.getValue(), currentFileName);
+    });
 
     window.onmessage = function (e) {
         if (!e.data) {
@@ -1058,6 +1375,7 @@ public class Main {\n\
 1 2 4\n\
 1 3\n\
 ";*/
+const DEFAULT_STDIN = "";
 
 const DEFAULT_COMPILER_OPTIONS = "";
 const DEFAULT_CMD_ARGUMENTS = "";

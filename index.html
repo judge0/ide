@@ -38,17 +38,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.css" integrity="sha512-KXol4x3sVoO+8ZsWPFI/r5KBVB/ssCGB5tsv2nVOKwLg33wTFP3fmnXa47FdSVIshVTgsYk/1734xSk9aFIa4A==" crossorigin="anonymous" referrerpolicy="no-referrer">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.js" integrity="sha512-Xo0Jh8MsOn72LGV8kU5LsclG7SUzJsWGhXbWcYs2MAmChkQzwiW/yTQwdJ8w6UA9C6EVG18GHb/TrYpYCjyAQw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    <script type="module" src="js/ai.js"></script>
-    <script type="module" src="js/configuration.js"></script>
-    <script type="module" src="js/electron.js"></script>
-    <script type="module" src="js/ide.js"></script>
-    <script type="module" src="js/local_storage.js"></script>
-    <script type="module" src="js/puter.js"></script>
-    <script type="module" src="js/query.js"></script>
-    <script type="module" src="js/style.js"></script>
-    <script type="module" src="js/theme.js"></script>
+    <script type="module" src="js/ai.js?v=105"></script>
+    <script type="module" src="js/configuration.js?v=105"></script>
+    <script type="module" src="js/electron.js?v=105"></script>
+    <script type="module" src="js/ide.js?v=105"></script>
+    <script type="module" src="js/local_storage.js?v=105"></script>
+    <script type="module" src="js/puter.js?v=105"></script>
+    <script type="module" src="js/query.js?v=105"></script>
+    <script type="module" src="js/style.js?v=105"></script>
+    <script type="module" src="js/theme.js?v=105"></script>
     <!--CSCI SERVER-->
-    <script type="module" src="js/csci.js"></script>
+    <script type="module" src="js/csci.js?v=105"></script>
 
     <link type="text/css" rel="stylesheet" href="css/ide.css">
     <link type="text/css" rel="stylesheet" href="css/semantic.css">
@@ -97,6 +97,9 @@
         <a id="judge0-header" href="https://judge0.com" target="_blank" class="header item judge0-showLogo">
             <img id="judge0-logo" src="./images/icon_var2_rounded_512.png">
         </a>
+        <div id="judge0-explorer-toggle-btn" class="icon link item" title="Toggle Explorer" onclick="toggleFileExplorer()" style="font-size:1.1em;">
+            <i class="bars icon"></i>
+        </div>
         <div class="ui simple dropdown item judge0-showFileMenu">
             <span class="text">File</span>
             <i class="dropdown icon"></i>
@@ -106,9 +109,17 @@
                     <span class="text"><i class="file icon"></i>Open File...</span>
                     <input type="file" id="open-file-input" style="display: none;">
                 </div>
+                <div id="judge0-open-dir-btn" class="item">
+                    <span class="description"></span>
+                    <span class="text"><i class="folder open icon"></i>Open Directory...</span>
+                </div>
                 <div id="judge0-save-btn" class="item">
                     <span class="description">+S</span>
                     <span class="text"><i class="save icon"></i>Save</span>
+                </div>
+                <div id="judge0-save-local-btn" class="item">
+                    <span class="description"></span>
+                    <span class="text"><i class="download icon"></i>Save to Local PC</span>
                 </div>
             </div>
         </div>
