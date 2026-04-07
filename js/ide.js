@@ -156,6 +156,7 @@ function decode(bytes) {
 }
 
 var gDirectoryHandles = []; // supports multiple open root directories
+var gOpenFileHandles = []; // tracker for individual files
 var gCurrentFileHandle = null;
 var isPickerActive = false;
 var fileExplorerGLContainer = null;
@@ -353,13 +354,93 @@ function showExplorerEmpty() {
     if (!c) return; c.innerHTML = `<div class="exp-empty"><i class="folder open outline icon"></i>No folder opened.<br>File → Open Directory...</div>`;
 }
 
+function renderFileItem(handle, container) {
+    const item = document.createElement('div');
+    item.className = 'exp-item';
+    item.dataset.name = handle.name;
+    if (gCurrentFileHandle && gCurrentFileHandle.name === handle.name) item.classList.add('exp-active');
+    const inner = document.createElement('div');
+    inner.className = 'exp-item-inner';
+    inner.style.paddingLeft = '12px';
+    inner.innerHTML = `<i class="${getFileIcon(handle.name)} exp-file-icon"></i><span class="exp-name">${handle.name}</span>`;
+    item.onclick = async () => {
+        try { const f = await handle.getFile(); openFile(await f.text(), handle.name); gCurrentFileHandle = handle; markActiveFile(handle); }
+        catch(e) { showError('Error', e.message); }
+    };
+    item.oncontextmenu = (e) => showContextMenu(e, handle);
+    item.appendChild(inner);
+    container.appendChild(item);
+}
+
 async function refreshFileExplorer() {
     injectExplorerStyles();
     const c = document.getElementById('judge0-file-explorer-container');
-    if (!c) return; c.innerHTML = '';
-    if (!gDirectoryHandles.length) return showExplorerEmpty();
-    for (const h of gDirectoryHandles) await renderExplorerRoot(h);
+    if (!c) return;
+    c.innerHTML = '';
+    if (gOpenFileHandles.length > 0) {
+        c.appendChild(Object.assign(document.createElement('div'), {className:'exp-section-header', innerText:'Opened Files'}));
+        for (const f of gOpenFileHandles) renderFileItem(f, c);
+    }
+    if (gDirectoryHandles.length > 0) {
+        c.appendChild(Object.assign(document.createElement('div'), {className:'exp-section-header', innerText:'Workspaces'}));
+        for (const d of gDirectoryHandles) await renderExplorerRoot(d);
+    }
+    if (gOpenFileHandles.length === 0 && gDirectoryHandles.length === 0) showExplorerEmpty();
 }
+
+async function createNewFile(dir) {
+    const n = prompt('New file name:');
+    if (n && dir) { try { await dir.getFileHandle(n, {create:true}); refreshFileExplorer(); } catch(e) { showError('Create Error', e.message); } }
+}
+
+async function createNewFolder(dir) {
+    const n = prompt('New folder name:');
+    if (n && dir) { try { await dir.getDirectoryHandle(n, {create:true}); refreshFileExplorer(); } catch(e) { showError('Folder Error', e.message); } }
+}
+
+function showContextMenu(e, entry, parent) {
+    e.preventDefault(); e.stopPropagation();
+    let m = document.getElementById('ctx-menu');
+    if (!m) { m = document.createElement('div'); m.id = 'ctx-menu'; document.body.appendChild(m); }
+    m.innerHTML = '';
+    const add = (i, l, h) => {
+        const d = document.createElement('div'); d.className = 'ctx-item'; d.innerHTML = `<i class="${i} icon"></i> ${l}`;
+        d.onclick = () => { m.style.display = 'none'; h(); }; m.appendChild(d);
+    };
+    if (!gDirectoryHandles.length && !gOpenFileHandles.length) {
+        add('folder open outline', 'Open Folder...', openDirectoryAction);
+    } else {
+        const target = (entry && entry.kind === 'directory') ? entry : (parent || gDirectoryHandles[0]);
+        if (target) {
+            add('file outline', 'New File...', () => createNewFile(target));
+            add('folder outline', 'New Folder...', () => createNewFolder(target));
+        }
+        if (entry) {
+            m.appendChild(Object.assign(document.createElement('div'), {className:'ctx-sep'}));
+            add('trash alternate outline red', 'Delete', async () => {
+                if (confirm(`Delete ${entry.name}?`)) {
+                    try { 
+                        if (parent) await parent.removeEntry(entry.name, {recursive:true}); 
+                        else gOpenFileHandles = gOpenFileHandles.filter(f => f !== entry); 
+                        refreshFileExplorer(); 
+                    } catch(err) { showError('Delete Error', err.message); }
+                }
+            });
+        }
+    }
+    m.style.left = e.clientX + 'px'; m.style.top = e.clientY + 'px'; m.style.display = 'block';
+    const hide = () => { m.style.display = 'none'; document.removeEventListener('mousedown', hide); };
+    setTimeout(() => document.addEventListener('mousedown', hide), 10);
+}
+
+document.addEventListener('contextmenu', (e) => {
+    const c = document.getElementById('judge0-file-explorer-container');
+    if (c && c.contains(e.target)) {
+        if (e.target === c || e.target.classList.contains('exp-empty') || e.target.classList.contains('exp-section-header')) {
+            showContextMenu(e, null, gDirectoryHandles[0]);
+        }
+    }
+});
 
 async function openDirectoryAction(e) {
     if (e) { e.preventDefault(); e.stopImmediatePropagation(); }
@@ -770,10 +851,14 @@ async function openFilePickerAndHandle() {
     try {
         const [fileHandle] = await window.showOpenFilePicker();
         const file = await fileHandle.getFile();
-        const text = await file.text();
-        openFile(text, file.name);
+        openFile(await file.text(), file.name);
         gCurrentFileHandle = fileHandle;
-        markActiveFile(fileHandle);
+        if (!gOpenFileHandles.find(o => o.name === fileHandle.name)) {
+            gOpenFileHandles.push(fileHandle);
+            refreshFileExplorer();
+        } else {
+            markActiveFile(fileHandle);
+        }
     } catch (err) {
         if (err.name !== "AbortError") console.error(err);
     } finally {
