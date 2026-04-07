@@ -1,7 +1,8 @@
 "use strict";
 import theme from "./theme.js";
 import configuration from "./configuration.js";
-import { sourceEditor } from "./ide.js";
+// sourceEditor is accessed via window.sourceEditor (set by ide.js) to avoid double-loading ide.js
+
 
 const THREAD = [
     {
@@ -69,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
             role: "user",
             content: `
 User's code:
-${sourceEditor.getValue()}
+${window.sourceEditor ? window.sourceEditor.getValue() : "(editor not ready)"}
 
 User's message:
 ${userInputValue}
