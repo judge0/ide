@@ -9,6 +9,12 @@ const theme = {
 
         document.body.style.background = `url("./images/logo_${isLight ? "white" : "black"}.svg") center center / 33% no-repeat ${isLight ? "#e0e1e2" : "#1b1c1d"} `;
 
+        if (isLight) {
+            document.body.classList.remove("judge0-dark-mode");
+        } else {
+            document.body.classList.add("judge0-dark-mode");
+        }
+
         document.getElementById("judge0-golden-layout-dark-theme-stylesheet").disabled = isLight;
         document.getElementById("judge0-golden-layout-light-theme-stylesheet").disabled = !isLight;
 

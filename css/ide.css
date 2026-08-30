@@ -22,15 +22,6 @@
     overflow-x: auto;
 }
 
-.judge0-user-message {
-    margin-left: auto !important;
-    margin-right: 1em !important;
-    margin-top: 1em !important;
-    max-width: 66%;
-    overflow-wrap: break-word;
-    width: fit-content;
-}
-
 #judge0-chat-input-container {
     margin-top: 0;
 }
@@ -49,16 +40,31 @@
     }
 }
 
+.judge0-user-message {
+    background-color: #2185d0;
+    border-radius: 12px 12px 2px 12px;
+    color: #ffffff;
+    margin-bottom: 1em !important;
+    margin-left: auto !important;
+    margin-right: 1em !important;
+    margin-top: 1em !important;
+    max-width: 66%;
+    overflow-wrap: break-word;
+    padding: 0.75em 1.2em;
+    width: fit-content;
+}
+
 .judge0-chat-assistant {
-    background-color: #f3f4f6;
-    border-radius: 8px;
-    color: #1f2937;
+    background-color: #ffffff;
+    border: 1px solid #d4d4d5;
+    border-radius: 12px 12px 12px 2px;
+    color: #1b1c1d;
     margin-bottom: 1em !important;
     margin-left: 1em !important;
     margin-top: 1em !important;
     max-width: 80%;
     overflow-wrap: break-word;
-    padding: 1em;
+    padding: 0.75em 1.2em;
     width: fit-content;
 }
 
@@ -72,9 +78,9 @@
 }
 
 .judge0-chat-assistant pre {
-    background-color: #1f2937;
+    background-color: #1b1c1d;
     border-radius: 4px;
-    color: #e5e7eb;
+    color: #ffffff;
     margin-bottom: 0.75em;
     margin-top: 0.75em;
     overflow-x: auto;
@@ -98,4 +104,28 @@
     margin-bottom: 0.75em;
     margin-top: 0;
     padding-left: 1.5em;
+}
+
+body.judge0-dark-mode .judge0-user-message {
+    background-color: #1678c2;
+    color: #ffffff;
+}
+
+body.judge0-dark-mode .judge0-chat-assistant {
+    background-color: #2b2c2d;
+    border: 1px solid #4a4b4c;
+    color: #ffffff;
+}
+
+body.judge0-dark-mode .judge0-chat-assistant pre {
+    background-color: #121314;
+    border: 1px solid #4a4b4c;
+}
+
+body.judge0-dark-mode .judge0-chat-assistant code {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+body.judge0-dark-mode .judge0-chat-assistant pre code {
+    background-color: transparent;
 }
