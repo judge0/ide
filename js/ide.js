@@ -679,42 +679,67 @@ document.addEventListener("DOMContentLoaded", async function () {
                             {
                                 role: "user",
                                 content:
-                                    `You are a code completion assistant. Given the following context, generate the most likely code completion.
+                                    `You are an inline code completion engine.
 
-                    ### Code Before Cursor:
-                    ${textBeforeCursor}
+                                The cursor is marked by <<<CURSOR>>>.
 
-                    ### Code After Cursor:
-                    ${textAfterCursor}
+                                Return ONLY the text that must be inserted at the cursor.
 
-                    ### Instructions:
-                    - Predict the next logical code segment.
-                    - Ensure the suggestion is syntactically and contextually correct.
-                    - Keep the completion concise and relevant.
-                    - Do not repeat existing code.
-                    - Provide only the missing code.
-                    - **Respond with only the code, without markdown formatting.**
-                    - **Do not include triple backticks (\`\`\`) or additional explanations.**
+                                The returned text will be inserted literally between the code before and after the cursor.
 
-                    ### Completion:`.trim(),
+                                Rules:
+                                - Complete the unfinished expression, statement, token, or construct at the cursor.
+                                - Prefer the smallest useful completion.
+                                - Do not repeat code that already exists after the cursor.
+                                - Do not generate unrelated code.
+                                - Do not explain anything.
+                                - Do not use Markdown.
+                                - Do not output triple backticks.
+                                - Do not include "Completion:" or any other prefix.
+
+                                ### Code:
+                                ${textBeforeCursor}<<<CURSOR>>>${textAfterCursor}
+
+                                ### Completion:`.trim(),
                             },
                         ],
                         document.getElementById("judge0-chat-model-select")
                             .value,
                     );
 
-                    let aiResponseValue = aiResponse?.toString().trim() || "";
+                    let aiResponseValue = "";
 
-                    if (Array.isArray(aiResponseValue)) {
-                        aiResponseValue = aiResponseValue
-                            .map((v) => v.text)
+                    if (Array.isArray(aiResponse)) {
+                        aiResponseValue = aiResponse
+                            .map((v) => {
+                                if (typeof v === "string") {
+                                    return v;
+                                }
+
+                                return v?.text || v?.content || "";
+                            })
                             .join("\n")
                             .trim();
+                    } else if (typeof aiResponse === "string") {
+                        aiResponseValue = aiResponse.trim();
+                    } else if (aiResponse && typeof aiResponse === "object") {
+                        aiResponseValue = (
+                            aiResponse.content ||
+                            aiResponse.text ||
+                            aiResponse.message?.content ||
+                            ""
+                        ).trim();
                     }
 
-                    if (!aiResponseValue || aiResponseValue.length === 0) {
+                    if (!aiResponseValue) {
                         return;
                     }
+
+                    aiResponseValue = aiResponseValue
+                        .replace(/^```[a-zA-Z0-9_-]*\s*/, "")
+                        .replace(/\s*```$/, "")
+                        .replace(/^Completion:\s*/i, "")
+                        .trim();
 
                     return {
                         items: [
@@ -725,7 +750,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     position.column,
                                     position.lineNumber,
                                     position.column,
-                                ),
+                                )
                             },
                         ],
                     };

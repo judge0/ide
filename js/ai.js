@@ -70,8 +70,25 @@ export async function getInlineCompletion(context, model) {
             return null;
         }
 
+        if (!response.ok) {
+            console.error(
+                'Inline completion request failed:',
+                response.status,
+                response.statusText
+            );
+            return null;
+        }
+
         const data = await response.json();
-        return data.response || data.completion || data;
+
+        const content = data?.choices?.[0]?.message?.content;
+
+        if (typeof content === 'string') {
+            return content;
+        }
+
+        console.error('Unexpected inline completion response:', data);
+        return null;
     } catch (error) {
         console.error('Inline completion error:', error);
         return null;
