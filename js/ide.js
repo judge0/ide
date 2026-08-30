@@ -1,6 +1,6 @@
 import configuration from "./configuration.js";
 import { requireAuthentication, getAuthToken, initAuth } from "./auth.js";
-import { getInlineCompletion } from "./ai.js";
+import { sendChatMessage, getInlineCompletion } from "./ai.js";
 
 const API_KEY = "";
 
@@ -561,7 +561,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     $selectLanguage = $("#select-language");
     $selectLanguage.change(function (event, data) {
         let skipSetDefaultSourceCodeName =
-            (data && data.skipSetDefaultSourceCodeName) || !!gPuterFile;
+            data && data.skipSetDefaultSourceCodeName;
         loadSelectedLanguage(skipSetDefaultSourceCodeName);
     });
 
@@ -793,6 +793,60 @@ document.addEventListener("DOMContentLoaded", async function () {
     document
         .getElementById("judge0-save-btn")
         .addEventListener("click", saveAction);
+
+    document
+        .getElementById("judge0-chat-form")
+        .addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const input = document.getElementById("judge0-chat-user-input");
+            const userMessage = input.value.trim();
+            if (!userMessage) return;
+
+            const model = document.getElementById(
+                "judge0-chat-model-select",
+            ).value;
+            const messagesContainer = document.getElementById(
+                "judge0-chat-messages",
+            );
+
+            const userEl = document.createElement("div");
+            userEl.className = "judge0-chat-message judge0-chat-user";
+            userEl.textContent = userMessage;
+            messagesContainer.appendChild(userEl);
+
+            input.value = "";
+            input.disabled = true;
+
+            const messages = [
+                {
+                    role: "user",
+                    content: `Current code:\n\`\`\`\n${sourceEditor.getValue()}\n\`\`\`\n\n${userMessage}`,
+                },
+            ];
+
+            const response = await sendChatMessage(messages, model);
+
+            const assistantEl = document.createElement("div");
+            assistantEl.className = "judge0-chat-message judge0-chat-assistant";
+
+            if (response) {
+                const text =
+                    response.response ||
+                    response.content ||
+                    response.message ||
+                    JSON.stringify(response);
+                assistantEl.innerHTML = DOMPurify.sanitize(marked.parse(text));
+            } else {
+                assistantEl.textContent = "Error: no response.";
+            }
+
+            messagesContainer.appendChild(assistantEl);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            input.disabled = false;
+            input.focus();
+        });
 
     window.onmessage = function (e) {
         if (!e.data) {
