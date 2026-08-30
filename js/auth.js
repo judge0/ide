@@ -1,4 +1,3 @@
-// js/auth.js
 const API_BASE_URL = 'https://api.apps.skwtr.com/ide/v1';
 
 export function initAuth() {
@@ -11,45 +10,76 @@ export function initAuth() {
         }).modal('show');
     }
 
-    document.getElementById('login-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        loginForm.removeEventListener('submit', handleLogin);
+        loginForm.addEventListener('submit', handleLogin);
+    }
+}
 
-        const username = $('#login-username').val();
-        const password = $('#login-password').val();
-        const errorDiv = document.getElementById('login-error');
+async function handleLogin(e) {
+    e.preventDefault();
 
-        try {
-            const response = await fetch(`${API_BASE_URL}/auth/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
+    const username = document.getElementById('login-username').value;
+    const password = document.getElementById('login-password').value;
+    const errorDiv = document.getElementById('login-error');
 
-            const data = await response.json();
+    errorDiv.style.display = 'none';
+    errorDiv.textContent = '';
 
-            if (response.ok && data.token) {
-                localStorage.setItem('skwtr_jwt', data.token);
-                localStorage.setItem('skwtr_role', data.role);
-                localStorage.setItem('skwtr_username', username);
+    if (!username || !password) {
+        errorDiv.textContent = 'Please enter both username and password';
+        errorDiv.style.display = 'block';
+        return;
+    }
 
-                $('#skwtr-login-modal').modal('hide');
-                errorDiv.style.display = 'none';
+    try {
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                username: username.trim(),
+                password: password
+            })
+        });
 
-                // Refresh the page to load authenticated content
-                window.location.reload();
-            } else {
-                errorDiv.textContent = data.error || 'Invalid credentials';
-                errorDiv.style.display = 'block';
-            }
-        } catch (err) {
-            errorDiv.textContent = 'Network error occurred. Please try again.';
+        const data = await response.json();
+
+        if (response.ok && data.token) {
+            localStorage.setItem('skwtr_jwt', data.token);
+            localStorage.setItem('skwtr_role', data.role || 'user');
+            localStorage.setItem('skwtr_username', data.username || username);
+
+            $('#skwtr-login-modal').modal('hide');
+
+            document.getElementById('login-password').value = '';
+
+            console.log('Login successful');
+        } else {
+            errorDiv.textContent = data.error || 'Invalid username or password';
             errorDiv.style.display = 'block';
+            document.getElementById('login-password').value = '';
         }
-    });
+    } catch (err) {
+        console.error('Login error:', err);
+        errorDiv.textContent = 'Network error. Please check your connection and try again.';
+        errorDiv.style.display = 'block';
+    }
 }
 
 export function getAuthToken() {
     return localStorage.getItem('skwtr_jwt');
+}
+
+export function getAuthRole() {
+    return localStorage.getItem('skwtr_role');
+}
+
+export function getUsername() {
+    return localStorage.getItem('skwtr_username');
 }
 
 export function logout() {

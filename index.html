@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <script src="https://js.puter.com/v2/"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
@@ -41,7 +40,6 @@
     <script type="module" src="js/auth.js"></script>
     <script type="module" src="js/ai.js"></script>
     <script type="module" src="js/configuration.js"></script>
-    <script type="module" src="js/electron.js"></script>
     <script type="module" src="js/ide.js"></script>
     <script type="module" src="js/local_storage.js"></script>
     <script type="module" src="js/query.js"></script>
@@ -118,18 +116,18 @@
             Login to SKWTR IDE
         </div>
         <div class="content">
-            <form id="login-form" class="ui form">
+            <form id="login-form" class="ui form" autocomplete="off">
                 <div class="field">
                     <label>Username</label>
                     <div class="ui left icon input">
-                        <input type="text" id="login-username" name="username" placeholder="Username" required>
+                        <input type="text" id="login-username" name="username" placeholder="Username" required autocomplete="username">
                         <i class="user icon"></i>
                     </div>
                 </div>
                 <div class="field">
                     <label>Password</label>
                     <div class="ui left icon input">
-                        <input type="password" id="login-password" name="password" placeholder="Password" required>
+                        <input type="password" id="login-password" name="password" placeholder="Password" required autocomplete="current-password">
                         <i class="lock icon"></i>
                     </div>
                 </div>
