@@ -856,12 +856,11 @@ document.addEventListener("DOMContentLoaded", async function () {
             assistantEl.className = "judge0-chat-message judge0-chat-assistant";
 
             if (response) {
-                const text =
-                    response.response ||
-                    response.content ||
-                    response.message ||
+                const extractedContent =
+                    response?.choices?.[0]?.message?.content ??
                     JSON.stringify(response);
-                assistantEl.innerHTML = DOMPurify.sanitize(marked.parse(text));
+
+                assistantEl.innerHTML = DOMPurify.sanitize(marked.parse(extractedContent));
             } else {
                 assistantEl.textContent = "Error: no response.";
             }
