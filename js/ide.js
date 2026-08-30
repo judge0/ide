@@ -836,7 +836,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             );
 
             const userEl = document.createElement("div");
-            userEl.className = "judge0-chat-message judge0-chat-user";
+            userEl.className = "judge0-chat-message judge0-user-message";
             userEl.textContent = userMessage;
             messagesContainer.appendChild(userEl);
 
