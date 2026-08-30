@@ -15,7 +15,6 @@ const DEFAULT_CONFIGURATIONS = {
             showCommandLineArguments: true,
             showRunButton: true,
             showThemeButton: true,
-            showPuterSignInOutButton: true,
             showStatusLine: true,
             showCopyright: true,
             showNavigation: true
@@ -41,7 +40,6 @@ const DEFAULT_CONFIGURATIONS = {
             showCommandLineArguments: false,
             showRunButton: true,
             showThemeButton: false,
-            showPuterSignInOutButton: false,
             showStatusLine: false,
             showCopyright: false,
             showNavigation: true
@@ -67,61 +65,8 @@ const DEFAULT_CONFIGURATIONS = {
             showCommandLineArguments: true,
             showRunButton: true,
             showThemeButton: true,
-            showPuterSignInOutButton: true,
             showStatusLine: true,
             showCopyright: false,
-            showNavigation: true
-        },
-        appOptions: {
-            showAIAssistant: true,
-            ioLayout: "stack",
-            assistantLayout: "column",
-            mainLayout: "row",
-            showInput: true,
-            showOutput: true
-        }
-    },
-    electron: {
-        theme: "system",
-        style: "electron",
-        styleOptions: {
-            showLogo: false,
-            showFileMenu: true,
-            showHelpMenu: true,
-            showSelectLanguage: true,
-            showCompilerOptions: true,
-            showCommandLineArguments: true,
-            showRunButton: true,
-            showThemeButton: true,
-            showPuterSignInOutButton: true,
-            showStatusLine: true,
-            showCopyright: false,
-            showNavigation: true
-        },
-        appOptions: {
-            showAIAssistant: true,
-            ioLayout: "stack",
-            assistantLayout: "column",
-            mainLayout: "row",
-            showInput: true,
-            showOutput: true
-        }
-    },
-    puter: {
-        theme: "system",
-        style: "puter",
-        styleOptions: {
-            showLogo: false,
-            showFileMenu: true,
-            showHelpMenu: true,
-            showSelectLanguage: true,
-            showCompilerOptions: true,
-            showCommandLineArguments: true,
-            showRunButton: true,
-            showThemeButton: true,
-            showPuterSignInOutButton: false,
-            showStatusLine: true,
-            showCopyright: true,
             showNavigation: true
         },
         appOptions: {
