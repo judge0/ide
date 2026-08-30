@@ -1,7 +1,6 @@
 "use strict";
 import configuration from "./configuration.js";
 import { IS_ELECTRON } from "./electron.js";
-import { IS_PUTER } from "./puter.js";
 
 const style = {
     apply(name) {

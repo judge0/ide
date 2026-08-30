@@ -1,4 +1,4 @@
-import { usePuter } from "./puter.js";
+
 import configuration from "./configuration.js";
 import { requireAuthentication, getAuthToken } from "./auth.js";
 import { getInlineCompletion } from "./ai.js";
