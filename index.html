@@ -52,29 +52,7 @@
     <link type="text/css" rel="stylesheet" href="css/semantic.css">
     <link type="text/css" rel="stylesheet" href="css/site.css">
 
-    <title>Judge0 IDE</title>
-    <meta name="title" content="Judge0 IDE">
-    <meta name="description" content="Free and open-source online code editor and compiler">
-    <meta name="author" content="Judge0 d.o.o.">
-    <meta name="keywords" content="online editor, online code editor, online ide, online compiler, online interpreter, run code online, learn programming online,
-    online debugger, programming in browser, online code runner, online code execution, debug online, debug C code online, debug C++ code online,
-    programming online, snippet, snippets, code snippet, code snippets, pastebin, execute code, programming in browser, run c online, run C++ online,
-    run java online, run python online, run ruby online, run c# online, run rust online, run pascal online, run basic online">
-
-    <meta property="og:url" content="https://ide.judge0.com">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Judge0 IDE">
-    <meta property="og:image" content="https://raw.githubusercontent.com/judge0/ide/refs/heads/master/.github/wallpaper.png">
-    <meta property="og:image:alt" content="Judge0 IDE">
-    <meta property="og:description" content="Free and open-source online code editor and compiler">
-    <meta property="og:site_name" content="Judge0 IDE">
-    <meta property="og:locale" content="en_US">
-
-    <meta property="twitter:url" content="https://ide.judge0.com">
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="Judge0 IDE">
-    <meta property="twitter:image" content="https://raw.githubusercontent.com/judge0/ide/refs/heads/master/.github/wallpaper.png">
-    <meta property="twitter:description" content="Free and open-source online code editor and compiler">
+    <title>SKWTR IDE</title>
 
     <link rel="shortcut icon" href="/favicons/favicon.ico">
 
@@ -92,7 +70,7 @@
 
 <body>
     <div id="judge0-site-navigation" class="ui top fixed borderless menu judge0-showNavigation">
-        <a id="judge0-header" href="https://judge0.com" target="_blank" class="header item judge0-showLogo">
+        <a id="judge0-header" href="#" target="_blank" class="header item judge0-showLogo">
             <img id="judge0-logo" src="./images/icon_var2_rounded_512.png">
         </a>
         <div class="ui simple dropdown item judge0-showFileMenu">
@@ -108,17 +86,6 @@
                     <span class="description">+S</span>
                     <span class="text"><i class="save icon"></i>Save</span>
                 </div>
-            </div>
-        </div>
-        <div class="ui simple dropdown item judge0-showHelpMenu">
-            <span class="text">Help</span>
-            <i class="dropdown icon"></i>
-            <div class="menu judge0-file-menu">
-                <a href="https://github.com/judge0/ide" class="link text item" target="_blank"><i class="external square alternate icon"></i>GitHub Repository</a>
-                <a href="/embed" class="link text item" target="_blank"><i class="external square alternate icon"></i>Embed Guide</a>
-                <a href="https://platform.sulu.sh/apis/judge0" class="link text item" target="_blank"><i class="external square alternate icon"></i>HTTP API Documentation</a>
-                <a href="PRIVACY.md" class="link text item" target="_blank"><i class="external square alternate icon"></i>Privacy Policy</a>
-                <a href="TERMS.md" class="link text item" target="_blank"><i class="external square alternate icon"></i>Terms of Service</a>
             </div>
         </div>
         <div class="item judge0-showSelectLanguage">
@@ -142,24 +109,35 @@
                 Run Code
             </button>
         </div>
-        <div class="right menu">
-            <div id="judge0-theme-toggle-btn" class="icon link item judge0-showThemeButton" data-content="">
-                <i id="judge0-theme-toggle-btn-icon" class="sun icon"></i>
-            </div>
-            <div class="item judge0-showPuterSignInOutButton">
-                <button id="judge0-sign-in-btn" class="ui basic button">
-                    <i class="sign-in icon"></i>
-                    Sign in with Puter
-                </button>
-                <button id="judge0-sign-out-btn" class="ui basic button" data-content="Sign out">
-                    <i class="sign-out icon"></i>
-                    <span id="judge0-puter-username">Sign out</span>
-                </button>
-            </div>
-        </div>
     </div>
 
     <div id="judge0-site-content"></div>
+
+    <div id="skwtr-login-modal" class="ui tiny modal">
+        <div class="header">
+            Login to SKWTR IDE
+        </div>
+        <div class="content">
+            <form id="login-form" class="ui form">
+                <div class="field">
+                    <label>Username</label>
+                    <div class="ui left icon input">
+                        <input type="text" id="login-username" name="username" placeholder="Username" required>
+                        <i class="user icon"></i>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Password</label>
+                    <div class="ui left icon input">
+                        <input type="password" id="login-password" name="password" placeholder="Password" required>
+                        <i class="lock icon"></i>
+                    </div>
+                </div>
+                <div class="ui error message" id="login-error" style="display: none;"></div>
+                <button class="ui fluid large primary submit button" type="submit">Login</button>
+            </form>
+        </div>
+    </div>
 
     <div id="judge0-site-modal" class="ui modal">
         <div class="header">
