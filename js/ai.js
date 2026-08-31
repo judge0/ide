@@ -40,13 +40,9 @@ export async function sendChatMessage(messages, model, stream = false) {
     }
 }
 
-export async function getInlineCompletion(context, model) {
+export async function getInlineCompletion(textBeforeCursor, textAfterCursor, model) {
     const token = getAuthToken();
-
-    if (!token) {
-        console.error("Unauthorized: Please log in first.");
-        return null;
-    }
+    if (!token) return null;
 
     try {
         const response = await fetch(`${API_BASE_URL}/ai/complete`, {
@@ -56,39 +52,24 @@ export async function getInlineCompletion(context, model) {
                 'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
-                messages: context,
                 model: model,
-                stream: false
+                prompt: textBeforeCursor,
+                suffix: textAfterCursor,
+                stream: false,
+                options: { temperature: 0.1, num_predict: 64 }
             })
         });
 
         if (response.status === 401) {
-            localStorage.removeItem('skwtr_jwt');
-            localStorage.removeItem('skwtr_role');
-            localStorage.removeItem('skwtr_username');
+            localStorage.clear();
             $('#skwtr-login-modal').modal('show');
             return null;
         }
 
-        if (!response.ok) {
-            console.error(
-                'Inline completion request failed:',
-                response.status,
-                response.statusText
-            );
-            return null;
-        }
+        if (!response.ok) return null;
 
         const data = await response.json();
-
-        const content = data?.choices?.[0]?.message?.content;
-
-        if (typeof content === 'string') {
-            return content;
-        }
-
-        console.error('Unexpected inline completion response:', data);
-        return null;
+        return data?.response || null;
     } catch (error) {
         console.error('Inline completion error:', error);
         return null;

@@ -675,36 +675,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                     });
 
                     const aiResponse = await getInlineCompletion(
-                        [
-                            {
-                                role: "user",
-                                content:
-                                    `You are an inline code completion engine.
-
-                                The cursor is marked by <<<CURSOR>>>.
-
-                                Return ONLY the text that must be inserted at the cursor.
-
-                                The returned text will be inserted literally between the code before and after the cursor.
-
-                                Rules:
-                                - Complete the unfinished expression, statement, token, or construct at the cursor.
-                                - Prefer the smallest useful completion.
-                                - Do not repeat code that already exists after the cursor.
-                                - Do not generate unrelated code.
-                                - Do not explain anything.
-                                - Do not use Markdown.
-                                - Do not output triple backticks.
-                                - Do not include "Completion:" or any other prefix.
-
-                                ### Code:
-                                ${textBeforeCursor}<<<CURSOR>>>${textAfterCursor}
-
-                                ### Completion:`.trim(),
-                            },
-                        ],
-                        document.getElementById("judge0-chat-model-select")
-                            .value,
+                        textBeforeCursor,
+                        textAfterCursor,
+                        document.getElementById("judge0-chat-model-select").value
                     );
 
                     let aiResponseValue = "";
