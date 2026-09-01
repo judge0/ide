@@ -1,200 +1,382 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en-US">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+        <!-- jQuery (needed by Semantic UI and Golden Layout) -->
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+            integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        ></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <!-- Markdown & sanitization -->
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/marked/15.0.6/marked.min.js"
+            integrity="sha512-rvRITpPeEKe4hV9M8XntuXX6nuohzqdR5O3W6nhjTLwkrx0ZgBQuaK4fv5DdOWzs2IaXsGt5h0+nyp9pEuoTXg=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        ></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.3/purify.min.js"
+            integrity="sha512-Ll+TuDvrWDNNRnFFIM8dOiw7Go7dsHyxRp4RutiIFW/wm3DgDmCnRZow6AqbXnCbpWu93yM1O34q+4ggzGeXVA=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        ></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/15.0.6/marked.min.js" integrity="sha512-rvRITpPeEKe4hV9M8XntuXX6nuohzqdR5O3W6nhjTLwkrx0ZgBQuaK4fv5DdOWzs2IaXsGt5h0+nyp9pEuoTXg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js" integrity="sha512-LQNxIMR5rXv7o+b1l8+N1EZMfhG7iFZ9HhnbJkTp4zjNr5Wvst75AqUeFDxeRUa7l5vEDyUiAip//r+EFLLCyA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js" integrity="sha512-iWiuBS5nt6r60fCz26Nd0Zqe0nbk1ZTIQbl3Kv7kYsX+yKMUFHzjaH2+AnM6vp2Xs+gNmaBAVWJjSmuPw76Efg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" integrity="sha512-fHwaWebuwA7NSF5Qg/af4UeDx9XqUpYpOGgubo3yWu+b2IQR4UeQwbb42Ti7gVAjNtVoI/I9TEoYeu9omwcC6g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.3/purify.min.js" integrity="sha512-Ll+TuDvrWDNNRnFFIM8dOiw7Go7dsHyxRp4RutiIFW/wm3DgDmCnRZow6AqbXnCbpWu93yM1O34q+4ggzGeXVA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <!-- KaTeX (math rendering) -->
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"
+            integrity="sha512-LQNxIMR5rXv7o+b1l8+N1EZMfhG7iFZ9HhnbJkTp4zjNr5Wvst75AqUeFDxeRUa7l5vEDyUiAip//r+EFLLCyA=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        ></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"
+            integrity="sha512-iWiuBS5nt6r60fCz26Nd0Zqe0nbk1ZTIQbl3Kv7kYsX+yKMUFHzjaH2+AnM6vp2Xs+gNmaBAVWJjSmuPw76Efg=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        ></script>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css"
+            integrity="sha512-fHwaWebuwA7NSF5Qg/af4UeDx9XqUpYpOGgubo3yWu+b2IQR4UeQwbb42Ti7gVAjNtVoI/I9TEoYeu9omwcC6g=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        />
 
-    <script>
-        var require = {
-            paths: {
-                "vs": "./vendor/monaco-editor-0.44.0/min/vs"
-            }
-        };
-    </script>
+        <!-- Monaco Editor -->
+        <script>
+            var require = {
+                paths: {
+                    vs: "./vendor/monaco-editor-0.44.0/min/vs",
+                },
+            };
+        </script>
+        <script src="./vendor/monaco-editor-0.44.0/min/vs/loader.js"></script>
+        <script src="./vendor/monaco-editor-0.44.0/min/vs/editor/editor.main.nls.js"></script>
+        <script src="./vendor/monaco-editor-0.44.0/min/vs/editor/editor.main.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/goldenlayout.min.js" integrity="sha256-NhJAZDfGgv4PiB+GVlSrPdh3uc75XXYSM4su8hgTchI=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/css/goldenlayout-base.css" integrity="sha512-rGtzJyDE8egZ/OScuBNLW1EIhRydcfrZo14oTvZwRLzEZu+s8foCtwi0XhXsKnhuoQAwJ7POFARWdU4fBL7FbQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
-    <link id="judge0-golden-layout-dark-theme-stylesheet" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/css/goldenlayout-dark-theme.css" integrity="sha512-XfcBrEH69BhsZ0XpvPyzOLgikhAvIG6Znbi6yKi1Jh1iYaOXSXvljWFerhcUl5LYLCuV61KhfCydQ1+MNxnilg==" crossorigin="anonymous" referrerpolicy="no-referrer" disabled>
-    <link id="judge0-golden-layout-light-theme-stylesheet" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/css/goldenlayout-light-theme.css" integrity="sha512-/S3N+v8cRHW2GJvM3v9FGHAKOhNgws+V1dYZb1fBxRd9XIwpqZFZB0jug+2HHf64eURsJLqVzCVn92pQTFHHow==" crossorigin="anonymous" referrerpolicy="no-referrer">
+        <!-- Golden Layout -->
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/goldenlayout.min.js"
+            integrity="sha256-NhJAZDfGgv4PiB+GVlSrPdh3uc75XXYSM4su8hgTchI="
+            crossorigin="anonymous"
+        ></script>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/css/goldenlayout-base.css"
+            integrity="sha512-rGtzJyDE8egZ/OScuBNLW1EIhRydcfrZo14oTvZwRLzEZu+s8foCtwi0XhXsKnhuoQAwJ7POFARWdU4fBL7FbQ=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        />
+        <link
+            id="judge0-golden-layout-dark-theme-stylesheet"
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/css/goldenlayout-dark-theme.css"
+            integrity="sha512-XfcBrEH69BhsZ0XpvPyzOLgikhAvIG6Znbi6yKi1Jh1iYaOXSXvljWFerhcUl5LYLCuV61KhfCydQ1+MNxnilg=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+            disabled
+        />
+        <link
+            id="judge0-golden-layout-light-theme-stylesheet"
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/golden-layout/1.5.9/css/goldenlayout-light-theme.css"
+            integrity="sha512-/S3N+v8cRHW2GJvM3v9FGHAKOhNgws+V1dYZb1fBxRd9XIwpqZFZB0jug+2HHf64eURsJLqVzCVn92pQTFHHow=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        />
 
-    <script src="./vendor/monaco-editor-0.44.0/min/vs/loader.js"></script>
-    <script src="./vendor/monaco-editor-0.44.0/min/vs/editor/editor.main.nls.js"></script>
-    <script src="./vendor/monaco-editor-0.44.0/min/vs/editor/editor.main.js"></script>
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"
+            rel="stylesheet"
+        />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+        <!-- Semantic UI -->
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.css"
+            integrity="sha512-KXol4x3sVoO+8ZsWPFI/r5KBVB/ssCGB5tsv2nVOKwLg33wTFP3fmnXa47FdSVIshVTgsYk/1734xSk9aFIa4A=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        />
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.js"
+            integrity="sha512-Xo0Jh8MsOn72LGV8kU5LsclG7SUzJsWGhXbWcYs2MAmChkQzwiW/yTQwdJ8w6UA9C6EVG18GHb/TrYpYCjyAQw=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        ></script>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.css" integrity="sha512-KXol4x3sVoO+8ZsWPFI/r5KBVB/ssCGB5tsv2nVOKwLg33wTFP3fmnXa47FdSVIshVTgsYk/1734xSk9aFIa4A==" crossorigin="anonymous" referrerpolicy="no-referrer">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.js" integrity="sha512-Xo0Jh8MsOn72LGV8kU5LsclG7SUzJsWGhXbWcYs2MAmChkQzwiW/yTQwdJ8w6UA9C6EVG18GHb/TrYpYCjyAQw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <!-- Custom CSS -->
+        <link type="text/css" rel="stylesheet" href="css/ide.css" />
+        <link type="text/css" rel="stylesheet" href="css/semantic.css" />
+        <link type="text/css" rel="stylesheet" href="css/site.css" />
 
-    <script type="module" src="js/auth.js"></script>
-    <script type="module" src="js/ai.js"></script>
-    <script type="module" src="js/configuration.js"></script>
-    <script type="module" src="js/ide.js"></script>
-    <script type="module" src="js/local_storage.js"></script>
-    <script type="module" src="js/query.js"></script>
-    <script type="module" src="js/style.js"></script>
-    <script type="module" src="js/theme.js"></script>
+        <!-- ✅ IMPORTANT: Load main module LAST -->
+        <script type="module" src="js/index.js"></script>
 
-    <link type="text/css" rel="stylesheet" href="css/ide.css">
-    <link type="text/css" rel="stylesheet" href="css/semantic.css">
-    <link type="text/css" rel="stylesheet" href="css/site.css">
+        <title>SKWTR IDE</title>
 
-    <title>SKWTR IDE</title>
+        <!-- Favicons -->
+        <link rel="shortcut icon" href="/favicons/favicon.ico" />
+        <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg" />
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="96x96"
+            href="/favicons/favicon-96x96.png"
+        />
+        <link
+            rel="apple-touch-icon"
+            sizes="180x180"
+            href="/favicons/favicon-180x180.png"
+        />
+        <meta name="apple-mobile-web-app-title" content="Judge0 IDE" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="msapplication-TileColor" content="#ffffff" />
+        <meta name="theme-color" content="#ffffff" />
+    </head>
 
-    <link rel="shortcut icon" href="/favicons/favicon.ico">
-
-    <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg">
-    <link rel="icon" type="image/png" sizes="96x96" href="/favicons/favicon-96x96.png">
-
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicons/favicon-180x180.png">
-    <meta name="apple-mobile-web-app-title" content="Judge0 IDE">
-
-    <link rel="manifest" href="/manifest.json">
-
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="theme-color" content="#ffffff">
-</head>
-
-<body>
-    <div id="judge0-site-navigation" class="ui top fixed borderless menu judge0-showNavigation">
-        <a id="judge0-header" href="#" target="_blank" class="header item judge0-showLogo">
-            <img id="judge0-logo" src="./images/icon_var2_rounded_512.png">
-        </a>
-        <div class="ui simple dropdown item judge0-showFileMenu">
-            <span class="text">File</span>
-            <i class="dropdown icon"></i>
-            <div class="menu judge0-file-menu">
-                <div id="judge0-open-file-btn" class="item">
-                    <span class="description">+O</span>
-                    <span class="text"><i class="file icon"></i>Open File...</span>
-                    <input type="file" id="open-file-input" style="display: none;">
-                </div>
-                <div id="judge0-save-btn" class="item">
-                    <span class="description">+S</span>
-                    <span class="text"><i class="save icon"></i>Save</span>
-                </div>
-            </div>
-        </div>
-        <div class="item judge0-showSelectLanguage">
-            <select id="select-language" class="ui search selection dropdown"></select>
-        </div>
-        <div class="item judge0-showCompilerOptions">
-            <div class="ui left icon transparent input">
-                <i class="flag icon"></i>
-                <input id="compiler-options" type="text" placeholder="Compiler options"></input>
-            </div>
-        </div>
-        <div class="item judge0-showCommandLineArguments">
-            <div class="ui left icon transparent input">
-                <i class="terminal icon"></i>
-                <input id="command-line-arguments" type="text" placeholder="Command line arguments"></input>
-            </div>
-        </div>
-        <div class="item judge0-showRunButton">
-            <button id="run-btn" class="ui primary labeled icon button" data-content="+↵">
-                <i class="play icon"></i>
-                Run Code
-            </button>
-        </div>
-
-        <div class="right menu">
-            <div id="judge0-theme-toggle-btn" class="icon link item judge0-showThemeButton" data-content="">
-                <i id="judge0-theme-toggle-btn-icon" class="sun icon"></i>
-            </div>
-        </div>
-    </div>
-
-    <div id="judge0-site-content"></div>
-
-    <div id="skwtr-login-modal" class="ui tiny modal">
-        <div class="header">
-            Login to SKWTR IDE
-        </div>
-        <div class="content">
-            <form id="login-form" class="ui form" autocomplete="off">
-                <div class="field">
-                    <label>Username</label>
-                    <div class="ui left icon input">
-                        <input type="text" id="login-username" name="username" placeholder="Username" required autocomplete="username">
-                        <i class="user icon"></i>
-                    </div>
-                </div>
-                <div class="field">
-                    <label>Password</label>
-                    <div class="ui left icon input">
-                        <input type="password" id="login-password" name="password" placeholder="Password" required autocomplete="current-password">
-                        <i class="lock icon"></i>
-                    </div>
-                </div>
-                <div class="ui error message" id="login-error" style="display: none;"></div>
-                <button class="ui fluid large primary submit button" type="submit">Login</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="judge0-site-modal" class="ui modal">
-        <div class="header">
-            <span id="title"></span>
-        </div>
-        <div class="scrolling content"></div>
-        <div class="actions">
-            <a id="report-problem-btn" class="ui labeled icon red button" href="https://github.com/judge0/ide/issues/new?title=New+bug+report&body=Describe+the+problem." target="_blank">
-                <i class="flag icon"></i>
-                Report Problem
+    <body>
+        <div
+            id="judge0-site-navigation"
+            class="ui top fixed borderless menu judge0-showNavigation"
+        >
+            <a
+                id="judge0-header"
+                href="#"
+                target="_blank"
+                class="header item judge0-showLogo"
+            >
+                <img
+                    id="judge0-logo"
+                    src="./images/icon_var2_rounded_512.png"
+                />
             </a>
-            <div class="ui labeled icon cancel secondary button">
-                <i class="close icon"></i>
-                Close (ESC)
-            </div>
-        </div>
-    </div>
-
-    <div id="judge0-chat-container" class="ui segment">
-        <div class="ui top attached borderless menu">
-            <div class="item">
-                <div class="ui toggle checked checkbox">
-                    <input id="judge0-inline-suggestions" type="checkbox" checked="">
-                    <label>Inline Suggestions</label>
+            <div class="ui simple dropdown item judge0-showFileMenu">
+                <span class="text">File</span>
+                <i class="dropdown icon"></i>
+                <div class="menu judge0-file-menu">
+                    <div id="judge0-open-file-btn" class="item">
+                        <span class="description">+O</span>
+                        <span class="text"
+                            ><i class="file icon"></i>Open File...</span
+                        >
+                        <input
+                            type="file"
+                            id="open-file-input"
+                            style="display: none"
+                        />
+                    </div>
+                    <div id="judge0-save-btn" class="item">
+                        <span class="description">+S</span>
+                        <span class="text"><i class="save icon"></i>Save</span>
+                    </div>
                 </div>
             </div>
-            <div class="right menu">
-                <div class="fitted item">
-                    <select id="judge0-chat-model-select" class="ui search selection dropdown item">
-                        <option>Default</option>
-                    </select>
+            <div class="item judge0-showSelectLanguage">
+                <select
+                    id="select-language"
+                    class="ui search selection dropdown"
+                ></select>
+            </div>
+            <div class="item judge0-showCompilerOptions">
+                <div class="ui left icon transparent input">
+                    <i class="flag icon"></i>
+                    <input
+                        id="compiler-options"
+                        type="text"
+                        placeholder="Compiler options"
+                    />
                 </div>
             </div>
-        </div>
-        <div id="judge0-chat-messages"></div>
-        <div id="judge0-chat-input-container" class="ui basic segment">
-            <form id="judge0-chat-form" class="ui fluid action input">
-                <input id="judge0-chat-user-input" type="text">
-                <button id="judge0-chat-send-button" class="ui primary icon button" type="submit">
-                    <i class="arrow up icon"></i>
+            <div class="item judge0-showCommandLineArguments">
+                <div class="ui left icon transparent input">
+                    <i class="terminal icon"></i>
+                    <input
+                        id="command-line-arguments"
+                        type="text"
+                        placeholder="Command line arguments"
+                    />
+                </div>
+            </div>
+            <div class="item judge0-showRunButton">
+                <button
+                    id="run-btn"
+                    class="ui primary labeled icon button"
+                    data-content="+↵"
+                >
+                    <i class="play icon"></i>
+                    Run Code
                 </button>
-            </form>
+            </div>
+
+            <div class="right menu">
+                <div
+                    id="judge0-theme-toggle-btn"
+                    class="icon link item judge0-showThemeButton"
+                    data-content=""
+                >
+                    <i id="judge0-theme-toggle-btn-icon" class="sun icon"></i>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <div id="judge0-status-line" class="ui bottom right attached mini label judge0-showStatusLine"></div>
+        <div id="judge0-site-content"></div>
 
-    <a href="https://judge0.com" target="_blank" class="ui bottom center attached mini label judge0-showCopyright">© 2016-2026 Judge0 d.o.o. – All Rights Reserved. • A Croatian 🇭🇷 company</a>
+        <!-- Login Modal -->
+        <div id="skwtr-login-modal" class="ui tiny modal">
+            <div class="header">Login to SKWTR IDE</div>
+            <div class="content">
+                <form id="login-form" class="ui form" autocomplete="off">
+                    <div class="field">
+                        <label>Username</label>
+                        <div class="ui left icon input">
+                            <input
+                                type="text"
+                                id="login-username"
+                                name="username"
+                                placeholder="Username"
+                                required
+                                autocomplete="username"
+                            />
+                            <i class="user icon"></i>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Password</label>
+                        <div class="ui left icon input">
+                            <input
+                                type="password"
+                                id="login-password"
+                                name="password"
+                                placeholder="Password"
+                                required
+                                autocomplete="current-password"
+                            />
+                            <i class="lock icon"></i>
+                        </div>
+                    </div>
+                    <div
+                        class="ui error message"
+                        id="login-error"
+                        style="display: none"
+                    ></div>
+                    <button
+                        class="ui fluid large primary submit button"
+                        type="submit"
+                    >
+                        Login
+                    </button>
+                </form>
+            </div>
+        </div>
 
-    <script>
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("sw.js").then(() => console.log("Service Worker Registered"));
-        }
-    </script>
-</body>
+        <!-- Error Modal -->
+        <div id="judge0-site-modal" class="ui modal">
+            <div class="header">
+                <span id="title"></span>
+            </div>
+            <div class="scrolling content"></div>
+            <div class="actions">
+                <a
+                    id="report-problem-btn"
+                    class="ui labeled icon red button"
+                    href="https://github.com/judge0/ide/issues/new?title=New+bug+report&body=Describe+the+problem."
+                    target="_blank"
+                >
+                    <i class="flag icon"></i>
+                    Report Problem
+                </a>
+                <div class="ui labeled icon cancel secondary button">
+                    <i class="close icon"></i>
+                    Close (ESC)
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Chat Container -->
+        <div
+            id="judge0-chat-container"
+            class="ui segment"
+            style="display: none; height: 100%; flex-direction: column"
+        >
+            <div class="ui top attached borderless menu">
+                <div class="item">
+                    <div class="ui toggle checked checkbox">
+                        <input
+                            id="judge0-inline-suggestions"
+                            type="checkbox"
+                            checked
+                        />
+                        <label>Inline Suggestions</label>
+                    </div>
+                </div>
+                <div class="right menu">
+                    <div class="fitted item">
+                        <select
+                            id="judge0-chat-model-select"
+                            class="ui search selection dropdown item"
+                        >
+                            <option value="default">Default</option>
+                            <!-- Other models will be added dynamically -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div
+                id="judge0-chat-messages"
+                style="flex: 1; overflow-y: auto; padding: 10px"
+            ></div>
+            <div
+                id="judge0-chat-input-container"
+                class="ui basic segment"
+                style="margin: 0"
+            >
+                <form id="judge0-chat-form" class="ui fluid action input">
+                    <input
+                        id="judge0-chat-user-input"
+                        type="text"
+                        placeholder="Ask the AI assistant..."
+                    />
+                    <button
+                        id="judge0-chat-send-button"
+                        class="ui primary icon button"
+                        type="submit"
+                    >
+                        <i class="arrow up icon"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Status Line -->
+        <div
+            id="judge0-status-line"
+            class="ui bottom right attached mini label judge0-showStatusLine"
+        ></div>
+
+        <!-- Copyright -->
+        <a
+            href="https://judge0.com"
+            target="_blank"
+            class="ui bottom center attached mini label judge0-showCopyright"
+            >© 2016-2026 Judge0 d.o.o. – All Rights Reserved. • A Croatian 🇭🇷
+            company</a
+        >
+
+        <script>
+            if ("serviceWorker" in navigator) {
+                navigator.serviceWorker
+                    .register("sw.js")
+                    .then(() => console.log("Service Worker Registered"));
+            }
+        </script>
+    </body>
 </html>
