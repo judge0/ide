@@ -2,13 +2,7 @@ import configuration from "./configuration.js";
 import { requireAuthentication, getAuthToken, initAuth } from "./auth.js";
 import { sendChatMessage, getInlineCompletion } from "./ai.js";
 
-const API_KEY = "";
-
-const AUTH_HEADERS = API_KEY
-    ? {
-          Authorization: `Bearer ${API_KEY}`,
-      }
-    : {};
+const API_BASE_URL = "https://api.apps.skwtr.com/ide/v1";
 
 const CE = "CE";
 const EXTRA_CE = "EXTRA_CE";
@@ -231,9 +225,15 @@ function run() {
     if (sourceEditor.getValue().trim() === "") {
         showError("Error", "Source code can't be empty!");
         return;
-    } else {
-        $runBtn.addClass("loading");
     }
+
+    if (!getAuthToken()) {
+        requireAuthentication();
+        $runBtn.removeClass("loading");
+        return;
+    }
+
+    $runBtn.addClass("loading");
 
     stdoutEditor.setValue("");
     $statusLine.html("");
@@ -263,6 +263,8 @@ function run() {
     };
 
     let sendRequest = function (data) {
+        const token = getAuthToken();
+
         window.top.postMessage(
             JSON.parse(
                 JSON.stringify({
@@ -279,21 +281,55 @@ function run() {
         );
 
         timeStart = performance.now();
+
+        const requestHeaders = token
+            ? {
+                  Authorization: `Bearer ${token}`,
+              }
+            : AUTH_HEADERS;
+
         $.ajax({
-            url: `${AUTHENTICATED_BASE_URL[flavor]}/submissions?base64_encoded=true&wait=false`,
+            url: `${API_BASE_URL}/code/run`,
             type: "POST",
             contentType: "application/json",
             data: JSON.stringify(data),
-            headers: AUTH_HEADERS,
+            headers: requestHeaders,
             success: function (data, textStatus, request) {
+                if (data && data.status) {
+                    handleResult(data);
+                    return;
+                }
+
+                if (!data || !data.token) {
+                    showError(
+                        "Error",
+                        "Code submission failed: missing token.",
+                    );
+                    $runBtn.removeClass("loading");
+                    return;
+                }
+
                 console.log(`Your submission token is: ${data.token}`);
-                let region = request.getResponseHeader("X-Judge0-Region");
+                const region = request.getResponseHeader("X-Judge0-Region");
                 setTimeout(
-                    fetchSubmission.bind(null, flavor, region, data.token, 1),
+                    fetchSubmission.bind(
+                        null,
+                        flavor,
+                        region,
+                        data.token,
+                        1,
+                        token,
+                    ),
                     INITIAL_WAIT_TIME_MS,
                 );
             },
-            error: handleRunError,
+            error: function (jqXHR) {
+                if (jqXHR && jqXHR.status === 401) {
+                    localStorage.clear();
+                    $("#skwtr-login-modal").modal("show");
+                }
+                handleRunError(jqXHR);
+            },
         });
     };
 
@@ -318,7 +354,13 @@ function run() {
     }
 }
 
-function fetchSubmission(flavor, region, submission_token, iteration) {
+function fetchSubmission(
+    flavor,
+    region,
+    submission_token,
+    iteration,
+    authToken = getAuthToken(),
+) {
     if (iteration >= MAX_PROBE_REQUESTS) {
         handleRunError(
             {
@@ -331,14 +373,30 @@ function fetchSubmission(flavor, region, submission_token, iteration) {
         return;
     }
 
+    const isBackendSubmission = !!authToken;
+    const requestUrl = isBackendSubmission
+        ? `${API_BASE_URL}/code/status/${encodeURIComponent(submission_token)}`
+        : `${UNAUTHENTICATED_BASE_URL[flavor]}/submissions/${submission_token}?base64_encoded=true`;
+
+    const requestHeaders = isBackendSubmission
+        ? {
+              Authorization: `Bearer ${authToken}`,
+          }
+        : {
+              "X-Judge0-Region": region,
+          };
+
     $.ajax({
-        url: `${UNAUTHENTICATED_BASE_URL[flavor]}/submissions/${submission_token}?base64_encoded=true`,
-        headers: {
-            "X-Judge0-Region": region,
-        },
+        url: requestUrl,
+        headers: requestHeaders,
         success: function (data) {
+            if (!data || !data.status) {
+                showError("Error", "Execution status response was invalid.");
+                $runBtn.removeClass("loading");
+                return;
+            }
+
             if (data.status.id <= 2) {
-                // In Queue or Processing
                 $statusLine.html(data.status.description);
                 setTimeout(
                     fetchSubmission.bind(
@@ -347,6 +405,7 @@ function fetchSubmission(flavor, region, submission_token, iteration) {
                         region,
                         submission_token,
                         iteration + 1,
+                        authToken,
                     ),
                     WAIT_TIME_FUNCTION(iteration),
                 );
@@ -354,7 +413,13 @@ function fetchSubmission(flavor, region, submission_token, iteration) {
                 handleResult(data);
             }
         },
-        error: handleRunError,
+        error: function (jqXHR) {
+            if (jqXHR && jqXHR.status === 401) {
+                localStorage.clear();
+                $("#skwtr-login-modal").modal("show");
+            }
+            handleRunError(jqXHR);
+        },
     });
 }
 
@@ -677,7 +742,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                     const aiResponse = await getInlineCompletion(
                         textBeforeCursor,
                         textAfterCursor,
-                        document.getElementById("judge0-chat-model-select").value
+                        document.getElementById("judge0-chat-model-select")
+                            .value,
                     );
 
                     let aiResponseValue = "";
@@ -723,7 +789,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     position.column,
                                     position.lineNumber,
                                     position.column,
-                                )
+                                ),
                             },
                         ],
                     };
@@ -833,7 +899,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                     response?.choices?.[0]?.message?.content ??
                     JSON.stringify(response);
 
-                assistantEl.innerHTML = DOMPurify.sanitize(marked.parse(extractedContent));
+                assistantEl.innerHTML = DOMPurify.sanitize(
+                    marked.parse(extractedContent),
+                );
             } else {
                 assistantEl.textContent = "Error: no response.";
             }
